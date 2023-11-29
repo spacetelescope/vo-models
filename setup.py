@@ -1,33 +1,23 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+"""Setup package for vo-models"""
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
-
-
-with open('README.md') as readme_file:
-    readme = readme_file.read()
-
+from setuptools import find_packages, setup
 
 requirements = [
-    "pydantic-xml"
-                ]
+    "pydantic-xml",
+    "pylint>=2.7.2",
+]
 
 
 setup(
-    name='vo-models',
-    version='0.1.0',
+    name="vo.models",
+    version="0.1.0",
     description="Open-source data models for IVOA specifications",
     author="Joshua Fraustro",
     author_email='jfraustro@stsci.edu',
     url='https://github.com/jwfraustro/vo-models',
-    packages=[
-        'vo-models',
-    ],
-    package_dir={'vo-models':
-                 'vo-models'},
+    packages=["vo." + pkg for pkg in find_packages("vo")],
+    package_dir={"vo-models": "vo"},
     include_package_data=True,
     install_requires=requirements,
     keywords='vo-models',
