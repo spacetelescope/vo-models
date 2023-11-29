@@ -4,7 +4,10 @@ import re
 from datetime import datetime
 from typing import Optional
 
-from pydantic_xml import BaseXmlModel, computed_attr
+from pydantic import GetCoreSchemaHandler, GetJsonSchemaHandler
+from pydantic.json_schema import JsonSchemaValue
+from pydantic_core import CoreSchema, core_schema
+from pydantic_xml import BaseXmlModel, RootXmlModel, computed_attr
 
 
 class VODateTime(datetime):
@@ -35,12 +38,9 @@ class VODateTime(datetime):
         return self.isoformat(sep="T", timespec="milliseconds")
 
     @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
+    def __get_pydantic_core_schema__(cls, source_type, handler: GetCoreSchemaHandler) -> CoreSchema:
+        return core_schema.no_info_before_validator_function(cls.validate, handler(datetime))
 
-    @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(pattern=cls.exp_vodt_regex)
 
     @classmethod
     def validate(cls, value: str):
@@ -85,13 +85,14 @@ class VODateTime(datetime):
         return iso_dt.replace("+00:00", "Z")
 
 
-class NillableElement(BaseXmlModel, skip_empty=True, nsmap={"xsi": "http://www.w3.org/2001/XMLSchema-instance"}):
+class NillElement(BaseXmlModel, skip_empty=True, nsmap={"xsi": "http://www.w3.org/2001/XMLSchema-instance"}):
     """An element that can be 'nillable' in XML.
 
     If no value is provided, the element will be rendered as <element xsi:nil="true" />.
     """
 
     value: Optional[str] = None
+
 
     @computed_attr(name="nil", ns="xsi")
     def nil(self) -> Optional[str]:
@@ -100,3 +101,12 @@ class NillableElement(BaseXmlModel, skip_empty=True, nsmap={"xsi": "http://www.w
             return "true"
         else:
             return None
+
+
+class DatetimeElement(RootXmlModel):
+    """A wrapper element for a VODatetime object.
+
+    Necessary to allow a Union between a NillableElement and simple VODatetime datatype.
+    """
+
+    root: VODateTime
