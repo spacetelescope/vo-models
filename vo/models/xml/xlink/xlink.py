@@ -2,7 +2,7 @@
 from enum import Enum
 
 
-class TypeValue(str, Enum):
+class XlinkType(str, Enum):
     """xlink 'type' values"""
 
     SIMPLE = "simple"

@@ -5,9 +5,6 @@ from enum import Enum
 from pydantic_xml import RootXmlModel
 
 
-class JobIdentifier(RootXmlModel[str]):
-    """The identifier for the job"""
-
 class ErrorType(str, Enum):
     """Enum for error types."""
 
