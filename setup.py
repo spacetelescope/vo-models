@@ -4,7 +4,7 @@
 from setuptools import find_packages, setup
 
 requirements = [
-    "pydantic-xml",
+    "pydantic-xml[lxml]",
     "pylint>=2.7.2",
 ]
 
