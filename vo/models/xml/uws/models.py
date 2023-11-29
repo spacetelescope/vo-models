@@ -1,11 +1,13 @@
 """UWS Job Schema using Pydantic-XML models"""
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Generic, Optional, TypeVar, Union
+from xml.etree.ElementTree import Element
 
-from pydantic import Field, computed_field, validator
-from pydantic_xml import BaseXmlModel, RootXmlModel, attr, computed_attr, element
+from pydantic import validator
+from pydantic_xml import BaseXmlModel, attr, element
 
-from vo.models.xml.uws.types import ErrorType, ExecutionPhase, JobIdentifier, UWSVersion
+from vo.models.xml.generics import NillableElement, VODateTime
+from vo.models.xml.uws.types import ErrorType, ExecutionPhase, UWSVersion
 from vo.models.xml.xlink import TypeValue
 
 NSMAP = {
@@ -14,32 +16,6 @@ NSMAP = {
     "xsd": "http://www.w3.org/2001/XMLSchema",
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",
 }
-
-
-class NillableElement(BaseXmlModel, skip_empty=True):
-    """An element that can be 'nillable' in XML.
-
-    If no value is provided, the element will be rendered as <element xsi:nil="true" />.
-    """
-
-    value: Optional[str] = Field(exclude=True)
-    nil: Optional[bool] = Field(exclude=True)
-
-    @computed_attr(name="nil", ns="xsi")
-    def nil(self) -> Optional[str]:
-        """If the value is None, return 'true'."""
-        if self.value is None:
-            return "true"
-        else:
-            return None
-
-    @computed_field(name="value")
-    def value(self) -> Optional[str]:
-        """If the value is None, return None."""
-        if self.value is None:
-            return None
-        else:
-            return self.value
 
 
 class Parameter(BaseXmlModel, tag="parameter", ns="uws", nsmap=NSMAP):
@@ -182,7 +158,7 @@ class JobSummary(BaseXmlModel, ns="uws", nsmap=NSMAP):
             optional in the schema for backwards compatibility. It will be formally required in the next major revision.
     """
 
-    job_id: JobIdentifier = element(tag="jobId")
+    job_id: str = element(tag="jobId")
     run_id: Optional[str] = element(tag="runId")
     owner_id: Optional[NillableElement] = element(tag="ownerId")
     phase: ExecutionPhase = element(tag="phase")
@@ -199,6 +175,11 @@ class JobSummary(BaseXmlModel, ns="uws", nsmap=NSMAP):
 
     version: Optional[UWSVersion] = attr()
 
+    class Config:
+        """JobSummary pydantic config options"""
+
+        arbitrary_types_allowed = True
+
 
 class Job(JobSummary, tag="job"):
     """This is the information that is returned when a GET is made for a single job resource - i.e. /{jobs}/{job-id}"""
@@ -212,4 +193,4 @@ class ShortJobDescription(BaseXmlModel, tag="jobref", ns="uws", nsmap=NSMAP):
     owner_id: Optional[NillableElement] = element(tag="ownerId")
     creation_time: Optional[datetime] = element(tag="creationTime")
 
-    id: JobIdentifier = attr()
+    id: str = attr()

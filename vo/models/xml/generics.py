@@ -2,6 +2,9 @@
 
 import re
 from datetime import datetime
+from typing import Optional
+
+from pydantic_xml import BaseXmlModel, computed_attr
 
 
 class VODateTime(datetime):
@@ -80,3 +83,20 @@ class VODateTime(datetime):
         """
         iso_dt = super().isoformat(sep=sep, timespec=timespec)
         return iso_dt.replace("+00:00", "Z")
+
+
+class NillableElement(BaseXmlModel, skip_empty=True, nsmap={"xsi": "http://www.w3.org/2001/XMLSchema-instance"}):
+    """An element that can be 'nillable' in XML.
+
+    If no value is provided, the element will be rendered as <element xsi:nil="true" />.
+    """
+
+    value: Optional[str] = None
+
+    @computed_attr(name="nil", ns="xsi")
+    def nil(self) -> Optional[str]:
+        """If the value is None, return 'true'."""
+        if self.value is None:
+            return "true"
+        else:
+            return None
