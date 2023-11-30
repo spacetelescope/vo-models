@@ -21,4 +21,7 @@ setup(
     include_package_data=True,
     install_requires=requirements,
     keywords='vo-models',
+    extras_require={
+        'test': ['pytest', 'pytest-cov']
+    }
 )
