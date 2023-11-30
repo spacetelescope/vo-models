@@ -1,11 +1,10 @@
 """UWS Job Schema using Pydantic-XML models"""
 from typing import Dict, Optional, Union
-from xml.etree.ElementTree import Element
 
 from pydantic import field_validator
 from pydantic_xml import BaseXmlModel, attr, element
 
-from vo.models.xml.generics import DatetimeElement, NillElement
+from vo.models.xml.generics import DatetimeElement, NillElement, VODateTime
 from vo.models.xml.uws.types import ErrorType, ExecutionPhase, UWSVersion
 from vo.models.xml.xlink import XlinkType
 
@@ -15,6 +14,52 @@ NSMAP = {
     "xsd": "http://www.w3.org/2001/XMLSchema",
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",
 }
+
+
+def validate_nillable(value, expected_type) -> dict:
+    """Creates a dictionary representing a NillElement for a pydantic-xml model.
+
+    The dictionary creates the element by way of NillElement(**dict) in pydantic-xml internally.
+    It also handles deserialized cases, when reading from a cache, for example.
+
+    Example:
+    the <startTime> element
+
+    - job_summary.start_time = 01-01-1970
+    -- pydantic-xml receives NillElement(**{value:'01-01-1970', nil:None})
+    -- the element is represented as <startTime>01-01-1970</startTime>
+
+    - job_summary.start_time = None (or value was not provided)
+    -- pydantic-xml receives NillElement(**{value:None, nil:'true'})
+    -- the element is represented as <startTime xsi:nil='true' />
+
+    When serialized (not XML - in the cache as a dict) the element is represented by:
+        if defined:
+            start_time = {'value':'01-01-1970', 'nil'=None}
+        or if not defined:
+            start_time = None
+
+    When JobSummary elements are deserialized from the cache, these elements are handled similarly
+    as the above cases.
+    """
+    if value:
+        if isinstance(value, NillElement):
+            return value
+        if isinstance(value, dict):
+            # if we received a dict to validate, we're reading this value from the cache, and was
+            # already coerced into the format of a NillElement dict.
+            if value.get("value"):
+                # if value was previously set, check it (mostly in cases of bad cache/model data)
+                if not isinstance(value.get("value"), expected_type):
+                    raise ValueError(f"Incorrect type for value: {value}. Expected type {str(expected_type)}")
+            return value
+
+        if not isinstance(value, expected_type):
+            # if we actually got a value, it's probably from user or code input - validate it
+            raise ValueError(f"Incorrect type for value: {value}. Expected type {str(expected_type)}")
+        return {"value": value}
+
+    return {"nil": "true"}
 
 
 class Parameter(BaseXmlModel, tag="parameter", ns="uws", nsmap=NSMAP):
@@ -42,7 +87,7 @@ class Parameter(BaseXmlModel, tag="parameter", ns="uws", nsmap=NSMAP):
 
     by_reference: Optional[bool] = attr(name="byReference", default=False)
     id: str = attr()
-    isPost: Optional[bool] = attr(name="isPost", default=None)
+    is_post: Optional[bool] = attr(name="isPost", default=None)
 
 
 class Parameters(BaseXmlModel, tag="parameters", ns="uws", nsmap=NSMAP):
@@ -67,13 +112,13 @@ class ErrorSummary(BaseXmlModel, tag="errorSummary", ns="uws", nsmap=NSMAP):
     has_detail (bool):  If true then there is a more detailed error message available at /{jobs}/{job-id}/error
     """
 
-    message: str = element()
+    message: str = element(default="")
 
-    type: ErrorType = attr()
-    has_detail: bool = attr(name="hasDetail")
+    type: ErrorType = attr(default=ErrorType.TRANSIENT)
+    has_detail: bool = attr(name="hasDetail", default=False)
 
 
-class ResultReference(BaseXmlModel, tag="resultReference", ns="uws", nsmap=NSMAP):
+class ResultReference(BaseXmlModel, tag="result", ns="uws", nsmap=NSMAP):
     """A reference to a UWS result.
 
     Attributes:
@@ -91,7 +136,7 @@ class ResultReference(BaseXmlModel, tag="resultReference", ns="uws", nsmap=NSMAP
     size: Optional[int] = attr(default=None)
     mime_type: Optional[str] = attr(name="mime-type", default=None)
 
-    any_attrs: Dict[str, str]
+    any_attrs: Optional[Dict[str, str]] = None
 
 
 class Results(BaseXmlModel, tag="results", ns="uws", nsmap=NSMAP):
@@ -103,6 +148,27 @@ class Results(BaseXmlModel, tag="results", ns="uws", nsmap=NSMAP):
 
     results: Optional[list[ResultReference]] = element(name="result", default_factory=list)
 
+
+class ShortJobDescription(BaseXmlModel, tag="jobref", ns="uws", nsmap=NSMAP):
+    """A short description of a job."""
+
+    # pylint: disable = no-self-argument
+
+    phase: ExecutionPhase = element()
+    run_id: Optional[str] = element(tag="runId", default=None)
+    owner_id: Optional[NillElement] = element(tag="ownerId", default=None)
+    creation_time: Optional[VODateTime] = element(tag="creationTime", default=None)
+
+    job_id: str = attr(name="id")
+    type: Optional[XlinkType] = attr(ns="xlink", default=XlinkType.SIMPLE)
+    href: Optional[str] = attr(ns="xlink", default=None)
+
+    @field_validator("owner_id", mode="before")
+    def validate_owner_id(cls, value):
+        """Sets default for owner_id if None"""
+        if not value:
+            return NillElement()
+        return value
 
 class Jobs(BaseXmlModel, tag="jobs", ns="uws", nsmap=NSMAP):
     """The list of job references returned at /(jobs)
@@ -119,7 +185,7 @@ class Jobs(BaseXmlModel, tag="jobs", ns="uws", nsmap=NSMAP):
                             It will be formally required in the next major revision.
     """
 
-    jobref: Optional[list["ShortJobDescription"]] = element(name="jobref", default_factory=list)
+    jobref: Optional[list[ShortJobDescription]] = element(name="jobref", default_factory=list)
 
     version: Optional[UWSVersion] = attr(default=UWSVersion.V1_1)
 
@@ -169,7 +235,7 @@ class JobSummary(BaseXmlModel, tag="job", ns="uws", nsmap=NSMAP, skip_empty=True
     owner_id: Optional[NillElement] = element(tag="ownerId", default=None)
     phase: ExecutionPhase = element(tag="phase")
     quote: Optional[NillElement] = element(tag="quote", default=None)
-    creation_time: Optional[DatetimeElement] = element(tag="creationTime", default=None)
+    creation_time: Optional[VODateTime] = element(tag="creationTime", default=None)
     start_time: Optional[Union[NillElement, DatetimeElement]] = element(tag="startTime", default=None)
     end_time: Optional[Union[NillElement, DatetimeElement]] = element(tag="endTime", default=None)
     execution_duration: Optional[int] = element(tag="executionDuration", default=0)
@@ -177,30 +243,17 @@ class JobSummary(BaseXmlModel, tag="job", ns="uws", nsmap=NSMAP, skip_empty=True
     parameters: Optional[Parameters] = element(tag="parameters", default=None)
     results: Optional[Results] = element(tag="results", default=None)
     error_summary: Optional[ErrorSummary] = element(tag="errorSummary", default=None)
-    job_info: Optional[list[Element]] = element(default_factory=[])
+    job_info: Optional[list[str]] = element(tag="jobInfo", default=[])
 
     version: Optional[UWSVersion] = attr(default=UWSVersion.V1_1)
 
-    @field_validator("owner_id")
-    def validate_owner_id(cls, value):
+    @field_validator("owner_id", "quote", "start_time", "end_time", "destruction", mode="before")
+    def validate_nillables(cls, value):
         """Sets default for owner_id if None"""
-        if not value:
-            return NillElement()
-        return value
+        if isinstance(value, VODateTime):
+            value = value.isoformat()
+        return validate_nillable(value, str)
 
-    @field_validator("quote")
-    def validate_quote(cls, value):
-        """Sets default for quote if None"""
-        if not value:
-            return NillElement()
-        return value
-
-    @field_validator("destruction")
-    def validate_destruction(cls, value):
-        """Sets default for destruction if None"""
-        if not value:
-            return NillElement()
-        return value
 
     class Config:
         """JobSummary pydantic config options"""
@@ -210,25 +263,3 @@ class JobSummary(BaseXmlModel, tag="job", ns="uws", nsmap=NSMAP, skip_empty=True
 
 class Job(JobSummary, tag="job"):
     """This is the information that is returned when a GET is made for a single job resource - i.e. /{jobs}/{job-id}"""
-
-
-class ShortJobDescription(BaseXmlModel, tag="jobref", ns="uws", nsmap=NSMAP):
-    """A short description of a job."""
-
-    # pylint: disable = no-self-argument
-
-    phase: ExecutionPhase = element()
-    run_id: Optional[str] = element(tag="runId", default=None)
-    owner_id: Optional[NillElement] = element(tag="ownerId", default=None)
-    creation_time: Optional[DatetimeElement] = element(tag="creationTime", default=None)
-
-    job_id: str = attr(name="id")
-    type: Optional[XlinkType] = attr(ns="xlink", default=XlinkType.SIMPLE)
-    href: Optional[str] = attr(ns="xlink", default=None)
-
-    @field_validator("owner_id")
-    def validate_owner_id(cls, value):
-        """Sets default for owner_id if None"""
-        if not value:
-            return NillElement()
-        return value

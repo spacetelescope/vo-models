@@ -1,11 +1,10 @@
 """Tests for the XML serialization of UWS elements"""
 
 from datetime import timezone as tz
-from typing import Optional
 from unittest import TestCase
+from xml.etree.ElementTree import canonicalize
 
 from lxml import etree
-from pydantic_xml import element
 
 from vo.models.xml.generics import VODateTime
 from vo.models.xml.uws import (
@@ -208,7 +207,7 @@ class TestShortJobDescriptionType(TestCase):
         self.assertEqual(short_job_description.href, "http://uri1")
         self.assertEqual(short_job_description.phase, "PENDING")
         self.assertEqual(short_job_description.run_id, "runId1")
-        self.assertEqual(short_job_description.owner_id.value, None)
+        self.assertEqual(short_job_description.owner_id, None)
         self.assertEqual(short_job_description.creation_time, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
 
     def test_write_to_xml(self):
@@ -233,15 +232,8 @@ class TestShortJobDescriptionType(TestCase):
         self.assertIn("<uws:creationTime>1900-01-01T01:01:01.000Z</uws:creationTime>", short_job_description_xml)
 
 
-class TestGenericParametersElement(TestCase):
-    """Test the generic UWS Parameters element"""
-
-    class TestParameters(Parameters):
-        """A test generic Parameters class"""
-
-        param1: Optional[Parameter] = element(tag="parameter")
-        param2: Optional[Parameter] = element(tag="parameter")
-        param3: Optional[Parameter] = element(tag="parameter")
+class TestParametersElement(TestCase):
+    """Test the UWS Parameters element"""
 
     test_parameters_xml = (
         f"<uws:parameters {UWS_NAMESPACE_HEADER}>"
@@ -251,58 +243,31 @@ class TestGenericParametersElement(TestCase):
         "</uws:parameters>"
     )
 
-    def test_base_parameters(self):
-        """Test the base Parameters element - no subclass"""
+    def test_read_from_xml(self):
+        """Test reading from XML"""
 
-        parameters = Parameters(
+        parameters = Parameters.from_xml(self.test_parameters_xml)
+        self.assertEqual(len(parameters.parameter), 3)
+
+        self.assertEqual(parameters.parameter[0].id, "param1")
+        self.assertEqual(parameters.parameter[1].id, "param2")
+        self.assertEqual(parameters.parameter[2].id, "param3")
+
+        self.assertEqual(parameters.parameter[0].value, "value1")
+        self.assertEqual(parameters.parameter[1].value, "value2")
+        self.assertEqual(parameters.parameter[2].value, "value3")
+
+    def test_write_to_xml(self):
+        """Test writing to XML"""
+
+        parameters_element = Parameters(
             parameter=[
                 Parameter(id="param1", type="xs:string", value="value1"),
                 Parameter(id="param2", type="xs:string", value="value2"),
                 Parameter(id="param3", type="xs:string", value="value3"),
             ]
         )
-        # pylint: disable=no-member
-        parameter_values = [param.value for param in parameters.parameter]
-        self.assertEqual(parameter_values, ["value1", "value2", "value3"])
-
-    def test_read_from_dict(self):
-        """Test reading base Parameters from dict"""
-
-        # Occurs when reading from cache
-        param_dict = {
-            "param1": {"id": "param1", "type": "xs:string", "value": "value1"},
-            "param2": {"id": "param2", "type": "xs:string", "value": "value2"},
-            "param3": {"id": "param3", "type": "xs:string", "value": "value3"},
-        }
-        # pylint: disable=no-member
-        parameters = Parameters(**param_dict)
-        self.assertEqual(parameters.param1.value, "value1")
-        self.assertEqual(parameters.param2.value, "value2")
-        self.assertEqual(parameters.param3.value, "value3")
-
-    def test_read_from_xml(self):
-        """Test reading from XML"""
-
-        parameters = self.TestParameters.from_xml(self.test_parameters_xml)
-        self.assertEqual(len(parameters.dict()), 3)
-
-        self.assertEqual(parameters.param1.id, "param1")
-        self.assertEqual(parameters.param2.id, "param2")
-        self.assertEqual(parameters.param3.id, "param3")
-
-        self.assertEqual(parameters.param1.value, "value1")
-        self.assertEqual(parameters.param2.value, "value2")
-        self.assertEqual(parameters.param3.value, "value3")
-
-    def test_write_to_xml(self):
-        """Test writing to XML"""
-
-        parameters = self.TestParameters(
-            param1=Parameter(id="param1", type="xs:string", value="value1"),
-            param2=Parameter(id="param2", type="xs:string", value="value2"),
-            param3=Parameter(id="param3", type="xs:string", value="value3"),
-        )
-        parameters_xml = parameters.to_xml(skip_empty=True, encoding=str)
+        parameters_xml = parameters_element.to_xml(skip_empty=True, encoding=str)
         self.assertIn('id="param1"', parameters_xml)
         self.assertIn('id="param2"', parameters_xml)
         self.assertIn('id="param3"', parameters_xml)
@@ -314,10 +279,12 @@ class TestGenericParametersElement(TestCase):
     def test_validate(self):
         """Test validation against XML schema"""
 
-        parameters = self.TestParameters(
-            param1=Parameter(id="param1", type="xs:string", value="value1"),
-            param2=Parameter(id="param2", type="xs:string", value="value2"),
-            param3=Parameter(id="param3", type="xs:string", value="value3"),
+        parameters = Parameters(
+            parameter=[
+                Parameter(id="param1", type="xs:string", value="value1"),
+                Parameter(id="param2", type="xs:string", value="value2"),
+                Parameter(id="param3", type="xs:string", value="value3"),
+            ]
         )
         parameters_xml = etree.fromstring(parameters.to_xml(skip_empty=True, encoding=str))
         uws_schema.assertValid(parameters_xml)
@@ -325,12 +292,6 @@ class TestGenericParametersElement(TestCase):
 
 class TestJobSummaryElement(TestCase):
     """Test the UWS JobSummary element"""
-
-    class TestParameters(Parameters):
-        """A test generic Parameters class"""
-
-        param1: Optional[Parameter] = element(tag="parameter")
-        param2: Optional[Parameter] = element(tag="parameter")
 
     job_summary_xml = (
         f'<uws:job {UWS_NAMESPACE_HEADER} version="1.1">'
@@ -357,7 +318,7 @@ class TestJobSummaryElement(TestCase):
     def test_read_from_xml(self):
         """Test reading from XML"""
 
-        job_summary = JobSummary[self.TestParameters].from_xml(self.job_summary_xml)
+        job_summary = JobSummary.from_xml(self.job_summary_xml)
         self.assertEqual(job_summary.job_id, "jobId1")
         self.assertEqual(job_summary.run_id, "runId1")
         self.assertEqual(job_summary.owner_id.value, "ownerId1")
@@ -367,12 +328,12 @@ class TestJobSummaryElement(TestCase):
         self.assertEqual(job_summary.start_time.value, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc).isoformat())
         self.assertEqual(job_summary.end_time.value, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc).isoformat())
         self.assertEqual(job_summary.execution_duration, 0)
-        self.assertEqual(job_summary.destruction, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
-        self.assertEqual(len(job_summary.parameters.dict()), 2)
-        self.assertEqual(job_summary.parameters.param1.id, "param1")
-        self.assertEqual(job_summary.parameters.param2.id, "param2")
-        self.assertEqual(job_summary.parameters.param1.value, "value1")
-        self.assertEqual(job_summary.parameters.param2.value, "value2")
+        self.assertEqual(job_summary.destruction.value, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc).isoformat())
+        self.assertEqual(len(job_summary.parameters.parameter), 2)
+        self.assertEqual(job_summary.parameters.parameter[0].id, "param1")
+        self.assertEqual(job_summary.parameters.parameter[1].id, "param2")
+        self.assertEqual(job_summary.parameters.parameter[0].value, "value1")
+        self.assertEqual(job_summary.parameters.parameter[1].value, "value2")
         self.assertEqual(len(job_summary.results.results), 0)
         self.assertEqual(job_summary.error_summary.message, "")
         self.assertEqual(job_summary.job_info[0], "jobInfo1")
@@ -380,7 +341,7 @@ class TestJobSummaryElement(TestCase):
     def test_write_to_xml(self):
         """Test writing to XML"""
 
-        job_summary = JobSummary[self.TestParameters](
+        job_summary = JobSummary(
             job_id="jobId1",
             run_id="runId1",
             owner_id="ownerId1",
@@ -391,9 +352,11 @@ class TestJobSummaryElement(TestCase):
             end_time=None,
             execution_duration=0,
             destruction=VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
-            parameters=self.TestParameters(
-                param1=Parameter(id="param1", type="xs:string", value="value1"),
-                param2=Parameter(id="param2", type="xs:string", value="value2"),
+            parameters=Parameters(
+                parameter=[
+                    Parameter(id="param1", type="xs:string", value="value1"),
+                    Parameter(id="param2", type="xs:string", value="value2"),
+                ]
             ),
             results=Results(),
             error_summary=ErrorSummary(),
@@ -415,7 +378,7 @@ class TestJobSummaryElement(TestCase):
     def test_validate(self):
         """Validate against the schema"""
 
-        job_summary = JobSummary[self.TestParameters](
+        job_summary = JobSummary(
             job_id="jobId1",
             run_id="runId1",
             owner_id="ownerId1",
@@ -426,9 +389,11 @@ class TestJobSummaryElement(TestCase):
             end_time=None,
             execution_duration=0,
             destruction=VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
-            parameters=self.TestParameters(
-                param1=Parameter(id="param1", value="value1"),
-                param2=Parameter(id="param2", value="value2"),
+            parameters=Parameters(
+                parameter=[
+                    Parameter(id="param1", value="value1"),
+                    Parameter(id="param2", value="value2"),
+                ]
             ),
             results=Results(results=[ResultReference(id="result1")]),
             error_summary=None,
@@ -445,7 +410,7 @@ class TestJobsElement(TestCase):
         '<uws:jobref id="id1" xlink:type="simple" xlink:href="http://uri1">'
         "<uws:phase>PENDING</uws:phase>"
         '<uws:ownerId xsi:nil="true" />'
-        "<uws:creationTime>1900-01-01T01:01:01Z</uws:creationTime>"
+        "<uws:creationTime>1900-01-01T01:01:01.000Z</uws:creationTime>"
         "</uws:jobref>"
         "</uws:jobs>"
     )

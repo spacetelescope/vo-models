@@ -4,8 +4,7 @@ import re
 from datetime import datetime
 from typing import Optional
 
-from pydantic import GetCoreSchemaHandler, GetJsonSchemaHandler
-from pydantic.json_schema import JsonSchemaValue
+from pydantic import GetCoreSchemaHandler
 from pydantic_core import CoreSchema, core_schema
 from pydantic_xml import BaseXmlModel, RootXmlModel, computed_attr
 
@@ -37,13 +36,25 @@ class VODateTime(datetime):
     def __str__(self) -> str:
         return self.isoformat(sep="T", timespec="milliseconds")
 
+    def _serialize(self) -> str:
+        return self.isoformat(sep="T", timespec="milliseconds")
+
+    # pylint: disable=unused-argument
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler: GetCoreSchemaHandler) -> CoreSchema:
-        return core_schema.no_info_before_validator_function(cls.validate, handler(datetime))
+        return core_schema.no_info_after_validator_function(
+            cls._validate,
+            core_schema.datetime_schema(),
+            serialization=core_schema.plain_serializer_function_ser_schema(
+                cls._serialize,
+                info_arg=False,
+                return_schema=core_schema.str_schema(),
+            ),
+        )
 
 
     @classmethod
-    def validate(cls, value: str):
+    def _validate(cls, value: str):
         """Validator that expands the pydantic datetime model to include Z UTC identifiers
 
         Args:
@@ -52,9 +63,12 @@ class VODateTime(datetime):
         Returns:
             VODateTime: VO-compliant datetime subclass
         """
+
         if isinstance(value, VODateTime):
-            # For compatibility with ProcMemCache, where the datetime is never serialized.
             return value
+
+        if isinstance(value, datetime):
+            return cls._validate(value.isoformat())
 
         if not isinstance(value, str):
             raise TypeError("String datetime required")
@@ -73,7 +87,7 @@ class VODateTime(datetime):
 
     @classmethod
     def fromisoformat(cls, date_string):
-        return cls.validate(date_string)
+        return cls._validate(date_string)
 
     def isoformat(self, sep: str = "T", timespec: str = "milliseconds") -> str:
         """Overwrites the datetime isoformat output to use a Z UTC indicator
@@ -103,10 +117,8 @@ class NillElement(BaseXmlModel, skip_empty=True, nsmap={"xsi": "http://www.w3.or
             return None
 
 
-class DatetimeElement(RootXmlModel):
+class DatetimeElement(RootXmlModel[VODateTime]):
     """A wrapper element for a VODatetime object.
 
     Necessary to allow a Union between a NillableElement and simple VODatetime datatype.
     """
-
-    root: VODateTime

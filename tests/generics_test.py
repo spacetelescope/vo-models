@@ -41,7 +41,7 @@ class TestVODatetimeModel(TestCase):
 
         # Test that we reject non-UTC datetimes
         with self.assertRaises(ValueError):
-            VODateTime.validate("20230315T18:27:18.758")
+            VODateTime._validate("20230315T18:27:18.758")
 
 
 class TestNillElement(TestCase):
