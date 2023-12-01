@@ -158,7 +158,7 @@ class ShortJobDescription(BaseXmlModel, tag="jobref", ns="uws", nsmap=NSMAP):
 
     phase: ExecutionPhase = element()
     run_id: Optional[str] = element(tag="runId", default=None)
-    owner_id: Optional[NillElement] = element(tag="ownerId", default=NillElement())
+    owner_id: Optional[NillElement] = element(tag="ownerId", default=None)
     creation_time: Optional[VODateTime] = element(tag="creationTime", default=None)
 
     job_id: str = attr(name="id")
@@ -168,9 +168,7 @@ class ShortJobDescription(BaseXmlModel, tag="jobref", ns="uws", nsmap=NSMAP):
     @field_validator("owner_id", mode="before")
     def validate_owner_id(cls, value):
         """Sets default for owner_id if None"""
-        if not value:
-            return NillElement()
-        return value
+        return validate_nillable(value, str)
 
 class Jobs(BaseXmlModel, tag="jobs", ns="uws", nsmap=NSMAP):
     """The list of job references returned at /(jobs)
@@ -251,7 +249,7 @@ class JobSummary(BaseXmlModel, tag="job", ns="uws", nsmap=NSMAP, skip_empty=True
 
     @field_validator("owner_id", "quote", "start_time", "end_time", "destruction", mode="before")
     def validate_nillables(cls, value):
-        """Sets default for owner_id if None"""
+        """Sets default for nillable fields if None"""
         if isinstance(value, VODateTime):
             value = value.isoformat()
         return validate_nillable(value, str)

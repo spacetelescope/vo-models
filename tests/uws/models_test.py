@@ -212,7 +212,7 @@ class TestShortJobDescriptionType(TestCase):
         self.assertEqual(short_job_description.href, "http://uri1")
         self.assertEqual(short_job_description.phase, "PENDING")
         self.assertEqual(short_job_description.run_id, "runId1")
-        self.assertEqual(short_job_description.owner_id, None)
+        self.assertEqual(short_job_description.owner_id.value, None)
         self.assertEqual(short_job_description.creation_time, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
 
     def test_write_to_xml(self):
@@ -433,6 +433,7 @@ class TestJobsElement(TestCase):
             jobref=[
                 ShortJobDescription(
                     job_id="id1",
+                    owner_id=None,
                     href="http://uri1",
                     phase=ExecutionPhase.PENDING,
                     creation_time=VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
