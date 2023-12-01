@@ -16,7 +16,7 @@ The project is designed to be used by IVOA members, service implementors, and de
 
 The following IVOA protocols are currently supported / under development:
 
-- **UWS (Universal Worker Service):**
+- **UWS (Universal Worker Service) version 1.1:**
   - Active development:
     - OpenAPI Models
     - Pydantic-XML Models
