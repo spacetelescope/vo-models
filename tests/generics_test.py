@@ -41,6 +41,7 @@ class TestVODatetimeModel(TestCase):
 
         # Test that we reject non-UTC datetimes
         with self.assertRaises(ValueError):
+            # pylint: disable=protected-access
             VODateTime._validate("20230315T18:27:18.758")
 
 

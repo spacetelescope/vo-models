@@ -123,8 +123,10 @@ class ResultReference(BaseXmlModel, tag="result", ns="uws", nsmap=NSMAP):
 
     Attributes:
     id (str):           The identifier of the result.
-    mime_type (str):    The MIME type of the result.
+    type (XlinkType):   The xlink type of the result.
+    href (str):         The link to the result.
     size (int):         The size of the result in bytes.
+    mime_type (str):    The MIME type of the result.
     """
 
     id: str = attr()
@@ -156,7 +158,7 @@ class ShortJobDescription(BaseXmlModel, tag="jobref", ns="uws", nsmap=NSMAP):
 
     phase: ExecutionPhase = element()
     run_id: Optional[str] = element(tag="runId", default=None)
-    owner_id: Optional[NillElement] = element(tag="ownerId", default=None)
+    owner_id: Optional[NillElement] = element(tag="ownerId", default=NillElement())
     creation_time: Optional[VODateTime] = element(tag="creationTime", default=None)
 
     job_id: str = attr(name="id")

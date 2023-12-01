@@ -54,10 +54,11 @@ class TestErrorSummaryType(TestCase):
 
         error_summary = ErrorSummary(type="transient", has_detail=True, message="Invalid query.")
         error_summary_xml = error_summary.to_xml(encoding=str)
-        self.assertIn('type="transient"', error_summary_xml)
-        self.assertIn('hasDetail="true"', error_summary_xml)
-        self.assertIn("<uws:message>Invalid query.</uws:message>", error_summary_xml)
 
+        self.assertEqual(
+            canonicalize(self.test_error_summary_xml, strip_text=True),
+            canonicalize(error_summary_xml, strip_text=True),
+        )
 
 class TestParameterType(TestCase):
     """Tests for the UWS Parameter complex type"""
@@ -82,10 +83,11 @@ class TestParameterType(TestCase):
 
         parameter = Parameter(by_reference=False, id="param1", is_post=False, value="test_value")
         parameter_xml = parameter.to_xml(encoding=str)
-        self.assertIn('byReference="false"', parameter_xml)
-        self.assertIn('id="param1"', parameter_xml)
-        self.assertIn('isPost="false"', parameter_xml)
-        self.assertIn("test_value", parameter_xml)
+
+        self.assertEqual(
+            canonicalize(self.test_parameter_xml, strip_text=True),
+            canonicalize(parameter_xml, strip_text=True),
+        )
 
 
 class TestResultReferenceType(TestCase):
@@ -120,11 +122,10 @@ class TestResultReferenceType(TestCase):
             size=1234,
         )
         result_reference_xml = result_reference.to_xml(encoding=str)
-        self.assertIn('id="result1"', result_reference_xml)
-        self.assertIn('mime-type="text/xml"', result_reference_xml)
-        self.assertIn('xlink:href="http://testlink.com/"', result_reference_xml)
-        self.assertIn('xlink:type="simple"', result_reference_xml)
-        self.assertIn('size="1234"', result_reference_xml)
+        self.assertEqual(
+            canonicalize(self.test_result_reference_xml, strip_text=True),
+            canonicalize(result_reference_xml, strip_text=True),
+        )
 
 
 class TestResultsElement(TestCase):
@@ -132,8 +133,8 @@ class TestResultsElement(TestCase):
 
     test_results_xml = (
         f"<uws:results {UWS_NAMESPACE_HEADER} >"
-        "<uws:result id='result1' mime-type='text/xml' xlink:href='http://testlink.com/' />"
-        "<uws:result id='result2' mime-type='text/xml' xlink:href='http://testlink.com/' />"
+        "<uws:result id='result1' mime-type='text/xml' xlink:type='simple' xlink:href='http://testlink.com/'/>"
+        "<uws:result id='result2' mime-type='text/xml' xlink:type='simple' xlink:href='http://testlink.com/'/>"
         "</uws:results>"
     )
 
@@ -163,8 +164,11 @@ class TestResultsElement(TestCase):
             ]
         )
         results_xml = results_list.to_xml(encoding=str, skip_empty=True)
-        self.assertIn('id="result1"', results_xml)
-        self.assertIn('id="result2"', results_xml)
+
+        self.assertEqual(
+            canonicalize(self.test_results_xml, strip_text=True),
+            canonicalize(results_xml, strip_text=True),
+        )
 
     def test_validate(self):
         """Test validation against XML schema"""
@@ -194,7 +198,8 @@ class TestShortJobDescriptionType(TestCase):
         f'<uws:jobref {UWS_NAMESPACE_HEADER} id="id1" xlink:type="simple" xlink:href="http://uri1">'
         "<uws:phase>PENDING</uws:phase>"
         "<uws:runId>runId1</uws:runId>"
-        "<uws:creationTime>1900-01-01T01:01:01Z</uws:creationTime>"
+        "<uws:ownerId xsi:nil='true'/>"
+        "<uws:creationTime>1900-01-01T01:01:01.000Z</uws:creationTime>"
         "</uws:jobref>"
     )
 
@@ -223,13 +228,11 @@ class TestShortJobDescriptionType(TestCase):
             creation_time=VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
         )
         short_job_description_xml = short_job_description.to_xml(skip_empty=True, encoding=str)
-        self.assertIn('id="id1"', short_job_description_xml)
-        self.assertIn('<uws:ownerId xsi:nil="true"/>', short_job_description_xml)
-        self.assertIn('xlink:type="simple"', short_job_description_xml)
-        self.assertIn('xlink:href="http://uri1"', short_job_description_xml)
-        self.assertIn("<uws:phase>PENDING</uws:phase>", short_job_description_xml)
-        self.assertIn("<uws:runId>runId1</uws:runId>", short_job_description_xml)
-        self.assertIn("<uws:creationTime>1900-01-01T01:01:01.000Z</uws:creationTime>", short_job_description_xml)
+
+        self.assertEqual(
+            canonicalize(self.test_short_job_description_xml, strip_text=True),
+            canonicalize(short_job_description_xml, strip_text=True),
+        )
 
 
 class TestParametersElement(TestCase):
@@ -237,9 +240,9 @@ class TestParametersElement(TestCase):
 
     test_parameters_xml = (
         f"<uws:parameters {UWS_NAMESPACE_HEADER}>"
-        '<uws:parameter id="param1" type="xs:string">value1</uws:parameter>'
-        '<uws:parameter id="param2" type="xs:string">value2</uws:parameter>'
-        '<uws:parameter id="param3" type="xs:string">value3</uws:parameter>'
+        '<uws:parameter byReference="false" id="param1">value1</uws:parameter>'
+        '<uws:parameter byReference="false" id="param2">value2</uws:parameter>'
+        '<uws:parameter byReference="false" id="param3">value3</uws:parameter>'
         "</uws:parameters>"
     )
 
@@ -262,28 +265,26 @@ class TestParametersElement(TestCase):
 
         parameters_element = Parameters(
             parameter=[
-                Parameter(id="param1", type="xs:string", value="value1"),
-                Parameter(id="param2", type="xs:string", value="value2"),
-                Parameter(id="param3", type="xs:string", value="value3"),
+                Parameter(id="param1", value="value1"),
+                Parameter(id="param2", value="value2"),
+                Parameter(id="param3", value="value3"),
             ]
         )
         parameters_xml = parameters_element.to_xml(skip_empty=True, encoding=str)
-        self.assertIn('id="param1"', parameters_xml)
-        self.assertIn('id="param2"', parameters_xml)
-        self.assertIn('id="param3"', parameters_xml)
 
-        self.assertIn("value1", parameters_xml)
-        self.assertIn("value2", parameters_xml)
-        self.assertIn("value3", parameters_xml)
+        self.assertEqual(
+            canonicalize(self.test_parameters_xml, strip_text=True),
+            canonicalize(parameters_xml, strip_text=True),
+        )
 
     def test_validate(self):
         """Test validation against XML schema"""
 
         parameters = Parameters(
             parameter=[
-                Parameter(id="param1", type="xs:string", value="value1"),
-                Parameter(id="param2", type="xs:string", value="value2"),
-                Parameter(id="param3", type="xs:string", value="value3"),
+                Parameter(id="param1", value="value1"),
+                Parameter(id="param2", value="value2"),
+                Parameter(id="param3", value="value3"),
             ]
         )
         parameters_xml = etree.fromstring(parameters.to_xml(skip_empty=True, encoding=str))
@@ -354,8 +355,8 @@ class TestJobSummaryElement(TestCase):
             destruction=VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
             parameters=Parameters(
                 parameter=[
-                    Parameter(id="param1", type="xs:string", value="value1"),
-                    Parameter(id="param2", type="xs:string", value="value2"),
+                    Parameter(id="param1", value="value1"),
+                    Parameter(id="param2", value="value2"),
                 ]
             ),
             results=Results(),
@@ -432,15 +433,18 @@ class TestJobsElement(TestCase):
             jobref=[
                 ShortJobDescription(
                     job_id="id1",
+                    href="http://uri1",
                     phase=ExecutionPhase.PENDING,
                     creation_time=VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
                 )
             ]
         )
         jobs_element_xml = jobs_element.to_xml(skip_empty=True, encoding=str)
-        self.assertIn("id1", jobs_element_xml)
-        self.assertIn("PENDING", jobs_element_xml)
-        self.assertIn("1900-01-01T01:01:01.000Z", jobs_element_xml)
+
+        self.assertEqual(
+            canonicalize(self.test_job_list_xml, strip_text=True),
+            canonicalize(jobs_element_xml, strip_text=True),
+        )
 
     def test_validate(self):
         """Validate against the schema"""
