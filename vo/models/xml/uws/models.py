@@ -1,10 +1,10 @@
 """UWS Job Schema using Pydantic-XML models"""
-from typing import Dict, Optional, Union
+from typing import Dict, Generic, Optional, Type, TypeVar, Union
 
 from pydantic import field_validator
 from pydantic_xml import BaseXmlModel, attr, element
 
-from vo.models.xml.generics import DatetimeElement, NillElement, VODateTime
+from vo.models.xml.generics import VODateTime
 from vo.models.xml.uws.types import ErrorType, ExecutionPhase, UWSVersion
 from vo.models.xml.xlink import XlinkType
 
@@ -15,52 +15,7 @@ NSMAP = {
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",
 }
 
-
-def validate_nillable(value, expected_type) -> dict:
-    """Creates a dictionary representing a NillElement for a pydantic-xml model.
-
-    The dictionary creates the element by way of NillElement(**dict) in pydantic-xml internally.
-    It also handles deserialized cases, when reading from a cache, for example.
-
-    Example:
-    the <startTime> element
-
-    - job_summary.start_time = 01-01-1970
-    -- pydantic-xml receives NillElement(**{value:'01-01-1970', nil:None})
-    -- the element is represented as <startTime>01-01-1970</startTime>
-
-    - job_summary.start_time = None (or value was not provided)
-    -- pydantic-xml receives NillElement(**{value:None, nil:'true'})
-    -- the element is represented as <startTime xsi:nil='true' />
-
-    When serialized (not XML - in the cache as a dict) the element is represented by:
-        if defined:
-            start_time = {'value':'01-01-1970', 'nil'=None}
-        or if not defined:
-            start_time = None
-
-    When JobSummary elements are deserialized from the cache, these elements are handled similarly
-    as the above cases.
-    """
-    if value:
-        if isinstance(value, NillElement):
-            return value
-        if isinstance(value, dict):
-            # if we received a dict to validate, we're reading this value from the cache, and was
-            # already coerced into the format of a NillElement dict.
-            if value.get("value"):
-                # if value was previously set, check it (mostly in cases of bad cache/model data)
-                if not isinstance(value.get("value"), expected_type):
-                    raise ValueError(f"Incorrect type for value: {value}. Expected type {str(expected_type)}")
-            return value
-
-        if not isinstance(value, expected_type):
-            # if we actually got a value, it's probably from user or code input - validate it
-            raise ValueError(f"Incorrect type for value: {value}. Expected type {str(expected_type)}")
-        return {"value": value}
-
-    return {"nil": "true"}
-
+ParametersType = TypeVar("ParametersType")
 
 class Parameter(BaseXmlModel, tag="parameter", ns="uws", nsmap=NSMAP):
     """A UWS Job parameter
@@ -87,7 +42,14 @@ class Parameter(BaseXmlModel, tag="parameter", ns="uws", nsmap=NSMAP):
 
     by_reference: Optional[bool] = attr(name="byReference", default=False)
     id: str = attr()
-    is_post: Optional[bool] = attr(name="isPost", default=None)
+    is_post: Optional[bool] = attr(name="isPost", default=False)
+
+    @field_validator("value", mode="before")
+    def validate_value(cls, value):  # pylint: disable=no-self-argument
+        """Coerces value to a string"""
+        # TODO: Find better way to handle arbitrary types
+        if value is not None:
+            return str(value)
 
 
 class Parameters(BaseXmlModel, tag="parameters", ns="uws", nsmap=NSMAP):
@@ -118,7 +80,7 @@ class ErrorSummary(BaseXmlModel, tag="errorSummary", ns="uws", nsmap=NSMAP):
     has_detail: bool = attr(name="hasDetail", default=False)
 
 
-class ResultReference(BaseXmlModel, tag="result", ns="uws", nsmap=NSMAP):
+class ResultReference(BaseXmlModel, tag="result", ns="uws", skip_empty=True, nsmap=NSMAP):
     """A reference to a UWS result.
 
     Attributes:
@@ -158,17 +120,13 @@ class ShortJobDescription(BaseXmlModel, tag="jobref", ns="uws", nsmap=NSMAP):
 
     phase: ExecutionPhase = element()
     run_id: Optional[str] = element(tag="runId", default=None)
-    owner_id: Optional[NillElement] = element(tag="ownerId", default=None)
+    owner_id: Optional[str] = element(tag="ownerId", default=None, nillable=True)
     creation_time: Optional[VODateTime] = element(tag="creationTime", default=None)
 
     job_id: str = attr(name="id")
     type: Optional[XlinkType] = attr(ns="xlink", default=XlinkType.SIMPLE)
     href: Optional[str] = attr(ns="xlink", default=None)
 
-    @field_validator("owner_id", mode="before")
-    def validate_owner_id(cls, value):
-        """Sets default for owner_id if None"""
-        return validate_nillable(value, str)
 
 class Jobs(BaseXmlModel, tag="jobs", ns="uws", nsmap=NSMAP):
     """The list of job references returned at /(jobs)
@@ -190,7 +148,11 @@ class Jobs(BaseXmlModel, tag="jobs", ns="uws", nsmap=NSMAP):
     version: Optional[UWSVersion] = attr(default=UWSVersion.V1_1)
 
 
-class JobSummary(BaseXmlModel, tag="job", ns="uws", nsmap=NSMAP, skip_empty=True):
+# pylint: disable=invalid-name
+ParametersType = TypeVar("ParametersType", bound=Parameters)
+
+
+class JobSummary(BaseXmlModel, Generic[ParametersType], tag="job", ns="uws", nsmap=NSMAP):
     """The complete representation of the state of a job
 
     Elements:
@@ -232,28 +194,20 @@ class JobSummary(BaseXmlModel, tag="job", ns="uws", nsmap=NSMAP, skip_empty=True
 
     job_id: str = element(tag="jobId")
     run_id: Optional[str] = element(tag="runId", default=None)
-    owner_id: Optional[NillElement] = element(tag="ownerId", default=None)
+    owner_id: Optional[str] = element(tag="ownerId", default=None, nillable=True)
     phase: ExecutionPhase = element(tag="phase")
-    quote: Optional[NillElement] = element(tag="quote", default=None)
+    quote: Optional[VODateTime] = element(tag="quote", default=None, nillable=True)
     creation_time: Optional[VODateTime] = element(tag="creationTime", default=None)
-    start_time: Optional[Union[NillElement, DatetimeElement]] = element(tag="startTime", default=None)
-    end_time: Optional[Union[NillElement, DatetimeElement]] = element(tag="endTime", default=None)
+    start_time: Optional[VODateTime] = element(tag="startTime", default=None, nillable=True)
+    end_time: Optional[VODateTime] = element(tag="endTime", default=None, nillable=True)
     execution_duration: Optional[int] = element(tag="executionDuration", default=0)
-    destruction: Optional[Union[NillElement, DatetimeElement]] = element(tag="destruction", default=None)
-    parameters: Optional[Parameters] = element(tag="parameters", default=None)
+    destruction: Optional[VODateTime] = element(tag="destruction", default=None, nillable=True)
+    parameters: Optional[ParametersType] = element(tag="parameters", default=None)
     results: Optional[Results] = element(tag="results", default=None)
     error_summary: Optional[ErrorSummary] = element(tag="errorSummary", default=None)
     job_info: Optional[list[str]] = element(tag="jobInfo", default=[])
 
     version: Optional[UWSVersion] = attr(default=UWSVersion.V1_1)
-
-    @field_validator("owner_id", "quote", "start_time", "end_time", "destruction", mode="before")
-    def validate_nillables(cls, value):
-        """Sets default for nillable fields if None"""
-        if isinstance(value, VODateTime):
-            value = value.isoformat()
-        return validate_nillable(value, str)
-
 
     class Config:
         """JobSummary pydantic config options"""

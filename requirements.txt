@@ -213,10 +213,12 @@ pydantic-core==2.14.5 \
     --hash=sha256:fb2ed8b3fe4bf4506d6dab3b93b83bbc22237e230cba03866d561c3577517d18 \
     --hash=sha256:fe0a5a1025eb797752136ac8b4fa21aa891e3d74fd340f864ff982d649691867
     # via pydantic
-pydantic-xml[lxml]==2.5.0 \
-    --hash=sha256:417be80d159d33d57a3ab9dc6f382d4bcad15363fe605ef7d155762114199d47 \
-    --hash=sha256:4a69a302cf3c095861b56ed4b119344115cba5dd91e0e9ce624f923da970ded8
-    # via vo-models (pyproject.toml)
+pydantic-xml[lxml]==2.6.0 \
+    --hash=sha256:2a7019dcfcf68b0136378e72efbe0747ec21f7ba16bfcaf6ab5a47dd1f2d68e9 \
+    --hash=sha256:8a88d0e8af20406eca06af20e57b1d2ccb7d1630c00f927e1f839629c0decb1e
+    # via
+    #   pydantic-xml
+    #   vo-models (pyproject.toml)
 typing-extensions==4.8.0 \
     --hash=sha256:8f92fc8806f9a6b641eaa5318da32b44d401efaac0f6678c9bc448ba3605faa0 \
     --hash=sha256:df8e4339e9cb77357558cbdbceca33c303714cf861d1eef15e1070055ae8b7ef

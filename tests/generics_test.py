@@ -1,8 +1,7 @@
 """Tests for generic VO xml models"""
 from unittest import TestCase
-from xml.etree.ElementTree import canonicalize
 
-from vo.models.xml.generics import NillElement, VODateTime
+from vo.models.xml.generics import VODateTime
 
 
 class TestVODatetimeModel(TestCase):
@@ -43,54 +42,3 @@ class TestVODatetimeModel(TestCase):
         with self.assertRaises(ValueError):
             # pylint: disable=protected-access
             VODateTime._validate("20230315T18:27:18.758")
-
-
-class TestNillElement(TestCase):
-    """Test NillElement parsing"""
-
-    nil_xml = (
-        """<NillElement xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"></NillElement>"""
-    )
-    non_nil_xml = (
-        """<NillElement xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">test_val</NillElement>"""
-    )
-
-    def test_to_xml(self):
-        """Test generating XML from NillElement"""
-
-        test_element = NillElement(value="test_val")
-        test_xml = test_element.to_xml(encoding=str)
-
-        self.assertEqual(canonicalize(test_xml, strip_text=True), canonicalize(self.non_nil_xml, strip_text=True))
-
-        test_element = NillElement(value=None)
-        test_xml = test_element.to_xml(encoding=str)
-
-        self.assertEqual(canonicalize(test_xml, strip_text=True), canonicalize(self.nil_xml, strip_text=True))
-
-
-    def test_from_xml(self):
-        """Test reading a NillElement from XML"""
-
-        # Element with a value defined
-        test_element = NillElement.from_xml(self.non_nil_xml)
-
-        assert isinstance(test_element, NillElement)
-        assert test_element.value == "test_val"
-        assert test_element.nil is None
-
-        # Test we can round-trip back to XML
-        test_xml = test_element.to_xml(encoding=str)
-
-        self.assertEqual(canonicalize(test_xml, strip_text=True), canonicalize(self.non_nil_xml, strip_text=True))
-
-        # Element without a value defined
-        test_element = NillElement.from_xml(self.nil_xml)
-
-        assert isinstance(test_element, NillElement)
-        assert test_element.value is None
-        assert test_element.nil == "true"
-
-        test_xml = test_element.to_xml(encoding=str)
-
-        self.assertEqual(canonicalize(test_xml, strip_text=True), canonicalize(self.nil_xml, strip_text=True))

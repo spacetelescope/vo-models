@@ -11,6 +11,7 @@ from vo.models.xml.uws.models import (
     JobSummary,
     Parameter,
     Parameters,
+    ParametersType,
     ResultReference,
     Results,
     ShortJobDescription,

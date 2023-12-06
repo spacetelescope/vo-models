@@ -212,7 +212,7 @@ class TestShortJobDescriptionType(TestCase):
         self.assertEqual(short_job_description.href, "http://uri1")
         self.assertEqual(short_job_description.phase, "PENDING")
         self.assertEqual(short_job_description.run_id, "runId1")
-        self.assertEqual(short_job_description.owner_id.value, None)
+        self.assertEqual(short_job_description.owner_id, None)
         self.assertEqual(short_job_description.creation_time, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
 
     def test_write_to_xml(self):
@@ -220,14 +220,13 @@ class TestShortJobDescriptionType(TestCase):
 
         short_job_description = ShortJobDescription(
             job_id="id1",
-            owner_id=None,
             type="simple",
             href="http://uri1",
             phase="PENDING",
             run_id="runId1",
             creation_time=VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
         )
-        short_job_description_xml = short_job_description.to_xml(skip_empty=True, encoding=str)
+        short_job_description_xml = short_job_description.to_xml(encoding=str)
 
         self.assertEqual(
             canonicalize(self.test_short_job_description_xml, strip_text=True),
@@ -240,9 +239,9 @@ class TestParametersElement(TestCase):
 
     test_parameters_xml = (
         f"<uws:parameters {UWS_NAMESPACE_HEADER}>"
-        '<uws:parameter byReference="false" id="param1">value1</uws:parameter>'
-        '<uws:parameter byReference="false" id="param2">value2</uws:parameter>'
-        '<uws:parameter byReference="false" id="param3">value3</uws:parameter>'
+        '<uws:parameter byReference="false" isPost="false" id="param1">value1</uws:parameter>'
+        '<uws:parameter byReference="false" isPost="false" id="param2">value2</uws:parameter>'
+        '<uws:parameter byReference="false" isPost="false" id="param3">value3</uws:parameter>'
         "</uws:parameters>"
     )
 
@@ -307,11 +306,10 @@ class TestJobSummaryElement(TestCase):
         "<uws:executionDuration>0</uws:executionDuration>"
         "<uws:destruction>1900-01-01T01:01:01.000Z</uws:destruction>"
         "<uws:parameters>"
-        '<uws:parameter id="param1">value1</uws:parameter>'
-        '<uws:parameter id="param2">value2</uws:parameter>'
+        '<uws:parameter byReference="false" isPost="false" id="param1">value1</uws:parameter>'
+        '<uws:parameter byReference="false" isPost="false" id="param2">value2</uws:parameter>'
         "</uws:parameters>"
         "<uws:results />"
-        "<uws:errorSummary />"
         "<uws:jobInfo>jobInfo1</uws:jobInfo>"
         "</uws:job>"
     )
@@ -319,38 +317,38 @@ class TestJobSummaryElement(TestCase):
     def test_read_from_xml(self):
         """Test reading from XML"""
 
-        job_summary = JobSummary.from_xml(self.job_summary_xml)
+        job_summary = JobSummary[Parameters].from_xml(self.job_summary_xml)
         self.assertEqual(job_summary.job_id, "jobId1")
         self.assertEqual(job_summary.run_id, "runId1")
-        self.assertEqual(job_summary.owner_id.value, "ownerId1")
+        self.assertEqual(job_summary.owner_id, "ownerId1")
         self.assertEqual(job_summary.phase, ExecutionPhase.PENDING.value)
-        self.assertEqual(job_summary.quote.value, None)
+        self.assertEqual(job_summary.quote, None)
         self.assertEqual(job_summary.creation_time, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
-        self.assertEqual(job_summary.start_time.value, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc).isoformat())
-        self.assertEqual(job_summary.end_time.value, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc).isoformat())
+        self.assertEqual(job_summary.start_time, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
+        self.assertEqual(job_summary.end_time, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
         self.assertEqual(job_summary.execution_duration, 0)
-        self.assertEqual(job_summary.destruction.value, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc).isoformat())
+        self.assertEqual(job_summary.destruction, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
         self.assertEqual(len(job_summary.parameters.parameter), 2)
         self.assertEqual(job_summary.parameters.parameter[0].id, "param1")
         self.assertEqual(job_summary.parameters.parameter[1].id, "param2")
         self.assertEqual(job_summary.parameters.parameter[0].value, "value1")
         self.assertEqual(job_summary.parameters.parameter[1].value, "value2")
         self.assertEqual(len(job_summary.results.results), 0)
-        self.assertEqual(job_summary.error_summary.message, "")
+        self.assertEqual(job_summary.error_summary, None)
         self.assertEqual(job_summary.job_info[0], "jobInfo1")
 
     def test_write_to_xml(self):
         """Test writing to XML"""
 
-        job_summary = JobSummary(
+        job_summary = JobSummary[Parameters](
             job_id="jobId1",
             run_id="runId1",
             owner_id="ownerId1",
             phase=ExecutionPhase.PENDING,
             quote=None,
             creation_time=VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
-            start_time=None,
-            end_time=None,
+            start_time=VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
+            end_time=VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
             execution_duration=0,
             destruction=VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
             parameters=Parameters(
@@ -360,26 +358,19 @@ class TestJobSummaryElement(TestCase):
                 ]
             ),
             results=Results(),
-            error_summary=ErrorSummary(),
             job_info=["jobInfo1"],
         )
-        job_summary_xml = job_summary.to_xml(skip_empty=True, encoding=str)
-        self.assertIn("jobId1", job_summary_xml)
-        self.assertIn("runId1", job_summary_xml)
-        self.assertIn("ownerId1", job_summary_xml)
-        self.assertIn("PENDING", job_summary_xml)
-        self.assertIn("1900-01-01T01:01:01.000Z", job_summary_xml)
-        self.assertIn("1900-01-01T01:01:01.000Z", job_summary_xml)
-        self.assertIn("1900-01-01T01:01:01.000Z", job_summary_xml)
-        self.assertIn("1900-01-01T01:01:01.000Z", job_summary_xml)
-        self.assertIn("value1", job_summary_xml)
-        self.assertIn("value2", job_summary_xml)
-        self.assertIn("jobInfo1", job_summary_xml)
+        job_summary_xml = job_summary.to_xml(encoding=str)
+
+        self.assertEqual(
+            canonicalize(self.job_summary_xml, strip_text=True),
+            canonicalize(job_summary_xml, strip_text=True),
+        )
 
     def test_validate(self):
         """Validate against the schema"""
 
-        job_summary = JobSummary(
+        job_summary = JobSummary[Parameters](
             job_id="jobId1",
             run_id="runId1",
             owner_id="ownerId1",
@@ -399,7 +390,7 @@ class TestJobSummaryElement(TestCase):
             results=Results(results=[ResultReference(id="result1")]),
             error_summary=None,
         )
-        job_summary_xml = etree.fromstring(job_summary.to_xml(skip_empty=True, encoding=str))
+        job_summary_xml = etree.fromstring(job_summary.to_xml(encoding=str))
         uws_schema.assertValid(job_summary_xml)
 
 
@@ -410,6 +401,7 @@ class TestJobsElement(TestCase):
         f'<uws:jobs {UWS_NAMESPACE_HEADER} version="1.1">'
         '<uws:jobref id="id1" xlink:type="simple" xlink:href="http://uri1">'
         "<uws:phase>PENDING</uws:phase>"
+        "<uws:runId/>"
         '<uws:ownerId xsi:nil="true" />'
         "<uws:creationTime>1900-01-01T01:01:01.000Z</uws:creationTime>"
         "</uws:jobref>"
@@ -422,7 +414,7 @@ class TestJobsElement(TestCase):
         jobs_element = Jobs.from_xml(self.test_job_list_xml)
         self.assertEqual(len(jobs_element.jobref), 1)
         self.assertEqual(jobs_element.jobref[0].job_id, "id1")
-        self.assertEqual(jobs_element.jobref[0].owner_id.value, None)
+        self.assertEqual(jobs_element.jobref[0].owner_id, None)
         self.assertEqual(jobs_element.jobref[0].phase, ExecutionPhase.PENDING)
         self.assertEqual(jobs_element.jobref[0].creation_time, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
 
@@ -440,7 +432,7 @@ class TestJobsElement(TestCase):
                 )
             ]
         )
-        jobs_element_xml = jobs_element.to_xml(skip_empty=True, encoding=str)
+        jobs_element_xml = jobs_element.to_xml(encoding=str)
 
         self.assertEqual(
             canonicalize(self.test_job_list_xml, strip_text=True),

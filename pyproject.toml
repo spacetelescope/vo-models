@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "vo-models"
-version = "0.1.0"
+version = "0.0.1"
 authors = [
     {name = "Joshua Fraustro", email="jfraustro@stsci.edu"},
     {name = "MAST Archive Developers", email="archive@stsci.edu"}
@@ -14,12 +14,10 @@ readme = "README.md"
 requires-python = ">=3.10"
 
 dependencies = [
-    "pydantic-xml[lxml]",
+    "pydantic-xml[lxml]>=2.6.0",
     ]
 
 classifiers = [
-    "Programming Lanugage :: Python :: 3",
-    "Programming Lanugage :: Python :: 3.10",
 
     "Topic :: Scientific/Engineering :: Astronomy",
     "Topic :: Software Development :: Libraries :: Python Modules",
