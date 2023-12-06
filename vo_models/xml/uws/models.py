@@ -1,12 +1,12 @@
 """UWS Job Schema using Pydantic-XML models"""
-from typing import Dict, Generic, Optional, Type, TypeVar, Union
+from typing import Dict, Generic, Optional, TypeVar
 
 from pydantic import field_validator
 from pydantic_xml import BaseXmlModel, attr, element
 
-from vo.models.xml.generics import VODateTime
-from vo.models.xml.uws.types import ErrorType, ExecutionPhase, UWSVersion
-from vo.models.xml.xlink import XlinkType
+from vo_models.xml.generics import VODateTime
+from vo_models.xml.uws.types import ErrorType, ExecutionPhase, UWSVersion
+from vo_models.xml.xlink import XlinkType
 
 NSMAP = {
     "uws": "http://www.ivoa.net/xml/UWS/v1.0",
@@ -15,6 +15,7 @@ NSMAP = {
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",
 }
 
+# pylint: disable=invalid-name
 ParametersType = TypeVar("ParametersType")
 
 class Parameter(BaseXmlModel, tag="parameter", ns="uws", nsmap=NSMAP):

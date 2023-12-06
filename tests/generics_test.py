@@ -1,7 +1,7 @@
 """Tests for generic VO xml models"""
 from unittest import TestCase
 
-from vo.models.xml.generics import VODateTime
+from vo_models.xml.generics import VODateTime
 
 
 class TestVODatetimeModel(TestCase):

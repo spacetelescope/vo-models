@@ -6,8 +6,8 @@ from xml.etree.ElementTree import canonicalize
 
 from lxml import etree
 
-from vo.models.xml.generics import VODateTime
-from vo.models.xml.uws import (
+from vo_models.xml.generics import VODateTime
+from vo_models.xml.uws import (
     ErrorSummary,
     Jobs,
     JobSummary,
@@ -17,7 +17,7 @@ from vo.models.xml.uws import (
     Results,
     ShortJobDescription,
 )
-from vo.models.xml.uws.types import ExecutionPhase
+from vo_models.xml.uws.types import ExecutionPhase
 
 UWS_NAMESPACE_HEADER = """xmlns:uws="http://www.ivoa.net/xml/UWS/v1.0"
 xmlns:xlink="http://www.w3.org/1999/xlink"
