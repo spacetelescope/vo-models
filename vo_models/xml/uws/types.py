@@ -2,8 +2,6 @@
 
 from enum import Enum
 
-from pydantic_xml import RootXmlModel
-
 
 class ErrorType(str, Enum):
     """Enum for error types."""

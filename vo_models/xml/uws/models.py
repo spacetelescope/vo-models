@@ -4,7 +4,7 @@ from typing import Dict, Generic, Optional, TypeVar
 from pydantic import field_validator
 from pydantic_xml import BaseXmlModel, attr, element
 
-from vo_models.xml.generics import VODateTime
+from vo_models.xml.voresource.types import UTCTimestamp
 from vo_models.xml.uws.types import ErrorType, ExecutionPhase, UWSVersion
 from vo_models.xml.xlink import XlinkType
 
@@ -122,7 +122,7 @@ class ShortJobDescription(BaseXmlModel, tag="jobref", ns="uws", nsmap=NSMAP):
     phase: ExecutionPhase = element()
     run_id: Optional[str] = element(tag="runId", default=None)
     owner_id: Optional[str] = element(tag="ownerId", default=None, nillable=True)
-    creation_time: Optional[VODateTime] = element(tag="creationTime", default=None)
+    creation_time: Optional[UTCTimestamp] = element(tag="creationTime", default=None)
 
     job_id: str = attr(name="id")
     type: Optional[XlinkType] = attr(ns="xlink", default=XlinkType.SIMPLE)
@@ -192,17 +192,18 @@ class JobSummary(BaseXmlModel, Generic[ParametersType], tag="job", ns="uws", nsm
     """
 
     # pylint: disable = no-self-argument
+    # pylint: disable = too-few-public-methods
 
     job_id: str = element(tag="jobId")
     run_id: Optional[str] = element(tag="runId", default=None)
     owner_id: Optional[str] = element(tag="ownerId", default=None, nillable=True)
     phase: ExecutionPhase = element(tag="phase")
-    quote: Optional[VODateTime] = element(tag="quote", default=None, nillable=True)
-    creation_time: Optional[VODateTime] = element(tag="creationTime", default=None)
-    start_time: Optional[VODateTime] = element(tag="startTime", default=None, nillable=True)
-    end_time: Optional[VODateTime] = element(tag="endTime", default=None, nillable=True)
+    quote: Optional[UTCTimestamp] = element(tag="quote", default=None, nillable=True)
+    creation_time: Optional[UTCTimestamp] = element(tag="creationTime", default=None)
+    start_time: Optional[UTCTimestamp] = element(tag="startTime", default=None, nillable=True)
+    end_time: Optional[UTCTimestamp] = element(tag="endTime", default=None, nillable=True)
     execution_duration: Optional[int] = element(tag="executionDuration", default=0)
-    destruction: Optional[VODateTime] = element(tag="destruction", default=None, nillable=True)
+    destruction: Optional[UTCTimestamp] = element(tag="destruction", default=None, nillable=True)
     parameters: Optional[ParametersType] = element(tag="parameters", default=None)
     results: Optional[Results] = element(tag="results", default=None)
     error_summary: Optional[ErrorSummary] = element(tag="errorSummary", default=None)

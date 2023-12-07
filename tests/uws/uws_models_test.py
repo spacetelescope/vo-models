@@ -6,7 +6,7 @@ from xml.etree.ElementTree import canonicalize
 
 from lxml import etree
 
-from vo_models.xml.generics import VODateTime
+from vo_models.xml.voresource.types import UTCTimestamp
 from vo_models.xml.uws import (
     ErrorSummary,
     Jobs,
@@ -213,7 +213,7 @@ class TestShortJobDescriptionType(TestCase):
         self.assertEqual(short_job_description.phase, "PENDING")
         self.assertEqual(short_job_description.run_id, "runId1")
         self.assertEqual(short_job_description.owner_id, None)
-        self.assertEqual(short_job_description.creation_time, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
+        self.assertEqual(short_job_description.creation_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
 
     def test_write_to_xml(self):
         """Test writing to XML"""
@@ -224,7 +224,7 @@ class TestShortJobDescriptionType(TestCase):
             href="http://uri1",
             phase="PENDING",
             run_id="runId1",
-            creation_time=VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
+            creation_time=UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
         )
         short_job_description_xml = short_job_description.to_xml(encoding=str)
 
@@ -323,11 +323,11 @@ class TestJobSummaryElement(TestCase):
         self.assertEqual(job_summary.owner_id, "ownerId1")
         self.assertEqual(job_summary.phase, ExecutionPhase.PENDING.value)
         self.assertEqual(job_summary.quote, None)
-        self.assertEqual(job_summary.creation_time, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
-        self.assertEqual(job_summary.start_time, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
-        self.assertEqual(job_summary.end_time, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
+        self.assertEqual(job_summary.creation_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
+        self.assertEqual(job_summary.start_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
+        self.assertEqual(job_summary.end_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
         self.assertEqual(job_summary.execution_duration, 0)
-        self.assertEqual(job_summary.destruction, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
+        self.assertEqual(job_summary.destruction, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
         self.assertEqual(len(job_summary.parameters.parameter), 2)
         self.assertEqual(job_summary.parameters.parameter[0].id, "param1")
         self.assertEqual(job_summary.parameters.parameter[1].id, "param2")
@@ -346,11 +346,11 @@ class TestJobSummaryElement(TestCase):
             owner_id="ownerId1",
             phase=ExecutionPhase.PENDING,
             quote=None,
-            creation_time=VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
-            start_time=VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
-            end_time=VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
+            creation_time=UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
+            start_time=UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
+            end_time=UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
             execution_duration=0,
-            destruction=VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
+            destruction=UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
             parameters=Parameters(
                 parameter=[
                     Parameter(id="param1", value="value1"),
@@ -376,11 +376,11 @@ class TestJobSummaryElement(TestCase):
             owner_id="ownerId1",
             phase=ExecutionPhase.PENDING,
             quote=None,
-            creation_time=VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
+            creation_time=UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
             start_time=None,
             end_time=None,
             execution_duration=0,
-            destruction=VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
+            destruction=UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
             parameters=Parameters(
                 parameter=[
                     Parameter(id="param1", value="value1"),
@@ -416,7 +416,7 @@ class TestJobsElement(TestCase):
         self.assertEqual(jobs_element.jobref[0].job_id, "id1")
         self.assertEqual(jobs_element.jobref[0].owner_id, None)
         self.assertEqual(jobs_element.jobref[0].phase, ExecutionPhase.PENDING)
-        self.assertEqual(jobs_element.jobref[0].creation_time, VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
+        self.assertEqual(jobs_element.jobref[0].creation_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
 
     def test_write_to_xml(self):
         """Test writing to XML"""
@@ -428,7 +428,7 @@ class TestJobsElement(TestCase):
                     owner_id=None,
                     href="http://uri1",
                     phase=ExecutionPhase.PENDING,
-                    creation_time=VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
+                    creation_time=UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
                 )
             ]
         )
@@ -447,7 +447,7 @@ class TestJobsElement(TestCase):
                 ShortJobDescription(
                     job_id="id1",
                     phase=ExecutionPhase.PENDING,
-                    creation_time=VODateTime(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
+                    creation_time=UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
                 )
             ]
         )

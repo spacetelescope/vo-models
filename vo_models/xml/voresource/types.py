@@ -1,15 +1,13 @@
-"""Definitions for useful VO objects"""
+"""VOResource Simple Types"""
 
 import re
 from datetime import datetime
-from typing import Optional
 
 from pydantic import GetCoreSchemaHandler
 from pydantic_core import CoreSchema, core_schema
-from pydantic_xml import BaseXmlModel, RootXmlModel, computed_attr
 
 
-class VODateTime(datetime):
+class UTCTimestamp(datetime):
     """A subclass of datetime to allow expanded handling of ISO formatted datetimes, and enforce
     the use of a Z identifier for UTC timezone in outputs
 
@@ -52,7 +50,6 @@ class VODateTime(datetime):
             ),
         )
 
-
     @classmethod
     def _validate(cls, value: str):
         """Validator that expands the pydantic datetime model to include Z UTC identifiers
@@ -64,7 +61,7 @@ class VODateTime(datetime):
             VODateTime: VO-compliant datetime subclass
         """
 
-        if isinstance(value, VODateTime):
+        if isinstance(value, UTCTimestamp):
             return value
 
         if isinstance(value, datetime):
