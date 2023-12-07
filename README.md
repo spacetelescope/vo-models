@@ -25,6 +25,12 @@ The following IVOA protocols are currently supported / under development:
 
 ## Installation
 
+The latest version of the project can be installed from PyPI:
+
+```bash
+pip install vo-models
+```
+
 ### Conda
 
 To install the project using Conda, you can use the provided environment file:
@@ -48,6 +54,8 @@ pip install -e .
 If you prefer to use pip, you can install the project directly from the repository:
 
 ```bash
+git clone https://github.com/spacetelescope/vo-models.git
+cd vo-models
 pip install -r requirements.txt
 pip install .
 ```
