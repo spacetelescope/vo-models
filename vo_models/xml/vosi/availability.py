@@ -4,7 +4,7 @@ from typing import Optional
 
 from pydantic_xml import BaseXmlModel, element
 
-from vo_models.xml.generics import VODateTime
+from vo_models.xml.voresource.types import UTCTimestamp
 
 NSMAP = {
     "": "http://www.ivoa.net/xml/VOSIAvailability/v1.0",
@@ -26,7 +26,7 @@ class Availability(BaseXmlModel, tag="availability", nsmap=NSMAP):
     """
 
     available: bool = element(tag="available")
-    up_since: Optional[VODateTime] = element(tag="upSince")
-    down_at: Optional[VODateTime] = element(tag="downAt")
-    back_at: Optional[VODateTime] = element(tag="backAt")
+    up_since: Optional[UTCTimestamp] = element(tag="upSince")
+    down_at: Optional[UTCTimestamp] = element(tag="downAt")
+    back_at: Optional[UTCTimestamp] = element(tag="backAt")
     note: Optional[list[str]] = element(tag="note")
