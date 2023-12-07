@@ -47,17 +47,7 @@ pip install .
 For active development, install the project in development mode:
 
 ```bash
-pip install -e .
-```
-
-### Pip
-If you prefer to use pip, you can install the project directly from the repository:
-
-```bash
-git clone https://github.com/spacetelescope/vo-models.git
-cd vo-models
-pip install -r requirements.txt
-pip install .
+pip install -e .[dev,test]
 ```
 
 ## Usage
