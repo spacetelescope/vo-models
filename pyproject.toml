@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vo-models"
+version = "0.1.0"
+authors = [
+    {name = "Joshua Fraustro", email="jfraustro@stsci.edu"},
+    {name = "MAST Archive Developers", email="archive@stsci.edu"}
+]
+description = "Data models for IVOA protocols"
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "pydantic-xml[lxml]>=2.6.0",
+    ]
+
+classifiers = [
+
+    "Topic :: Scientific/Engineering :: Astronomy",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+
+    "License :: OSI Approved :: MIT License",
+]
+keywords = [
+    "ivoa",
+    "uws",
+    "pydantic",
+    "pydantic-xml",
+    "openapi",
+    ]
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-cov"]
+dev = ["pylint"]
+
+[project.urls]
+Homepage = "https://github.com/spacetelescope/vo-models"
+Issues = "https://github.com/spacetelescope/vo-models/issues"
+
+

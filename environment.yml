@@ -1,11 +1,10 @@
 name: "vo-models"
 channels:
-  - file:///grp/dmd/conda/
+  - defaults
   - conda-forge
 dependencies:
   - python>=3.10,<3.11
   - pip
   - wheel
   - pip:
-      - -r requirements.txt
       - pip-tools
