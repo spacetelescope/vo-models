@@ -6,7 +6,6 @@ from xml.etree.ElementTree import canonicalize
 
 from lxml import etree
 
-from vo_models.xml.voresource.types import UTCTimestamp
 from vo_models.xml.uws import (
     ErrorSummary,
     Jobs,
@@ -18,6 +17,7 @@ from vo_models.xml.uws import (
     ShortJobDescription,
 )
 from vo_models.xml.uws.types import ExecutionPhase
+from vo_models.xml.voresource.types import UTCTimestamp
 
 UWS_NAMESPACE_HEADER = """xmlns:uws="http://www.ivoa.net/xml/UWS/v1.0"
 xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -34,12 +34,13 @@ with open("tests/uws/UWS-Schema-V1.0.xsd", "r") as schema_file:
 class TestErrorSummaryType(TestCase):
     """Tests for the UWS errorSummary complex type"""
 
-    test_error_summary_xml = f"""<uws:errorSummary {UWS_NAMESPACE_HEADER}
-    type="transient"
-    hasDetail="true">
-    <uws:message>Invalid query.</uws:message>
-    </uws:errorSummary>
-    """
+    test_error_summary_xml = (
+        f"<uws:errorSummary {UWS_NAMESPACE_HEADER} "
+        'type="transient" '
+        'hasDetail="true">'
+        "<uws:message>Invalid query.</uws:message>"
+        "</uws:errorSummary>"
+    )
 
     def test_read_from_xml(self):
         """Test reading from XML"""
@@ -414,8 +415,9 @@ class TestJobsElement(TestCase):
         jobs_element = Jobs.from_xml(self.test_job_list_xml)
         self.assertEqual(len(jobs_element.jobref), 1)
         self.assertEqual(jobs_element.jobref[0].job_id, "id1")
-        self.assertEqual(jobs_element.jobref[0].owner_id, None)
         self.assertEqual(jobs_element.jobref[0].phase, ExecutionPhase.PENDING)
+        self.assertEqual(jobs_element.jobref[0].run_id, None)
+        self.assertEqual(jobs_element.jobref[0].owner_id, None)
         self.assertEqual(jobs_element.jobref[0].creation_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
 
     def test_write_to_xml(self):
