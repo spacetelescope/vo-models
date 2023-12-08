@@ -18,7 +18,7 @@ class UTCTimestamp(datetime):
     # vodt_regex = r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?Z?"
 
     # Expanded regex to accept Zulu but also +00:00 offset UTC times
-    exp_vodt_regex = r"(\d{4}-\d\d-\d\d(T|\s)\d\d:\d\d:\d\d(\.\d+)?)(Z|\+\d\d:\d\d)?"
+    exp_utc_regex = r"(\d{4}-\d\d-\d\d(T|\s)\d\d:\d\d:\d\d(\.\d+)?)(Z|\+\d\d:\d\d)?"
     # Will match:
     # 2023-03-15T18:27:18.758 (UTC assumed - T separator)
     # 2023-03-15 18:27:18.758 (UTC assumed - space separator)
@@ -29,7 +29,7 @@ class UTCTimestamp(datetime):
 
     # TODO: Python 3.11 datetime.fromisoformat() does accept a 'Z' indicated UTC time. Revisit this when upgrading.
 
-    vodt_regex_match = re.compile(exp_vodt_regex)
+    utc_regex_match = re.compile(exp_utc_regex)
 
     def __str__(self) -> str:
         return self.isoformat(sep="T", timespec="milliseconds")
@@ -58,7 +58,7 @@ class UTCTimestamp(datetime):
             value (str): datetime string. Comes from either a user's POST (destruction) or from the cache
 
         Returns:
-            VODateTime: VO-compliant datetime subclass
+            UTCTimestamp: VO-compliant datetime subclass
         """
 
         if isinstance(value, UTCTimestamp):
@@ -72,13 +72,13 @@ class UTCTimestamp(datetime):
 
         value = value.upper()
 
-        valid_vodt = cls.vodt_regex_match.fullmatch(value)
-        if not valid_vodt:
+        valid_utc = cls.utc_regex_match.fullmatch(value)
+        if not valid_utc:
             # If there was no full match, reject it
             raise ValueError("Invalid VOResource ISO-8601 date format")
 
         # Grab only the date/time match and manually add a UTC offset for an aware python datetime object
-        value = valid_vodt.group(1) + "+00:00"
+        value = valid_utc.group(1) + "+00:00"
 
         return super().fromisoformat(value)
 
