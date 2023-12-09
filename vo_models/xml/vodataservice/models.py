@@ -1,11 +1,15 @@
 """Pydantic-xml models for IVOA schema VODataService-v1.2.xsd"""
 
-from pydantic_xml import BaseXmlModel, element, attr
 from typing import Literal, Optional
-from pydantic import types, networks
 
-from vo_models.xml.voresource.types import UTCTimestamp
-from vo_models.xml.vodataservice.types import HTTPQueryType, ParamUse, ArrayShape, FloatInterval
+from pydantic_xml import BaseXmlModel, attr, element
+
+from vo_models.xml.vodataservice.types import (
+    ArrayShape,
+    FloatInterval,
+    HTTPQueryType,
+    ParamUse,
+)
 
 NSMAP = {
     "xml": "http://www.w3.org/XML/1998/namespace",
@@ -16,7 +20,6 @@ NSMAP = {
     "vm": "http://www.ivoa.net/xml/VOMetadata/v0.1",
     "": "",
 }
-
 
 
 class SpatialCoverage(BaseXmlModel, ns="vs", nsmap=NSMAP):
@@ -30,7 +33,7 @@ class SpatialCoverage(BaseXmlModel, ns="vs", nsmap=NSMAP):
                     frame. Note that for celestial coverages, ICRS must be used.
                     VODataService 1.2 does not prescribe a vocabulary for what values are allowed here.  As long as no
                     such vocabulary is agreed upon, the frame attribute should not be set.
-   """
+    """
 
     value: Optional[str] = None
 
@@ -49,9 +52,7 @@ class ServiceReference(BaseXmlModel, ns="vs", nsmap=NSMAP):
 
     value: Optional[str] = None
 
-    ivo_id: Optional[IdentifierURI] = attr(
-        name="ivo-id",
-    )
+    ivo_id: Optional[IdentifierURI] = attr(name="ivo-id")
 
 
 class Format(BaseXmlModel, ns="vs", nsmap=NSMAP):
@@ -61,10 +62,7 @@ class Format(BaseXmlModel, ns="vs", nsmap=NSMAP):
     This should use RFC 2046 media (“MIME”) types for network-retrievable, digital data.
     """
 
-    is_mimetype: Optional[bool] = attr(
-        name="isMIMEType",
-        default=False,
-    )
+    is_mimetype: Optional[bool] = attr(name="isMIMEType", default=False)
 
 
 class DataType(BaseXmlModel, ns="vs", nsmap=NSMAP):
@@ -99,11 +97,11 @@ class SimpleDataType(DataType, ns="vs", nsmap=NSMAP):
 
     value: Literal[
         "integer",
-"real",
-"complex",
-"boolean",
-"char",
-"string",
+        "real",
+        "complex",
+        "boolean",
+        "char",
+        "string",
     ]
 
 
@@ -120,19 +118,18 @@ class VOTableType(BaseXmlModel, ns="vs", nsmap=NSMAP):
 
     value: Literal[
         "boolean",
-"bit",
-"unsignedByte",
-"short",
-"int",
-"long",
-"char",
-"unicodeChar",
-"float",
-"double",
-"floatComplex",
-"doubleComplex",
+        "bit",
+        "unsignedByte",
+        "short",
+        "int",
+        "long",
+        "char",
+        "unicodeChar",
+        "float",
+        "double",
+        "floatComplex",
+        "doubleComplex",
     ]
-
 
 
 class TAPDataType(TableDataType, ns="vs", nsmap=NSMAP):
@@ -143,9 +140,7 @@ class TAPDataType(TableDataType, ns="vs", nsmap=NSMAP):
     - size (int):   The length of the fixed-length value.
     """
 
-    size: int = attr(
-        gt=0
-    )
+    size: int = attr(gt=0)
 
 
 class TAPType(TAPDataType, ns="vs", nsmap=NSMAP):
@@ -156,21 +151,22 @@ class TAPType(TAPDataType, ns="vs", nsmap=NSMAP):
 
     value: Literal[
         "BOOLEAN",
-"SMALLINT",
-"INTEGER",
-"BIGINT",
-"REAL",
-"DOUBLE",
-"TIMESTAMP",
-"CHAR",
-"VARCHAR",
-"BINARY",
-"VARBINARY",
-"POINT",
-"REGION",
-"CLOB",
-"BLOB",
+        "SMALLINT",
+        "INTEGER",
+        "BIGINT",
+        "REAL",
+        "DOUBLE",
+        "TIMESTAMP",
+        "CHAR",
+        "VARCHAR",
+        "BINARY",
+        "VARBINARY",
+        "POINT",
+        "REGION",
+        "CLOB",
+        "BLOB",
     ]
+
 
 class Coverage(BaseXmlModel, ns="vs", nsmap=NSMAP):
     """
@@ -190,7 +186,8 @@ class Coverage(BaseXmlModel, ns="vs", nsmap=NSMAP):
                                     This is written as for VOTable tabledata (i.e.,
                                     whitespace-separated C-style floating point literals), as
                                     in “47847.2 51370.2”.
-    - spectral (FloatInterval):     A pair of lower, upper limits of a spectral interval for which the resource offers data.
+    - spectral (FloatInterval):     A pair of lower, upper limits of a spectral interval for which the resource offers
+                                    data.
     - footprint (ServiceReference): A reference to a footprint service for retrieving
                                     precise and up-to-date description of coverage.
     - waveband (str):               A name of a messenger that the resource is relevant for
@@ -203,13 +200,15 @@ class Coverage(BaseXmlModel, ns="vs", nsmap=NSMAP):
                                     to get an appropriate match.
     """
 
-    stcresource_profile: Optional[STCResourceProfile] = element(tag="STCResourceProfile")
-    spatial: Optional[SpatialCoverage] = element(tag="spatial")
-    temporal: Optional[list[FloatInterval]] = element(tag="temporal")
-    spectral: Optional[list[FloatInterval]] = element(tag="spectral")
-    footprint: Optional[ServiceReference] = element(tag="footprint")
-    waveband: Optional[str] = element(tag="waveband")
-    region_of_regard: Optional[float] = element(tag="regionOfRegard")
+    stcresource_profile: Optional[STCResourceProfile] = element(
+        tag="STCResourceProfile"
+    )
+    spatial: Optional[SpatialCoverage] = element(default=None)
+    temporal: Optional[list[FloatInterval]] = element(default=None)
+    spectral: Optional[list[FloatInterval]] = element(default=None)
+    footprint: Optional[ServiceReference] = element(default=None)
+    waveband: Optional[str] = element(default=None)
+    region_of_regard: Optional[float] = element(tag="regionOfRegard", default=None)
 
 
 class BaseParam(BaseXmlModel, ns="vs", nsmap=NSMAP):
@@ -220,15 +219,16 @@ class BaseParam(BaseXmlModel, ns="vs", nsmap=NSMAP):
     - name (str):           The name of the parameter or column.
     - description (str):    A free-text description of a parameter's or column's contents.
     - unit (str):           The unit associated with the values in the parameter or column.
-    - ucd (str):            The name of a unified content descriptor that describes the scientific content of the parameter.
+    - ucd (str):            The name of a unified content descriptor that describes the scientific content of the
+                            parameter.
     - utype (str):          An identifier for a concept in a data model that the data in this schema represent.
-   """
+    """
 
-    name: Optional[str] = element(tag="name", default=None)
-    description: Optional[str] = element(tag="description", default=None)
-    unit: Optional[str] = element(tag="unit", default=None)
-    ucd: Optional[str] = element(tag="ucd", default=None)
-    utype: Optional[str] = element(tag="utype", default=None)
+    name: Optional[str] = element(default=None)
+    description: Optional[str] = element(default=None)
+    unit: Optional[str] = element(default=None)
+    ucd: Optional[str] = element(default=None)
+    utype: Optional[str] = element(default=None)
 
 
 class TableParam(BaseParam, ns="vs", nsmap=NSMAP):
@@ -246,10 +246,10 @@ class TableParam(BaseParam, ns="vs", nsmap=NSMAP):
                     to the data described If not provided, then the value is unknown.
     """
 
-    std: Optional[bool] = attr()
+    std: Optional[bool] = attr(default=None)
 
-    data_type: Optional[TableDataType] = element(tag="dataType")
-    flag: Optional[list[str]] = element()
+    data_type: Optional[TableDataType] = element(tag="dataType", default=None)
+    flag: Optional[list[str]] = element(default_factory=list)
 
 
 class InputParam(BaseParam, ns="vs", nsmap=NSMAP):
@@ -267,8 +267,8 @@ class InputParam(BaseParam, ns="vs", nsmap=NSMAP):
                             effectively extends the behavior of the service or application.
     """
 
-    std: Optional[bool] = attr()
-    use: Optional[str] = attr()
+    std: Optional[bool] = attr(default=None)
+    use: Optional[str] = attr(default=None)
 
     data_type: Optional[DataType] = element(tag="dataType")
 
@@ -287,20 +287,14 @@ class StandardSTC(Resource, ns="vs", nsmap=NSMAP):
                                             assigned to it.
     """
 
-    stc_definitions: list["STCDescriptionType"] | "STCDescriptionType" = element(tag="stcDefinitions")
+    stc_definitions: list["STCDescriptionType"] | "STCDescriptionType" = element(
+        tag="stcDefinitions"
+    )
 
 
 class FKColumn(BaseXmlModel, ns="vs", nsmap=NSMAP):
     """
     A pair of columns that are used to join two tables.
-
-    To do an inner join of data from the two tables, a query should
-    include a constraint that sets the value from the first column equal
-    to the value in the second column.
-
-    This type assumes that it is used in the context of
-    implied source (i.e., current) and target tables, as in
-    the ForeignKey type's fkColumn.
 
     Elements:
     - fromColumn (str): The unqualified name of the column from the current table.
@@ -325,9 +319,9 @@ class DataResource(Service, ns="vs", nsmap=NSMAP):
     - coverage (Coverage):          Extent of the content of the resource over space, time, and frequency.
     """
 
-    facility: Optional[list[ResourceName]] = element()
-    instrument: Optional[list[ResourceName]] = element()
-    coverage: Optional[Coverage] = element()
+    facility: Optional[list[ResourceName]] = element(default=None)
+    instrument: Optional[list[ResourceName]] = element(default=None)
+    coverage: Optional[Coverage] = element(default=None)
 
 
 class DataService(DataResource, ns="vs", nsmap=NSMAP):
@@ -342,7 +336,8 @@ class DataService(DataResource, ns="vs", nsmap=NSMAP):
 
 class ParamHTTP(Interface, ns="vs", nsmap=NSMAP):
     """
-    A service invoked via an HTTP Query (either Get or Post) with a set of arguments consisting of keyword name-value pairs.
+    A service invoked via an HTTP Query (either Get or Post) with a set of arguments consisting of keyword
+    name-value pairs.
 
     Elements:
     - queryType (HTTPQueryType):    The type of HTTP request, either GET or POST.
@@ -354,19 +349,12 @@ class ParamHTTP(Interface, ns="vs", nsmap=NSMAP):
                                     non-null response.
     """
 
-
-    query_type: Optional[list[str]] = element(
-        tag="queryType",
-        max_occurs=2,
+    query_type: Optional[list[HTTPQueryType]] = element(
+        tag="queryType", max_occurs=2, default_factory=list
     )
-
-    result_type: Optional[str] = element(tag="resultType")
-
-    param: Optional[list[InputParam]] = element()
-
-    test_query: Optional[str] = element(
-        tag="testQuery"
-    )
+    result_type: Optional[str] = element(tag="resultType", default=None)
+    param: Optional[list[InputParam]] = element(default_factory=list)
+    test_query: Optional[str] = element(tag="testQuery", default=None)
 
 
 class ForeignKey(BaseXmlModel, ns="vs", nsmap=NSMAP):
@@ -390,8 +378,8 @@ class ForeignKey(BaseXmlModel, ns="vs", nsmap=NSMAP):
 
     target_table: str = element(tag="targetTable")
     fk_column: list[FKColumn] | FKColumn = element(tag="fkColumn")
-    description: Optional[str] = element(tag="description", default=None)
-    utype: Optional[str] = element(tag="utype", default=None)
+    description: Optional[str] = element(default=None)
+    utype: Optional[str] = element(default=None)
 
 
 class Table(BaseXmlModel, ns="vs", nsmap=NSMAP):
@@ -424,12 +412,12 @@ class Table(BaseXmlModel, ns="vs", nsmap=NSMAP):
                             values are allowed.
     """
 
-    name: str = element(tag="name")
-    title: Optional[str] = element(tag="title", default=None)
-    description: Optional[str] = element(tag="description", default=None)
-    utype: Optional[str] = element(tag="utype", default=None)
-    nrows: Optional[int] = element(tag="nrows", default=None, gte=0)
-    column: list[TableParam] | TableParam = element(tag="column")
+    name: str = element()
+    title: Optional[str] = element(default=None)
+    description: Optional[str] = element(default=None)
+    utype: Optional[str] = element(default=None)
+    nrows: Optional[int] = element(default=None, gte=0)
+    column: list[TableParam] | TableParam = element()
     foreign_key: list[ForeignKey] | ForeignKey = element(tag="foreignKey")
 
     type: Optional[str] = attr(name="type", default=None)
@@ -465,7 +453,7 @@ class TableSchema(BaseXmlModel, ns="vs", nsmap=NSMAP):
     title: Optional[str] = element()
     description: Optional[str] = element()
     utype: Optional[str] = element()
-    table: list[Table] | Table = element(tag="table")
+    table: list[Table] | Table = element()
 
 
 class TableSet(BaseXmlModel, ns="vs", nsmap=NSMAP):
@@ -481,7 +469,7 @@ class TableSet(BaseXmlModel, ns="vs", nsmap=NSMAP):
                             “default”.
     """
 
-    schema: list[TableSchema] | TableSchema = element(tag="schema")
+    schema: list[TableSchema] | TableSchema = element()
 
 
 class DataCollection(Resource, ns="vs", nsmap=NSMAP):
@@ -510,49 +498,15 @@ class DataCollection(Resource, ns="vs", nsmap=NSMAP):
     - tableset (TableSet):          A description of the tables that are part of this collection.
                                     Each schema name must be unique within a tableset.
     - access_url (AccessURL):       The URL that can be used to download the data contained in this data collection.
-   """
+    """
 
-    facility: Optional[list[ResourceName]] = element(
-        tag="facility",
-        ns="",
-        default=None
-    )
-
-    instrument: Optional[list[ResourceName]] = element(
-        tag="instrument",
-        ns="",
-        default=None
-    )
-
-    rights: Optional[list[Rights]] = element(
-        tag="rights",
-        ns="",
-        default=None
-    )
-
-    format: Optional[list[Format]] = element(
-        tag="format",
-        ns="",
-        default=None
-    )
-
-    coverage: Optional[Coverage] = element(
-        tag="coverage",
-        ns="",
-        default=None
-    )
-
-    tableset: Optional[TableSet] = element(
-        tag="tableset",
-        ns="",
-        default=None
-    )
-
-    access_url: Optional[AccessURL] = element(
-        tag="accessURL",
-        ns="",
-        default=None
-    )
+    facility: Optional[list[ResourceName]] = element(default=None)
+    instrument: Optional[list[ResourceName]] = element(default=None)
+    rights: Optional[list[Rights]] = element(default=None)
+    format: Optional[list[Format]] = element(default=None)
+    coverage: Optional[Coverage] = element(default=None)
+    tableset: Optional[TableSet] = element(default=None)
+    access_url: Optional[AccessURL] = element(tag="accessURL", default=None)
 
 
 class CatalogResource(DataResource):
