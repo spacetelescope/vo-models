@@ -56,6 +56,19 @@ class Parameter(BaseXmlModel, tag="parameter", ns="uws", nsmap=NSMAP):
 class Parameters(BaseXmlModel, tag="parameters", ns="uws", nsmap=NSMAP):
     """An abstract holder of UWS parameters."""
 
+    def __init__(__pydantic_self__, **data) -> None:  # pylint: disable=no-self-argument
+        # during init -- especially if reading from xml -- we may not get the parameters in the order
+        # pydantic-xml expects. This will remap the dict with keys based on the parameter id.
+        parameter_vals = [val for val in data.values() if val is not None]
+        remapped_vals = {}
+        for param in parameter_vals:
+            if isinstance(param, dict):
+                remapped_vals[param["id"]] = Parameter(**param)
+            else:
+                remapped_vals[param.id] = param
+        data = remapped_vals
+        super().__init__(**data)
+
 
 class ErrorSummary(BaseXmlModel, tag="errorSummary", ns="uws", nsmap=NSMAP):
     """A short summary of an error - a fuller representation of the
