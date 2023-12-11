@@ -4,8 +4,8 @@ from typing import Dict, Generic, Optional, TypeVar
 from pydantic import field_validator
 from pydantic_xml import BaseXmlModel, attr, element
 
-from vo_models.xml.voresource.types import UTCTimestamp
 from vo_models.xml.uws.types import ErrorType, ExecutionPhase, UWSVersion
+from vo_models.xml.voresource.types import UTCTimestamp
 from vo_models.xml.xlink import XlinkType
 
 NSMAP = {
@@ -54,13 +54,7 @@ class Parameter(BaseXmlModel, tag="parameter", ns="uws", nsmap=NSMAP):
 
 
 class Parameters(BaseXmlModel, tag="parameters", ns="uws", nsmap=NSMAP):
-    """A list of UWS Job parameters.
-
-    Elements:
-    parameter (Parameter): a UWS Job parameter.
-    """
-
-    parameter: Optional[list[Parameter]] = element(name="parameter", default_factory=list)
+    """An abstract holder of UWS parameters."""
 
 
 class ErrorSummary(BaseXmlModel, tag="errorSummary", ns="uws", nsmap=NSMAP):

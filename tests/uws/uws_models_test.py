@@ -1,10 +1,12 @@
 """Tests for the XML serialization of UWS elements"""
 
 from datetime import timezone as tz
+from typing import Optional
 from unittest import TestCase
 from xml.etree.ElementTree import canonicalize
 
 from lxml import etree
+from pydantic_xml import element
 
 from vo_models.xml.uws import (
     ErrorSummary,
@@ -238,6 +240,15 @@ class TestShortJobDescriptionType(TestCase):
 class TestParametersElement(TestCase):
     """Test the UWS Parameters element"""
 
+    class TestParameters(Parameters):
+        """A test subclass of Parameters.
+
+        This subclass is used to test the Parameters element, which is an abstract type."""
+
+        param1: Optional[Parameter] = element(tag="parameter", default=None)
+        param2: Optional[Parameter] = element(tag="parameter", default=None)
+        param3: Optional[Parameter] = element(tag="parameter", default=None)
+
     test_parameters_xml = (
         f"<uws:parameters {UWS_NAMESPACE_HEADER}>"
         '<uws:parameter byReference="false" isPost="false" id="param1">value1</uws:parameter>'
@@ -249,26 +260,24 @@ class TestParametersElement(TestCase):
     def test_read_from_xml(self):
         """Test reading from XML"""
 
-        parameters = Parameters.from_xml(self.test_parameters_xml)
-        self.assertEqual(len(parameters.parameter), 3)
+        parameters = self.TestParameters.from_xml(self.test_parameters_xml)
+        self.assertEqual(len(parameters.dict()), 3)
 
-        self.assertEqual(parameters.parameter[0].id, "param1")
-        self.assertEqual(parameters.parameter[1].id, "param2")
-        self.assertEqual(parameters.parameter[2].id, "param3")
+        self.assertEqual(parameters.param1.id, "param1")
+        self.assertEqual(parameters.param2.id, "param2")
+        self.assertEqual(parameters.param3.id, "param3")
 
-        self.assertEqual(parameters.parameter[0].value, "value1")
-        self.assertEqual(parameters.parameter[1].value, "value2")
-        self.assertEqual(parameters.parameter[2].value, "value3")
+        self.assertEqual(parameters.param1.value, "value1")
+        self.assertEqual(parameters.param2.value, "value2")
+        self.assertEqual(parameters.param3.value, "value3")
 
     def test_write_to_xml(self):
         """Test writing to XML"""
 
-        parameters_element = Parameters(
-            parameter=[
-                Parameter(id="param1", value="value1"),
-                Parameter(id="param2", value="value2"),
-                Parameter(id="param3", value="value3"),
-            ]
+        parameters_element = self.TestParameters(
+            param1=Parameter(id="param1", value="value1"),
+            param2=Parameter(id="param2", value="value2"),
+            param3=Parameter(id="param3", value="value3"),
         )
         parameters_xml = parameters_element.to_xml(skip_empty=True, encoding=str)
 
@@ -294,6 +303,12 @@ class TestParametersElement(TestCase):
 class TestJobSummaryElement(TestCase):
     """Test the UWS JobSummary element"""
 
+    class TestParameters(Parameters):
+        """A test subclass of Parameters."""
+
+        param1: Optional[Parameter] = element(tag="parameter", default=None)
+        param2: Optional[Parameter] = element(tag="parameter", default=None)
+
     job_summary_xml = (
         f'<uws:job {UWS_NAMESPACE_HEADER} version="1.1">'
         "<uws:jobId>jobId1</uws:jobId>"
@@ -318,7 +333,7 @@ class TestJobSummaryElement(TestCase):
     def test_read_from_xml(self):
         """Test reading from XML"""
 
-        job_summary = JobSummary[Parameters].from_xml(self.job_summary_xml)
+        job_summary = JobSummary[self.TestParameters].from_xml(self.job_summary_xml)
         self.assertEqual(job_summary.job_id, "jobId1")
         self.assertEqual(job_summary.run_id, "runId1")
         self.assertEqual(job_summary.owner_id, "ownerId1")
@@ -329,11 +344,11 @@ class TestJobSummaryElement(TestCase):
         self.assertEqual(job_summary.end_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
         self.assertEqual(job_summary.execution_duration, 0)
         self.assertEqual(job_summary.destruction, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
-        self.assertEqual(len(job_summary.parameters.parameter), 2)
-        self.assertEqual(job_summary.parameters.parameter[0].id, "param1")
-        self.assertEqual(job_summary.parameters.parameter[1].id, "param2")
-        self.assertEqual(job_summary.parameters.parameter[0].value, "value1")
-        self.assertEqual(job_summary.parameters.parameter[1].value, "value2")
+        self.assertEqual(len(job_summary.parameters.dict()), 2)
+        self.assertEqual(job_summary.parameters.param1.id, "param1")
+        self.assertEqual(job_summary.parameters.param2.id, "param2")
+        self.assertEqual(job_summary.parameters.param1.value, "value1")
+        self.assertEqual(job_summary.parameters.param2.value, "value2")
         self.assertEqual(len(job_summary.results.results), 0)
         self.assertEqual(job_summary.error_summary, None)
         self.assertEqual(job_summary.job_info[0], "jobInfo1")
@@ -341,7 +356,7 @@ class TestJobSummaryElement(TestCase):
     def test_write_to_xml(self):
         """Test writing to XML"""
 
-        job_summary = JobSummary[Parameters](
+        job_summary = JobSummary[self.TestParameters](
             job_id="jobId1",
             run_id="runId1",
             owner_id="ownerId1",
@@ -352,11 +367,9 @@ class TestJobSummaryElement(TestCase):
             end_time=UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
             execution_duration=0,
             destruction=UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
-            parameters=Parameters(
-                parameter=[
-                    Parameter(id="param1", value="value1"),
-                    Parameter(id="param2", value="value2"),
-                ]
+            parameters=self.TestParameters(
+                param1=Parameter(id="param1", value="value1"),
+                param2=Parameter(id="param2", value="value2"),
             ),
             results=Results(),
             job_info=["jobInfo1"],
@@ -371,7 +384,7 @@ class TestJobSummaryElement(TestCase):
     def test_validate(self):
         """Validate against the schema"""
 
-        job_summary = JobSummary[Parameters](
+        job_summary = JobSummary[self.TestParameters](
             job_id="jobId1",
             run_id="runId1",
             owner_id="ownerId1",
@@ -382,11 +395,9 @@ class TestJobSummaryElement(TestCase):
             end_time=None,
             execution_duration=0,
             destruction=UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
-            parameters=Parameters(
-                parameter=[
-                    Parameter(id="param1", value="value1"),
-                    Parameter(id="param2", value="value2"),
-                ]
+            parameters=self.TestParameters(
+                param1=Parameter(id="param1", value="value1"),
+                param2=Parameter(id="param2", value="value2"),
             ),
             results=Results(results=[ResultReference(id="result1")]),
             error_summary=None,
