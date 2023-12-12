@@ -1,4 +1,4 @@
-"""Tests for the XML serialization of UWS elements"""
+"""Tests for UWS pydantic-xml models"""
 
 from datetime import timezone as tz
 from typing import Optional
@@ -8,7 +8,7 @@ from xml.etree.ElementTree import canonicalize
 from lxml import etree
 from pydantic_xml import element
 
-from vo_models.xml.uws import (
+from vo_models.uws import (
     ErrorSummary,
     Jobs,
     JobSummary,
@@ -18,8 +18,8 @@ from vo_models.xml.uws import (
     Results,
     ShortJobDescription,
 )
-from vo_models.xml.uws.types import ExecutionPhase
-from vo_models.xml.voresource.types import UTCTimestamp
+from vo_models.uws.types import ExecutionPhase
+from vo_models.voresource.types import UTCTimestamp
 
 UWS_NAMESPACE_HEADER = """xmlns:uws="http://www.ivoa.net/xml/UWS/v1.0"
 xmlns:xlink="http://www.w3.org/1999/xlink"

@@ -1,7 +1,7 @@
 """Tests for VOResource simple types"""
 from unittest import TestCase
 
-from vo_models.xml.voresource.types import UTCTimestamp
+from vo_models.voresource.types import UTCTimestamp
 
 
 class TestUTCTimestampModel(TestCase):
