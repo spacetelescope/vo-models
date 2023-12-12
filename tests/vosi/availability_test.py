@@ -9,8 +9,8 @@ from lxml import etree
 with open("tests/vosi/VOSIAvailability-v1.0.xsd") as f:
     availability_schema = etree.parse(f)
 
-from vo_models.xml.vosi.availability import Availability
-from vo_models.xml.voresource.types import UTCTimestamp
+from vo_models.voresource.types import UTCTimestamp
+from vo_models.vosi.availability import Availability
 
 VOSI_AVAILABILITY_HEADER = """xmlns="http://www.ivoa.net/xml/VOSIAvailability/v1.0"
 xmlns:xsd="http://www.w3.org/2001/XMLSchema"
