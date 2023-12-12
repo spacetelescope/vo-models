@@ -4,8 +4,8 @@ from typing import Dict, Generic, Optional, TypeVar
 from pydantic import field_validator
 from pydantic_xml import BaseXmlModel, attr, element
 
-from vo_models.xml.voresource.types import UTCTimestamp
 from vo_models.xml.uws.types import ErrorType, ExecutionPhase, UWSVersion
+from vo_models.xml.voresource.types import UTCTimestamp
 from vo_models.xml.xlink import XlinkType
 
 NSMAP = {
@@ -54,13 +54,20 @@ class Parameter(BaseXmlModel, tag="parameter", ns="uws", nsmap=NSMAP):
 
 
 class Parameters(BaseXmlModel, tag="parameters", ns="uws", nsmap=NSMAP):
-    """A list of UWS Job parameters.
+    """An abstract holder of UWS parameters."""
 
-    Elements:
-    parameter (Parameter): a UWS Job parameter.
-    """
-
-    parameter: Optional[list[Parameter]] = element(name="parameter", default_factory=list)
+    def __init__(__pydantic_self__, **data) -> None:  # pylint: disable=no-self-argument
+        # during init -- especially if reading from xml -- we may not get the parameters in the order
+        # pydantic-xml expects. This will remap the dict with keys based on the parameter id.
+        parameter_vals = [val for val in data.values() if val is not None]
+        remapped_vals = {}
+        for param in parameter_vals:
+            if isinstance(param, dict):
+                remapped_vals[param["id"]] = Parameter(**param)
+            else:
+                remapped_vals[param.id] = param
+        data = remapped_vals
+        super().__init__(**data)
 
 
 class ErrorSummary(BaseXmlModel, tag="errorSummary", ns="uws", nsmap=NSMAP):
