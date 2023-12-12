@@ -289,12 +289,10 @@ class TestParametersElement(TestCase):
     def test_validate(self):
         """Test validation against XML schema"""
 
-        parameters = Parameters(
-            parameter=[
-                Parameter(id="param1", value="value1"),
-                Parameter(id="param2", value="value2"),
-                Parameter(id="param3", value="value3"),
-            ]
+        parameters = self.TestParameters(
+            param1=Parameter(id="param1", value="value1"),
+            param2=Parameter(id="param2", value="value2"),
+            param3=Parameter(id="param3", value="value3"),
         )
         parameters_xml = etree.fromstring(parameters.to_xml(skip_empty=True, encoding=str))
         uws_schema.assertValid(parameters_xml)
