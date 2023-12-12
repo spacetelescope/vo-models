@@ -140,8 +140,6 @@ class ShortJobDescription(BaseXmlModel, tag="jobref", ns="uws", nsmap=NSMAP):
     href (str):         The link to the job.
     """
 
-    # pylint: disable = no-self-argument
-
     phase: ExecutionPhase = element()
     run_id: Optional[str] = element(tag="runId", default=None)
     owner_id: Optional[str] = element(tag="ownerId", default=None, nillable=True)
@@ -214,7 +212,6 @@ class JobSummary(BaseXmlModel, Generic[ParametersType], tag="job", ns="uws", nsm
                             It will be formally required in the next major revision.
     """
 
-    # pylint: disable = no-self-argument
     # pylint: disable = too-few-public-methods
 
     job_id: str = element(tag="jobId")
