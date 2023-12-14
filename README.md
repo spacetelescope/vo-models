@@ -12,10 +12,11 @@ The project is designed to be used by IVOA members, service implementors, and de
 
 ## Protocols
 
-The following IVOA protocols are currently supported / under development:
+The following IVOA protocols are currently supported:
 
-- **UWS (Universal Worker Service) version 1.1:**
-    - Pydantic-XML Models
+- **UWS (Universal Worker Service) version 1.1**
+- **VOSI (IVOA Support Interfaces) version 1.1**
+  - VOSI Availability
 
 
 ## Installation
