@@ -4,9 +4,9 @@ from typing import Dict, Generic, Optional, TypeVar
 from pydantic import field_validator
 from pydantic_xml import BaseXmlModel, attr, element
 
-from vo_models.xml.uws.types import ErrorType, ExecutionPhase, UWSVersion
-from vo_models.xml.voresource.types import UTCTimestamp
-from vo_models.xml.xlink import XlinkType
+from vo_models.uws.types import ErrorType, ExecutionPhase, UWSVersion
+from vo_models.voresource.types import UTCTimestamp
+from vo_models.xlink import XlinkType
 
 NSMAP = {
     "uws": "http://www.ivoa.net/xml/UWS/v1.0",
