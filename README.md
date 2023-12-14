@@ -1,14 +1,12 @@
 # vo-models
 
-`vo-models` an open-source project to provide Python models and OpenAPI specifications for [IVOA](https://www.ivoa.net/) service protocols.
+`vo-models` an open-source project to provide Python models for [IVOA](https://www.ivoa.net/) service protocols.
 
 The project is designed to be used by IVOA members, service implementors, and developers to help facilitate the development of IVOA-compliant services and clients.
 
 ## Features
 
 - **Pydantic-xml Models:** The project includes Python models for IVOA protocols, using [pydantic-xml](https://github.com/dapper91/pydantic-xml). Based on [Pydantic](https://docs.pydantic.dev/latest/), these models describe transactions for an IVOA protocol, such as UWS, and feature automatic validation, parsing and serialization of XML data for use with Python clients and web frameworks.
-
-- **OpenAPI Specifications:** The project includes OpenAPI definitions for IVOA protocols. The use of OpenAPI provides a standardized and machine-readable way to describe the IVOA protocols. OpenAPI specifications offer benefits such as automatic documentation generation, and automatic client and server code generation.
 
 - **Expandability:** The project is designed with future expansion in mind. Plans include extending the schema and models to cover other IVOA standards.
 
@@ -17,11 +15,8 @@ The project is designed to be used by IVOA members, service implementors, and de
 The following IVOA protocols are currently supported / under development:
 
 - **UWS (Universal Worker Service) version 1.1:**
-  - Active development:
-    - OpenAPI Models
     - Pydantic-XML Models
-  - Planned:
-    - OpenAPI Service Definition
+
 
 ## Installation
 
@@ -49,15 +44,6 @@ For active development, install the project in development mode:
 ```bash
 pip install -e .[dev,test]
 ```
-
-## Usage
-### OpenAPI Schema
-
-OpenAPI schema files representing IVOA protocol transactions can be found in the `vo/models/openapi` directory.
-
-For each protocol, two files are provided: a `components.yml` file containing the JSON/XML schema definitions for request / response transactions, and a file named after the protocol (e.g. `uws.yml`) containing the OpenAPI specification for the protocol. The schema models, and the OpenAPI specification, are viewable in the [Swagger Editor](https://editor.swagger.io/).
-
-*Note: Currently, the OpenAPI API definition files are not guaranteed to be complete. They are provided as a starting point for future development, and an example of how the schema definitions can be used.*
 
 ### Pydantic-XML Models
 
