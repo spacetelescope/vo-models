@@ -39,7 +39,3 @@ dev = ["pylint"]
 [project.urls]
 Homepage = "https://github.com/spacetelescope/vo-models"
 Issues = "https://github.com/spacetelescope/vo-models/issues"
-
-[tool.setuptools]
-packages = ["vo_models"]
-
