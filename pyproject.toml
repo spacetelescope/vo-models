@@ -26,10 +26,8 @@ classifiers = [
 ]
 keywords = [
     "ivoa",
-    "uws",
     "pydantic",
     "pydantic-xml",
-    "openapi",
     ]
 
 [project.optional-dependencies]
