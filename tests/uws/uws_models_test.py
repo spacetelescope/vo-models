@@ -55,13 +55,16 @@ class TestErrorSummaryType(TestCase):
     def test_write_to_xml(self):
         """Test writing to XML"""
 
-        error_summary = ErrorSummary(type="transient", has_detail=True, message="Invalid query.")
+        error_summary = ErrorSummary(
+            type="transient", has_detail=True, message="Invalid query."
+        )
         error_summary_xml = error_summary.to_xml(encoding=str)
 
         self.assertEqual(
             canonicalize(self.test_error_summary_xml, strip_text=True),
             canonicalize(error_summary_xml, strip_text=True),
         )
+
 
 class TestParameterType(TestCase):
     """Tests for the UWS Parameter complex type"""
@@ -84,7 +87,9 @@ class TestParameterType(TestCase):
     def test_write_to_xml(self):
         """Test writing to XML"""
 
-        parameter = Parameter(by_reference=False, id="param1", is_post=False, value="test_value")
+        parameter = Parameter(
+            by_reference=False, id="param1", is_post=False, value="test_value"
+        )
         parameter_xml = parameter.to_xml(encoding=str)
 
         self.assertEqual(
@@ -209,14 +214,19 @@ class TestShortJobDescriptionType(TestCase):
     def test_read_from_xml(self):
         """Test reading from XML"""
 
-        short_job_description = ShortJobDescription.from_xml(self.test_short_job_description_xml)
+        short_job_description = ShortJobDescription.from_xml(
+            self.test_short_job_description_xml
+        )
         self.assertEqual(short_job_description.job_id, "id1")
         self.assertEqual(short_job_description.type, "simple")
         self.assertEqual(short_job_description.href, "http://uri1")
         self.assertEqual(short_job_description.phase, "PENDING")
         self.assertEqual(short_job_description.run_id, "runId1")
         self.assertEqual(short_job_description.owner_id, None)
-        self.assertEqual(short_job_description.creation_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
+        self.assertEqual(
+            short_job_description.creation_time,
+            UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
+        )
 
     def test_write_to_xml(self):
         """Test writing to XML"""
@@ -294,7 +304,9 @@ class TestParametersElement(TestCase):
             param2=Parameter(id="param2", value="value2"),
             param3=Parameter(id="param3", value="value3"),
         )
-        parameters_xml = etree.fromstring(parameters.to_xml(skip_empty=True, encoding=str))
+        parameters_xml = etree.fromstring(
+            parameters.to_xml(skip_empty=True, encoding=str)
+        )
         uws_schema.assertValid(parameters_xml)
 
 
@@ -337,9 +349,15 @@ class TestJobSummaryElement(TestCase):
         self.assertEqual(job_summary.owner_id, "ownerId1")
         self.assertEqual(job_summary.phase, ExecutionPhase.PENDING.value)
         self.assertEqual(job_summary.quote, None)
-        self.assertEqual(job_summary.creation_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
-        self.assertEqual(job_summary.start_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
-        self.assertEqual(job_summary.end_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
+        self.assertEqual(
+            job_summary.creation_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc)
+        )
+        self.assertEqual(
+            job_summary.start_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc)
+        )
+        self.assertEqual(
+            job_summary.end_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc)
+        )
         self.assertEqual(job_summary.execution_duration, 0)
         self.assertEqual(job_summary.destruction, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
         self.assertEqual(len(job_summary.parameters.dict()), 2)
@@ -427,7 +445,10 @@ class TestJobsElement(TestCase):
         self.assertEqual(jobs_element.jobref[0].phase, ExecutionPhase.PENDING)
         self.assertEqual(jobs_element.jobref[0].run_id, None)
         self.assertEqual(jobs_element.jobref[0].owner_id, None)
-        self.assertEqual(jobs_element.jobref[0].creation_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
+        self.assertEqual(
+            jobs_element.jobref[0].creation_time,
+            UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc),
+        )
 
     def test_write_to_xml(self):
         """Test writing to XML"""
@@ -462,5 +483,7 @@ class TestJobsElement(TestCase):
                 )
             ]
         )
-        jobs_element_xml = etree.fromstring(jobs_element.to_xml(skip_empty=True, encoding=str))
+        jobs_element_xml = etree.fromstring(
+            jobs_element.to_xml(skip_empty=True, encoding=str)
+        )
         uws_schema.assertValid(jobs_element_xml)
