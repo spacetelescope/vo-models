@@ -17,6 +17,7 @@ The following IVOA protocols are currently supported:
 - **UWS (Universal Worker Service) version 1.1**
 - **VOSI (IVOA Support Interfaces) version 1.1**
   - VOSI Availability
+- **VODataService version 1.2**
 
 
 ## Installation
