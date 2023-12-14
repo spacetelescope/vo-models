@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vo-models"
-version = "0.2.0"
+version = "0.2.1"
 authors = [
     {name = "Joshua Fraustro", email="jfraustro@stsci.edu"},
     {name = "MAST Archive Developers", email="archive@stsci.edu"}
@@ -39,7 +39,3 @@ dev = ["pylint"]
 [project.urls]
 Homepage = "https://github.com/spacetelescope/vo-models"
 Issues = "https://github.com/spacetelescope/vo-models/issues"
-
-[tool.setuptools]
-packages = ["vo_models"]
-

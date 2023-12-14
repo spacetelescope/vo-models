@@ -122,9 +122,23 @@ class Results(BaseXmlModel, tag="results", ns="uws", nsmap=NSMAP):
 
 
 class ShortJobDescription(BaseXmlModel, tag="jobref", ns="uws", nsmap=NSMAP):
-    """A short description of a job."""
+    """A short description of a job.
 
-    # pylint: disable = no-self-argument
+    Elements:
+    phase (ExecutionPhase):     The execution phase - returned at /{jobs}/{job-id}/phase
+    run_id (str):               A client supplied identifier - the UWS system
+                                does nothing other than to return it as part of the
+                                description of the job
+    owner_id (str):             the owner (creator) of the job - this should be
+                                expressed as a string that can be parsed in accordance
+                                with IVOA security standards.
+    creation_time (datetime):   The instant at which the job was created.
+
+    Attributes:
+    job_id (str):       The identifier for the job.
+    type (XlinkType):   The xlink reference type of the job.
+    href (str):         The link to the job.
+    """
 
     phase: ExecutionPhase = element()
     run_id: Optional[str] = element(tag="runId", default=None)
@@ -198,7 +212,6 @@ class JobSummary(BaseXmlModel, Generic[ParametersType], tag="job", ns="uws", nsm
                             It will be formally required in the next major revision.
     """
 
-    # pylint: disable = no-self-argument
     # pylint: disable = too-few-public-methods
 
     job_id: str = element(tag="jobId")
