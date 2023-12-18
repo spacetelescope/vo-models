@@ -13,7 +13,7 @@ NSMAP = {
 }
 
 
-class Availability(BaseXmlModel, tag="availability", nsmap=NSMAP):
+class Availability(BaseXmlModel, tag="availability", nsmap=NSMAP, skip_empty=True):
     """VOSI Availability complex type.
 
     Elements:
@@ -26,7 +26,7 @@ class Availability(BaseXmlModel, tag="availability", nsmap=NSMAP):
     """
 
     available: bool = element(tag="available")
-    up_since: Optional[UTCTimestamp] = element(tag="upSince")
-    down_at: Optional[UTCTimestamp] = element(tag="downAt")
-    back_at: Optional[UTCTimestamp] = element(tag="backAt")
-    note: Optional[list[str]] = element(tag="note")
+    up_since: Optional[UTCTimestamp] = element(tag="upSince", default=None)
+    down_at: Optional[UTCTimestamp] = element(tag="downAt", default=None)
+    back_at: Optional[UTCTimestamp] = element(tag="backAt", default=None)
+    note: Optional[list[str]] = element(tag="note", default=None)
