@@ -1,7 +1,6 @@
 """UWS Job Schema using Pydantic-XML models"""
 from typing import Dict, Generic, Optional, TypeVar
 
-from pydantic import field_validator
 from pydantic_xml import BaseXmlModel, attr, element
 
 from vo_models.uws.types import ErrorType, ExecutionPhase, UWSVersion
@@ -21,10 +20,6 @@ ParametersType = TypeVar("ParametersType")
 class Parameter(BaseXmlModel, tag="parameter", ns="uws", nsmap=NSMAP):
     """A UWS Job parameter
 
-    The list of input parameters to the job - if the job description language does not naturally have
-    parameters, then this list should contain one element which is the content of the original POST that created the
-    job.
-
     Attributes:
     byReference (bool): If this attribute is true then the content of the parameter represents a URL to retrieve the
                         actual parameter value.
@@ -39,22 +34,21 @@ class Parameter(BaseXmlModel, tag="parameter", ns="uws", nsmap=NSMAP):
     value (str): the value of the parameter.
     """
 
-    value: Optional[str] = None
+    value: Optional[str | int | float | bool | bytes] = None  # only primitive types are allowed
 
     by_reference: Optional[bool] = attr(name="byReference", default=False)
     id: str = attr()
     is_post: Optional[bool] = attr(name="isPost", default=False)
 
-    @field_validator("value", mode="before")
-    def validate_value(cls, value):  # pylint: disable=no-self-argument
-        """Coerces value to a string"""
-        # TODO: Find better way to handle arbitrary types
-        if value is not None:
-            return str(value)
-
 
 class Parameters(BaseXmlModel, tag="parameters", ns="uws", nsmap=NSMAP):
-    """An abstract holder of UWS parameters."""
+    """
+    An abstract holder of UWS parameters.
+
+    The list of input parameters to the job - if the job description language does not naturally have
+    parameters, then this list should contain one element which is the content of the original POST that created the
+    job.
+    """
 
     def __init__(__pydantic_self__, **data) -> None:  # pylint: disable=no-self-argument
         # during init -- especially if reading from xml -- we may not get the parameters in the order
@@ -168,10 +162,6 @@ class Jobs(BaseXmlModel, tag="jobs", ns="uws", nsmap=NSMAP):
     jobref: Optional[list[ShortJobDescription]] = element(name="jobref", default_factory=list)
 
     version: Optional[UWSVersion] = attr(default=UWSVersion.V1_1)
-
-
-# pylint: disable=invalid-name
-ParametersType = TypeVar("ParametersType", bound=Parameters)
 
 
 class JobSummary(BaseXmlModel, Generic[ParametersType], tag="job", ns="uws", nsmap=NSMAP):
