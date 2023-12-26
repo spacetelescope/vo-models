@@ -16,13 +16,18 @@ NSMAP = {
 class Availability(BaseXmlModel, tag="availability", nsmap=NSMAP, skip_empty=True):
     """VOSI Availability complex type.
 
-    Elements:
-        available (bool):   Whether the service is currently available.
-        upSince (datetime): The instant at which the service last became available.
-        downAt (datetime):  The instant at which the service is next scheduled to become unavailable.
-        backAt (datetime):  The instant at which the service is scheduled to become available again after a period
-                            of unavailability.
-        note (str):         A textual note concerning availability.
+    Parameters:
+        available (bool):
+            (element) - Whether the service is currently available.
+        up_since (UTCTimestamp):
+            (element) - The instant at which the service last became available.
+        down_at (UTCTimestamp):
+            (element) - The instant at which the service is next scheduled to become unavailable.
+        back_at (UTCTimestamp):
+            (element) - The instant at which the service is scheduled to become available again after a period
+            of unavailability.
+        note (Optional[list[str]]):
+            (element) - A textual note concerning availability.
     """
 
     available: bool = element(tag="available")
