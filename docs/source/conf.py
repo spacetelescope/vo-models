@@ -6,11 +6,15 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import sys
 from pathlib import Path
 
 import toml
 
-CONF_PATH = Path(__file__).parent.parent.parent / "pyproject.toml"
+ROOT_PATH = Path(__file__).parent.parent.parent
+CONF_PATH = ROOT_PATH / "pyproject.toml"
+sys.path.insert(0, str(ROOT_PATH))
+
 PYPROJECT = toml.load(CONF_PATH)["project"]
 
 project = PYPROJECT["name"]
@@ -28,6 +32,7 @@ extensions = [
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.viewcode",
     "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",
 ]
 
 autodoc_typehints = "description"
