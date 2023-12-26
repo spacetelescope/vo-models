@@ -34,8 +34,13 @@ keywords = [
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-cov"]
-dev = ["pylint"]
+dev = ["pylint", "ruff", "pre-commit"]
+docs = ["sphinx", "sphinx_design", "furo", "sphinx-copybutton","toml"]
 
 [project.urls]
 Homepage = "https://github.com/spacetelescope/vo-models"
 Issues = "https://github.com/spacetelescope/vo-models/issues"
+
+[tool.ruff]
+line-length = 120
+extend-exclude = ["docs/conf.py"]
