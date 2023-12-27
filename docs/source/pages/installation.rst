@@ -6,7 +6,7 @@ Installation
 Install Using pip
 ------------------
 
-To install the vo-models package, you can use pip:
+To install the ``vo-models`` package, you can use pip:
 
 .. code-block:: bash
 

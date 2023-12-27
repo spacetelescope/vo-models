@@ -13,7 +13,7 @@ Models for UWS are provided in the ``vo_models.uws`` package. Supported models a
 Models
 ^^^^^^
 
-errorSummary
+ErrorSummary
 *****************
 
 Represents an error summary returned by a UWS service as part of a :ref:`pages/protocols/uws:JobSummary` object.

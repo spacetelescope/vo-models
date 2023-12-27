@@ -6,7 +6,7 @@ Quickstart
 Basic Usage
 -----------
 
-Working with vo-models classes is easy. They can be created and modified like any Pydantic model.
+Working with ``vo-models`` classes is easy. They can be created and modified like any Pydantic model.
 
 The following example creates a UWS :ref:`pages/protocols/uws:shortjobdescription` model using keyword arguments and updates the phase:
 
@@ -200,4 +200,4 @@ Sub-models can also be serialized to XML, and will correctly inherit their paren
 
 For more information on how to use ``pydantic-xml``, see the `pydantic-xml documentation <https://pydantic-xml.readthedocs.io/en/latest/>`_.
 
-For example usage of vo-models for each protocol, see :ref:`pages/protocols/index:supported protocols`.
+For example usage of ``vo-models`` for each protocol, see :ref:`pages/protocols/index:supported protocols`.

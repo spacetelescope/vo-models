@@ -3,7 +3,7 @@
 VOSI (VO Support Interface)
 --------------------------------------------
 
-vo-models supports the following VOSI v1.0 models:
+``vo-models`` supports the following VOSI v1.0 protocols:
 
 Availability
 *****************
