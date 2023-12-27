@@ -35,12 +35,16 @@ extensions = [
     "sphinx.ext.napoleon",
 ]
 
+autodoc_default_options = {
+    "no-inherited-members": None,
+    "exclude-members": "model_config, model_fields",
+}
+
 autodoc_typehints = "description"
 autodoc_typehints_format = "short"
 autodoc_member_order = "bysource"
-autodoc_default_options = {
-    "show-inheritance": True,
-}
+
+autoclass_content = "class"
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),

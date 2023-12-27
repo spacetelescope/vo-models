@@ -3,7 +3,7 @@
 UWS (Universal Worker Service)
 ------------------------------
 
-UWS is a protocol for describing and executing jobs on remote services. vo-models currently provides support for the `UWS 1.1 version <https://www.ivoa.net/documents/UWS/20161024/REC-UWS-1.1-20161024.html>`_ of the protocol.
+UWS is a protocol for describing and executing jobs on remote services. ``vo-models`` currently provides support for the `UWS 1.1 version <https://www.ivoa.net/documents/UWS/20161024/REC-UWS-1.1-20161024.html>`_ of the protocol.
 
 .. note::
     In the provided examples, the UWS namespace has not been included for brevity. As output by `to_xml()`, the namespace is included in the root element of the XML document.
@@ -223,4 +223,6 @@ Simple Types
 
 The following simple types are provided in the ``vo_models.uws`` package for use in UWS models:
 
-- :py:func:`vo_models.uws.types.ErrorType`
+- :py:class:`vo_models.uws.types.ErrorType`
+- :py:class:`vo_models.uws.types.ExecutionPhase`
+- :py:class:`vo_models.uws.types.UWSVersion`

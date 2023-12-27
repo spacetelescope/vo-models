@@ -20,6 +20,7 @@ User Guide
 .. toctree::
    :maxdepth: 1
 
+   pages/quickstart
    pages/installation
 
 Supported Protocols
@@ -28,6 +29,20 @@ Supported Protocols
    :maxdepth: 2
 
    pages/protocols/index
+
+API Documentation
+^^^^^^^^^^^^^^^^^
+.. toctree::
+   :maxdepth: 1
+
+   pages/api/index
+
+Links
+^^^^^
+
+- `Source Code <https://github.com/spacetelescope/vo-models>`_
+- `Pydantic-xml <https://pydantic-xml.readthedocs.io/en/latest/>`_
+- `Pydantic <https://docs.pydantic.dev/latest/>`_
 
 Indices and tables
 ^^^^^^^^^^^^^^^^^^

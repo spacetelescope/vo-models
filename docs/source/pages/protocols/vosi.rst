@@ -8,6 +8,9 @@ vo-models supports the following VOSI v1.0 models:
 Availability
 *****************
 
+The Availability model is used to represent the response given by a UWS service to a
+``GET /availability`` request.
+
 .. grid:: 2
     :gutter: 2
 
