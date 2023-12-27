@@ -1,6 +1,6 @@
 .. _vosi:
 
-VOSI (Virtual Observatory Support Interface)
+VOSI (VO Support Interface)
 --------------------------------------------
 
 vo-models supports the following VOSI v1.0 models:

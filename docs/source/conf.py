@@ -13,7 +13,7 @@ import toml
 
 ROOT_PATH = Path(__file__).parent.parent.parent
 CONF_PATH = ROOT_PATH / "pyproject.toml"
-sys.path.insert(0, str(ROOT_PATH))
+sys.path.insert(0, str(ROOT_PATH.absolute()))
 
 PYPROJECT = toml.load(CONF_PATH)["project"]
 
