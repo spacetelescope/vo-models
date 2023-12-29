@@ -105,10 +105,10 @@ class UTCTimestamp(datetime):
 
 
 class UTCDateTime(str):
-    """A date stamp that can be given to a precision of either a day (type
-    xs:date) or seconds (type xs:dateTime). Where only a date is given,
-    it is to be interpreted as the span of the day on the UTC timezone
-    if such distinctions are relevant."""
+    """A date stamp that can be given to a precision of either a day (type xs:date) or seconds (type xs:dateTime).
+
+    Where only a date is given, it is to be interpreted as the span of the day on the UTC timezone if such distinctions
+    are relevant."""
 
 
 class ValidationLevel(Enum):
