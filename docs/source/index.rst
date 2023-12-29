@@ -30,7 +30,7 @@ Using the models in your project for validation and serialization to XML is as s
    <uws:jobref id="job_1" xlink:type="simple">
         <uws:phase>PENDING</uws:phase>
          <uws:runId>run_1</uws:runId>
-    </uws:jobref>'
+    </uws:jobref>
 
 For more information on getting started with ``vo-models``, see :ref:`quickstart`.
 

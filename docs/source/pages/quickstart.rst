@@ -61,7 +61,7 @@ or from XML:
 Serializing
 -----------
 
-Models can be serialized to JSON using ``.model_dump_json()`` like any Pydantic model, or using the ``to_xml()`` method of pydantic-xml:
+Models can be serialized to JSON using ``.model_dump_json()`` like any Pydantic model, or to XML using the ``to_xml()`` method of pydantic-xml:
 
 .. grid:: 2
     :gutter: 2

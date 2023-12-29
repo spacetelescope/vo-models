@@ -19,6 +19,8 @@ The following IVOA protocols are currently supported:
   - VOSI Availability
 - **VODataService version 1.2**
 
+You can read more about using these models in our documentation: https://vo-models.readthedocs.io/
+
 
 ## Installation
 
