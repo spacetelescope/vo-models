@@ -2,9 +2,13 @@
 
 import re
 from datetime import datetime
+from enum import Enum
 
-from pydantic import GetCoreSchemaHandler
+from pydantic import Field, GetCoreSchemaHandler
 from pydantic_core import CoreSchema, core_schema
+from typing_extensions import Annotated
+
+# pylint: disable=too-few-public-methods
 
 
 class UTCTimestamp(datetime):
@@ -98,3 +102,64 @@ class UTCTimestamp(datetime):
         """
         iso_dt = super().isoformat(sep=sep, timespec=timespec)
         return iso_dt.replace("+00:00", "Z")
+
+
+class UTCDateTime(str):
+    """A date stamp that can be given to a precision of either a day (type
+    xs:date) or seconds (type xs:dateTime). Where only a date is given,
+    it is to be interpreted as the span of the day on the UTC timezone
+    if such distinctions are relevant."""
+
+
+class ValidationLevel(Enum):
+    """
+    The allowed values for describing the resource descriptions and interfaces.
+    """
+
+    VALUE_0 = 0
+    """
+    The resource has a description that is stored in a registry. This level does not imply a compliant description.
+    """
+    VALUE_1 = 1
+    """
+    In addition to meeting the level 0 definition, the resource description conforms syntactically to this standard
+    and to the encoding scheme used.
+    """
+    VALUE_2 = 2
+    """
+    In addition to meeting the level 1 definition, the resource description refers to an existing resource that has
+    demonstrated to be functionally compliant.
+    """
+    VALUE_3 = 3
+    """
+    In addition to meeting the level 2 definition, the resource description has been inspected by a human and judged
+    to comply semantically to this standard as well as meeting any additional minimum quality criteria (e.g., providing
+    values for important but non-required metadata) set by the human inspector.
+    """
+    VALUE_4 = 4
+    """
+    In addition to meeting the level 3 definition, the resource description meets additional quality criteria set by
+    the human inspector and is therefore considered an excellent description of the resource. Consequently, the resource
+    is expected to operate well as part of a VO application or research study.
+    """
+
+
+AuthorityID = Annotated[
+    str, Field(pattern=r"[\w\d][\w\d\-_\.!~\*'\(\)\+=]{2,}", description="The authority identifier for the resource.")
+]
+
+ResourceKey = Annotated[
+    str,
+    Field(
+        pattern=r"[\w\d\-_\.!~\*'\(\)\+=]+(/[\w\d\-_\.!~\*'\(\)\+=]+)*",
+        description="The resource key for the resource.",
+    ),
+]
+
+IdentifierURI = Annotated[
+    str,
+    Field(
+        pattern=r"ivo://[\w\d][\w\d\-_\.!~\*'\(\)\+=]{2,}(/[\w\d\-_\.!~\*'\(\)\+=]+(/[\w\d\-_\.!~\*'\(\)\+=]+)*)?",
+        description="A reference to a registry record.",
+    ),
+]

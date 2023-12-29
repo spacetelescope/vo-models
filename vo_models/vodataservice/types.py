@@ -1,9 +1,13 @@
 """Simple types for VODataService XML elements."""
 
+import re
 from enum import Enum
 
+from pydantic import GetCoreSchemaHandler
+from pydantic_core import CoreSchema, core_schema
 
-class HTTPQueryType(Enum, str):
+
+class HTTPQueryType(str, Enum):
     """The type of HTTP request, either GET or POST.
 
     The service may indicate support for both GET
@@ -15,11 +19,11 @@ class HTTPQueryType(Enum, str):
     and does not need to be given for those.
     """
 
-    GET: str = "GET"
-    POST: str = "POST"
+    GET = "GET"
+    POST = "POST"
 
 
-class ParamUse(Enum, str):
+class ParamUse(str, Enum):
     """
     The use of a parameter in a query.  The values are:
 
@@ -31,9 +35,9 @@ class ParamUse(Enum, str):
               application or service.
     """
 
-    REQUIRED: str = "required"
-    OPTIONAL: str = "optional"
-    IGNORED: str = "ignored"
+    REQUIRED = "required"
+    OPTIONAL = "optional"
+    IGNORED = "ignored"
 
 
 class ArrayShape(str):
@@ -43,11 +47,23 @@ class ArrayShape(str):
     the shape indicates that the length of the last axis is variable or
     undetermined."""
 
-    pattern = r"([0-9]+x)*[0-9]*[0-9*]"
+    pattern = re.compile(r"([0-9]+x)*[0-9]*[0-9*]")
 
     @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(pattern=cls.pattern)
+    def __get_pydantic_core_schema__(cls, source_type, handler: GetCoreSchemaHandler) -> CoreSchema:
+        return core_schema.with_info_before_validator_function(cls, handler(str))
+
+    @classmethod
+    def _validate(cls, value: str):
+        "Validator against the ArrayShape pattern."
+        if not isinstance(value, str):
+            raise TypeError("String required")
+        if not cls.pattern.match(value):
+            raise ValueError("Invalid ArrayShape format")
+        return value
+
+
+foo = ArrayShape("1x2x3")
 
 
 class FloatInterval(str):
@@ -61,8 +77,19 @@ class FloatInterval(str):
 
     """
 
-    pattern = r"[+-]?([0-9]+\.?[0-9]*|\.[0-9]+)([eE][+-]?[0-9]+)? [+-]?([0-9]+\.?[0-9]*|\.[0-9]+)([eE][+-]?[0-9]+)?"
+    pattern = re.compile(
+        r"[+-]?([0-9]+\.?[0-9]*|\.[0-9]+)([eE][+-]?[0-9]+)? [+-]?([0-9]+\.?[0-9]*|\.[0-9]+)([eE][+-]?[0-9]+)?"
+    )
 
     @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(pattern=cls.pattern)
+    def __get_pydantic_core_schema__(cls, source_type, handler: GetCoreSchemaHandler) -> CoreSchema:
+        return core_schema.with_info_before_validator_function(cls, handler(str))
+
+    @classmethod
+    def _validate(cls, value: str):
+        "Validator against the ArrayShape pattern."
+        if not isinstance(value, str):
+            raise TypeError("String required")
+        if not cls.pattern.match(value):
+            raise ValueError("Invalid FloatInterval format")
+        return value
