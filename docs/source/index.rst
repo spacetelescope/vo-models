@@ -32,7 +32,7 @@ Using the models in your project for validation and serialization to XML is as s
          <uws:runId>run_1</uws:runId>
     </uws:jobref>
 
-For more information on getting started with ``vo-models``, see :ref:`quickstart`.
+For more information on getting started with ``vo-models``, see :ref:`quickstart_guide`
 
 User Guide
 ^^^^^^^^^^
