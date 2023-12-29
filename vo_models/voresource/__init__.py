@@ -1,3 +1,27 @@
-"""
-Module containing VOResource classes.
-"""
+"""IVOA VOResource-v1.1.xsd pydantic-xml models"""
+
+from vo_models.voresource.models import (
+    AccessURL,
+    Capability,
+    Contact,
+    Content,
+    Creator,
+    Curation,
+    Date,
+    Interface,
+    MirrorURL,
+    Organisation,
+    Relationship,
+    Resource,
+    ResourceName,
+    Rights,
+    SecurityMethod,
+    Service,
+    Source,
+    UTCDateTime,
+    UTCTimestamp,
+    Validation,
+    ValidationLevel,
+    WebBrowser,
+    WebService,
+)
