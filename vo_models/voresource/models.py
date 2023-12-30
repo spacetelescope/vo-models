@@ -2,10 +2,10 @@
 import datetime
 from typing import Literal, Optional
 
-from pydantic import field_validator, networks, types
-from pydantic_xml import BaseXmlModel, RootXmlModel, attr, element
+from pydantic import field_validator, networks
+from pydantic_xml import BaseXmlModel, attr, element
 
-from vo_models.voresource.types import IdentifierURI, UTCDateTime, UTCTimestamp, ValidationLevel
+from vo_models.voresource.types import IdentifierURI, UTCTimestamp, ValidationLevel
 
 # pylint: disable=no-self-argument
 # pylint: disable=too-few-public-methods
@@ -23,6 +23,7 @@ class Validation(BaseXmlModel, ns="vr", nsmap=NSMAP):
     """A validation stamp combining a validation level and the ID of the validator.
 
     Parameters:
+        value: (ValidationLevel): The validation level.
         validated_by: (networks.AnyUrl):
             (attr) - The IVOA ID of the registry or organisation that assigned the validation level.
     """
@@ -40,6 +41,7 @@ class ResourceName(BaseXmlModel, ns="vr", nsmap=NSMAP):
     That is, the entity referred to may have an associated identifier.
 
     Parameters:
+        value: (str): The name of the resource.
         ivo_id: (Optional[IdentifierURI]):
             (attr) - The IVOA identifier for the resource referred to.
     """
@@ -78,8 +80,9 @@ class Source(BaseXmlModel, ns="vr", nsmap=NSMAP):
         value: (networks.AnyUrl): A bibliographic reference from which the present resource is derived or extracted.
         format: (Optional[str]):
             (attr) - The reference format.
-            Recognized values include "bibcode", referring to a standard astronomical bibcode
-            (http://cdsweb.u-strasbg.fr/simbad/refcode.html).
+
+                Recognized values include "bibcode", referring to a standard astronomical bibcode
+                (http://cdsweb.u-strasbg.fr/simbad/refcode.html).
     """
 
     value: networks.AnyUrl
@@ -110,10 +113,13 @@ class AccessURL(BaseXmlModel, ns="vr", nsmap=NSMAP):
         value: (networks.AnyUrl): The URL (or base URL) that a client uses to access the service.
         use: (Literal["full", "base", "dir"]):
             (attr) - A flag indicating whether this should be interpreted as a base URL, a full URL, or a URL to a
-            directory that will produce a listing of files. Allowed values are:
-            "full" - Assume a full URL--that is, one that can be invoked directly without alteration.
-            "base" - Assume a base URL--that is, one requiring an extra portion to be appended before being invoked.
-            "dir" - Assume URL points to a directory that will return a listing of files.
+            directory that will produce a listing of files.
+
+                Allowed values are:
+
+                "full" - Assume a full URL--that is, one that can be invoked directly without alteration.
+                "base" - Assume a base URL--that is, one requiring an extra portion to be appended before being invoked.
+                "dir" - Assume URL points to a directory that will return a listing of files.
     """
 
     value: networks.AnyUrl
@@ -122,7 +128,7 @@ class AccessURL(BaseXmlModel, ns="vr", nsmap=NSMAP):
 
 
 class MirrorURL(BaseXmlModel, ns="vr", nsmap=NSMAP):
-    """A URL of a mirror (i.e., a functionally identical additional service interface) to
+    """A URL of a mirror (i.e., a functionally identical additional service interface) to a service.
 
     Parameters:
         value: (networks.AnyUrl): A URL of a mirror
@@ -143,20 +149,24 @@ class Contact(BaseXmlModel, ns="vr", nsmap=NSMAP):
             (attr) - An IVOA identifier for the contact (typically when it is an organization).
         name: (ResourceName):
             (element) - The name or title of the contact person.
-            This can be a person's name, e.g. “John P. Jones” or a group, “Archive Support Team”.
+
+                This can be a person's name, e.g. “John P. Jones” or a group, “Archive Support Team”.
         address: (Optional[str]):
             (element) - The contact mailing address
-            All components of the mailing address are given in one string, e.g.
-            “3700 San Martin Drive, Baltimore, MD 21218 USA”.
+
+                All components of the mailing address are given in one string, e.g.
+                “3700 San Martin Drive, Baltimore, MD 21218 USA”.
         email: (Optional[str]):
             (element) - The contact email address
         telephone: (Optional[str]):
             (element) - The contact telephone number
-            Complete international dialing codes should be given, e.g.
-            “+1-410-338-1234”.
+
+                Complete international dialing codes should be given, e.g.
+                “+1-410-338-1234”.
         alt_identifier: (Optional[list[networks.AnyUrl]]):
-            (element) - A reference to this entitiy in a non-IVOA identifier scheme, e.g., orcid. Always use a URI form
-            including a scheme here.
+            (element) - A reference to this entitiy in a non-IVOA identifier scheme, e.g., orcid.
+
+                Always use a URI form including a scheme here.
     """
 
     ivo_id: Optional[IdentifierURI] = attr(name="ivo_id")
@@ -175,16 +185,16 @@ class Creator(BaseXmlModel, ns="vr", nsmap=NSMAP):
         ivo_id: (Optional[IdentifierURI]):
             (attr) - An IVOA identifier for the creator (typically when it is an organization).
         name: (ResourceName):
-            (element) - The name or title of the creating person or organisation
-            Users of the creation should use this name in
-            subsequent credits and acknowledgements.
-            This should be exactly one name, preferably last name
-            first (as in "van der Waals, Johannes Diderik").
+            (element) - The name or title of the creating person or organisation.
+
+                Users of the creation should use this name in subsequent credits and acknowledgements.
+                This should be exactly one name, preferably last name first (as in "van der Waals, Johannes Diderik").
         logo: (Optional[networks.AnyUrl]):
             (element) - URL pointing to a graphical logo, which may be used to help identify the information source.
         alt_identifier: (Optional[list[networks.AnyUrl]]):
-            (element) - A reference to this entitiy in a non-IVOA identifier scheme, e.g., orcid. Always use a URI form
-            including a scheme here.
+            (element) - A reference to this entitiy in a non-IVOA identifier scheme, e.g., orcid.
+
+                Always use a URI form including a scheme here.
     """
 
     ivo_id: Optional[IdentifierURI] = attr(name="ivo_id", default=None)
@@ -200,8 +210,9 @@ class Relationship(BaseXmlModel, ns="vr", nsmap=NSMAP):
     Parameters:
         relationship_type: (str):
             (element) - The named type of relationship
-            The value  of relationshipType should be taken from the vocabulary at
-            http://www.ivoa.net/rdf/voresource/relationship_type.
+
+                The value  of relationshipType should be taken from the vocabulary at
+                http://www.ivoa.net/rdf/voresource/relationship_type.
         related_resource: (list[ResourceName]):
             (element) - the name of resource that this resource is related to.
     """
@@ -219,8 +230,9 @@ class SecurityMethod(BaseXmlModel, ns="vr", nsmap=NSMAP):
     Parameters:
         standard_id: (Optional[networks.AnyUrl]):
             (attr) - A URI identifier for a standard security mechanism.
-            This provides a unique way to refer to a security specification standard. The use of an IVOA identifier
-            here implies that a VOResource description of the standard is registered and accessible.
+
+                This provides a unique way to refer to a security specification standard. The use of an IVOA identifier
+                here implies that a VOResource description of the standard is registered and accessible.
     """
 
     standard_id: Optional[networks.AnyUrl] = attr(name="standardID", default=None)
@@ -235,13 +247,15 @@ class Curation(BaseXmlModel, ns="vr", nsmap=NSMAP):
         creator: (Optional[list[Creator]]):
             (element) - The entity/ies (e.g. person(s) or organisation) primarily responsible for creating the content
             or constitution of the resource.
-            This is the equivalent of the author of a publication.
+
+                This is the equivalent of the author of a publication.
         contributor: (Optional[list[ResourceName]]):
             (element) - Entity responsible for contributions to the content of the resource
         date: (Optional[list[Date]]):
             (element) - Date associated with an event in the life cycle of the resource.
-            This will typically be associated with the creation or  availability (i.e., most recent release or
-            version) of the resource.  Use the role attribute to clarify.
+
+                This will typically be associated with the creation or  availability (i.e., most recent release or
+                version) of the resource.  Use the role attribute to clarify.
         version: (Optional[str]):
             (element) - Label associated with creation or availablilty of a version of a resource.
         contact: (list[Contact]):
@@ -264,21 +278,27 @@ class Content(BaseXmlModel, ns="vr", nsmap=NSMAP):
             (element) - A topic, object type, or other descriptive keywords about the resource.
             Terms for Subject should be drawn from the Unified Astronomy Thesaurus (http://astrothesaurus.org).
         description: (str):
-            (element) - An account of the nature of the resource
-            The description may include but is not limited to an abstract, table of contents, reference to a
-            graphical representation of content or a free-text account of the content.
+            (element) - An account of the nature of the resource.
+
+                The description may include but is not limited to an abstract, table of contents, reference to a
+                graphical representation of content or a free-text account of the content.
         source: (Optional[Source]):
             (element) - A bibliographic reference from which the present resource is derived or extracted.
-            This is intended to point to an article in the published literature. An ADS Bibcode is recommended as a
-            value when available.
+
+                This is intended to point to an article in the published literature. An ADS Bibcode is recommended as a
+                value when available.
         reference_url: (networks.AnyUrl):
             (element) - URL pointing to a human-readable document describing this resource.
         type: (Optional[list[str]]):
-            (element) - Nature or genre of the content of the resource. Values for type should be taken from the
-            controlled vocabulary http://www.ivoa.net/rdf/voresource/content_type
+            (element) - Nature or genre of the content of the resource.
+
+                Values for type should be taken from the controlled vocabulary
+                http://www.ivoa.net/rdf/voresource/content_type
         content_level: (Optional[list[str]]):
-            (element) - Description of the content level or intended audience. Values for contentLevel should be taken
-            from the controlled vocabulary http://www.ivoa.net/rdf/voresource/content_level.
+            (element) - Description of the content level or intended audience.
+
+                Values for contentLevel should be taken from the controlled vocabulary
+                http://www.ivoa.net/rdf/voresource/content_level.
         relationship: (Optional[list[Relationship]]):
             (element) - a description of a relationship to another resource.
     """
@@ -293,6 +313,7 @@ class Content(BaseXmlModel, ns="vr", nsmap=NSMAP):
 
 
 class Interface(BaseXmlModel, ns="vr", nsmap=NSMAP):
+
     """A description of a service interface.
 
     Since this type is abstract, one must use an Interface subclass to describe an actual interface.
@@ -302,18 +323,22 @@ class Interface(BaseXmlModel, ns="vr", nsmap=NSMAP):
     Parameters:
         version: (Optional[str]):
             (attr) - The version of a standard interface specification that this interface complies with.
-            Most VO standards indicate the version in the standardID attribute of the capability. For these standards,
-            the version attribute should not be used.
+
+                Most VO standards indicate the version in the standardID attribute of the capability.
+                For these standards, the version attribute should not be used.
         role: (Optional[str]):
             (attr) - A tag name that identifies the role the interface plays in the particular capability.
-            If the value is equal to 'std' or begins with 'std:', then the interface refers to a standard
-            interface defined by the standard referred to by the capability's standardID attribute.
+
+                If the value is equal to 'std' or begins with 'std:', then the interface refers to a standard
+                interface defined by the standard referred to by the capability's standardID attribute.
         access_url: (list[AccessURL]):
             (element) - The URL (or base URL) that a client uses to access the service.
-            How this URL is to be interpreted and used depends on the specific Interface subclass
+
+                How this URL is to be interpreted and used depends on the specific Interface subclass
         mirror_url: (Optional[list[MirrorURL]]):
             (element) - A (base) URL of a mirror of this interface.
-            As with accessURL, how this URL is to be interpreted and used depends on the specific Interface subclass
+
+                As with accessURL, how this URL is to be interpreted and used depends on the specific Interface subclass
         security_method: (Optional[list[SecurityMethod]]):
             (element) - The mechanism the client must employ to authenticate to the service.
         test_querystring: (Optional[str]):
@@ -330,7 +355,32 @@ class Interface(BaseXmlModel, ns="vr", nsmap=NSMAP):
 
 
 class WebBrowser(Interface, ns="vr", nsmap=NSMAP):
-    """A (form-based) interface intended to be accesed interactively by a user via a web browser."""
+    """A (form-based) interface intended to be accesed interactively by a user via a web browser.
+
+    Parameters:
+        version: (Optional[str]):
+            (attr) - The version of a standard interface specification that this interface complies with.
+
+                Most VO standards indicate the version in the standardID attribute of the capability.
+                For these standards, the version attribute should not be used.
+        role: (Optional[str]):
+            (attr) - A tag name that identifies the role the interface plays in the particular capability.
+
+                If the value is equal to 'std' or begins with 'std:', then the interface refers to a standard
+                interface defined by the standard referred to by the capability's standardID attribute.
+        access_url: (list[AccessURL]):
+            (element) - The URL (or base URL) that a client uses to access the service.
+
+                How this URL is to be interpreted and used depends on the specific Interface subclass
+        mirror_url: (Optional[list[MirrorURL]]):
+            (element) - A (base) URL of a mirror of this interface.
+
+                As with accessURL, how this URL is to be interpreted and used depends on the specific Interface subclass
+        security_method: (Optional[list[SecurityMethod]]):
+            (element) - The mechanism the client must employ to authenticate to the service.
+        test_querystring: (Optional[str]):
+            (element) - Test data for exercising the service.
+    """
 
 
 class WebService(Interface, ns="vr", nsmap=NSMAP):
@@ -340,9 +390,32 @@ class WebService(Interface, ns="vr", nsmap=NSMAP):
 
     Parameters:
         wsdl_url: (Optional[list[networks.AnyUrl]]):
-            (element) - The location of the WSDL that describes this Web Service.  If not provided, the location is
-            assumed to be the accessURL with "?wsdl" appended.
-            Multiple occurrences should represent mirror copies of the same WSDL file.
+            (element) - The location of the WSDL that describes this Web Service.
+
+                If not provided, the location is assumed to be the accessURL with "?wsdl" appended.
+                Multiple occurrences should represent mirror copies of the same WSDL file.
+        version: (Optional[str]):
+            (attr) - The version of a standard interface specification that this interface complies with.
+
+                Most VO standards indicate the version in the standardID attribute of the capability.
+                For these standards, the version attribute should not be used.
+        role: (Optional[str]):
+            (attr) - A tag name that identifies the role the interface plays in the particular capability.
+
+                If the value is equal to 'std' or begins with 'std:', then the interface refers to a standard
+                interface defined by the standard referred to by the capability's standardID attribute.
+        access_url: (list[AccessURL]):
+            (element) - The URL (or base URL) that a client uses to access the service.
+
+                How this URL is to be interpreted and used depends on the specific Interface subclass
+        mirror_url: (Optional[list[MirrorURL]]):
+            (element) - A (base) URL of a mirror of this interface.
+
+                As with accessURL, how this URL is to be interpreted and used depends on the specific Interface subclass
+        security_method: (Optional[list[SecurityMethod]]):
+            (element) - The mechanism the client must employ to authenticate to the service.
+        test_querystring: (Optional[str]):
+            (element) - Test data for exercising the service.
     """
 
     wsdl_url: Optional[list[networks.AnyUrl]] = element(tag="wsdlURL", default_factory=list)
@@ -355,21 +428,25 @@ class Resource(BaseXmlModel, ns="vr", nsmap=NSMAP):
     Parameters:
         created: (UTCTimestamp):
             (attr) - The UTC date and time this resource metadata description was created.
-            This timestamp must not be in the future.  This time is not required to be accurate; it should be at
-            least accurate to the day.  Any non-significant time fields should be set to zero.
+
+                This timestamp must not be in the future.  This time is not required to be accurate; it should be at
+                least accurate to the day.  Any non-significant time fields should be set to zero.
         updated: (UTCTimestamp):
             (attr) - The UTC date this resource metadata description was last updated.
-            This timestamp must not be in the future.  This time is not required to be accurate; it should be at
-            least accurate to the day.  Any non-significant time fields should be set to zero.
+
+                This timestamp must not be in the future.  This time is not required to be accurate; it should be at
+                least accurate to the day.  Any non-significant time fields should be set to zero.
         status: (Literal["active", "inactive", "deleted"]):
             (attr) - A tag indicating whether this resource is believed to be still actively maintained.
-            "active" -  Resource is believed to be currently maintained, and its description is up to date (default)
-            "inactive" - Resource is apparently not being maintained at the present
-            "deleted" - Resource publisher has explicitly deleted the resource.
+
+                "active" -  Resource is believed to be currently maintained, and its description is up to date (default)
+                "inactive" - Resource is apparently not being maintained at the present
+                "deleted" - Resource publisher has explicitly deleted the resource.
         version: (Optional[str]):
             (attr) - The VOResource XML schema version against which this instance was written.
-            Implementors should set this to the value of the version attribute of their schema's root (xs:schema)
-            element. Clients may assume version 1.0 if this attribute is missing.
+
+                Implementors should set this to the value of the version attribute of their schema's root (xs:schema)
+                element. Clients may assume version 1.0 if this attribute is missing.
         validation_level: (Optional[list[Validation]]):
             (element) - A numeric grade describing the quality of the resource description, when applicable, to be used
             to indicate the confidence an end-user can put in the resource as part of a VO application or research
@@ -429,8 +506,9 @@ class Organisation(Resource, ns="vr", nsmap=NSMAP):
             (attr) - a tag indicating whether this resource is believed to be still actively maintained.
         version: (Optional[str]):
             (attr) - The VOResource XML schema version against which this instance was written.
-            Implementors should set this to the value of the version attribute of their schema's root (xs:schema)
-            element. Clients may assume version 1.0 if this attribute is missing.
+
+                Implementors should set this to the value of the version attribute of their schema's root (xs:schema)
+                element. Clients may assume version 1.0 if this attribute is missing.
         facility: (Optional[list[ResourceName]]):
             (element) - The observatory or facility used to collect the data contained or managed by this resource.
         instrument: Optional[list[ResourceName]]):
@@ -454,22 +532,26 @@ class Capability(BaseXmlModel, ns="vr", nsmap=NSMAP):
     Parameters:
         standard_id: (Optional[networks.AnyUrl]):
             (attr) - A URI identifier for a standard service.
-            This provides a unique way to refer to a service specification standard, such as a Simple Image Access
-            service. The use of an IVOA identifier here implies that a VOResource description of the standard is
-            registered and accessible.
+
+                This provides a unique way to refer to a service specification standard, such as a Simple Image Access
+                service. The use of an IVOA identifier here implies that a VOResource description of the standard is
+                registered and accessible.
         validation_level: (Optional[list[Validation]]):
             (element) - A numeric grade describing the quality of the capability description and interface, when
             applicable, to be used to indicate the confidence an end-user can put in the resource as part of a
             VO application or research study.
-            See ValidationLevel for an explanation of the allowed levels.
+
+                See ValidationLevel for an explanation of the allowed levels.
         description: (Optional[str]):
             (element) - A human-readable description of what this capability provides as part of the over-all service.
-            Use of this optional element is especially encouraged when this capability is non-standard and is one
-            of several capabilities listed.
+
+                Use of this optional element is especially encouraged when this capability is non-standard and is one
+                of several capabilities listed.
         interface: (Optional[list[Interface]]):
             (element) - A description of how to call the service to access this capability.
-            Since the Interface type is abstract, one must describe the interface using a subclass of Interface,
-            denoting it via xsi:type.
+
+                Since the Interface type is abstract, one must describe the interface using a subclass of Interface,
+                denoting it via xsi:type.
     """
 
     standard_id: Optional[networks.AnyUrl] = attr(name="standardID", default=None)
@@ -491,19 +573,23 @@ class Service(Resource, ns="vr", nsmap=NSMAP):
             (attr) - A tag indicating whether this resource is believed to be still actively maintained.
         version: (Optional[str]):
             (attr) - The VOResource XML schema version against which this instance was written.
-            Implementors should set this to the value of the version attribute of their schema's root (xs:schema)
-            element. Clients may assume version 1.0 if this attribute is missing.
+
+                Implementors should set this to the value of the version attribute of their schema's root (xs:schema)
+                element. Clients may assume version 1.0 if this attribute is missing.
         rights: (Optional[list[Rights]]):
             (element) - Information about rights held in and over the resource.
-            Mainly for compatibility with DataCite, this elementis repeatable.  Resource record authors are advised
-            that within the Virtual Observatory clients will typically only display and/or use the rights element
-            occurring first and ignore later elements.
+
+                Mainly for compatibility with DataCite, this elementis repeatable.  Resource record authors are advised
+                that within the Virtual Observatory clients will typically only display and/or use the rights element
+                occurring first and ignore later elements.
         capability: (Optional[list[Capability]]):
             (element) - A description of a general capability of the service and how to use it.
-            This describes a general function of the service, usually in terms of a standard service protocol
-            (e.g. SIA), but not necessarily so.
-            A service can have many capabilities associated with it, each reflecting different aspects of the
-            functionality it provides.
+
+                This describes a general function of the service, usually in terms of a standard service protocol
+                (e.g. SIA), but not necessarily so.
+
+                A service can have many capabilities associated with it, each reflecting different aspects of the
+                functionality it provides.
     """
 
     created: UTCTimestamp = attr(name="created")
