@@ -2,6 +2,7 @@
 
 from typing import Literal, Optional
 
+from pydantic import field_validator
 from pydantic_xml import BaseXmlModel, attr, element
 
 from vo_models.stc.models import STCDescriptionType, STCResourceProfile
@@ -73,10 +74,13 @@ class Format(BaseXmlModel, ns="vs", nsmap=NSMAP):
     This should use RFC 2046 media (“MIME”) types for network-retrievable, digital data.
 
     Parameters:
+        value (str):
+            (content) - The MIME media type of the resource.
         is_mimetype (bool):
             (attr) - If true, the value of this element is a MIME type.
     """
 
+    value: str
     is_mimetype: Optional[bool] = attr(name="isMIMEType", default=False)
 
 
@@ -131,7 +135,7 @@ class TableDataType(DataType, ns="vs", nsmap=NSMAP):
     """
 
 
-class VOTableType(BaseXmlModel, ns="vs", nsmap=NSMAP):
+class VOTableType(TableDataType, ns="vs", nsmap=NSMAP):
     """
     A data type supported explicitly by the VOTable format
     """
@@ -232,13 +236,18 @@ class Coverage(BaseXmlModel, ns="vs", nsmap=NSMAP):
     """
 
     # TODO: STCResourceProfile is not implemented
-    stcresource_profile: Optional[STCResourceProfile] = element(tag="STCResourceProfile")
+    stcresource_profile: Optional[STCResourceProfile] = element(tag="STCResourceProfile", default=None)
     spatial: Optional[SpatialCoverage] = element(default=None)
     temporal: Optional[list[FloatInterval]] = element(default=None)
     spectral: Optional[list[FloatInterval]] = element(default=None)
     footprint: Optional[ServiceReference] = element(default=None)
     waveband: Optional[str] = element(default=None)
     region_of_regard: Optional[float] = element(tag="regionOfRegard", default=None)
+
+    @field_validator("temporal", "spectral", mode="before")
+    def _valdiate_lists(cls, value):
+        if not isinstance(value, list):
+            return [value]
 
 
 class BaseParam(BaseXmlModel, ns="vs", nsmap=NSMAP):
@@ -360,6 +369,14 @@ class DataResource(Service, ns="vs", nsmap=NSMAP):
     facility: Optional[list[ResourceName]] = element(default=None)
     instrument: Optional[list[ResourceName]] = element(default=None)
     coverage: Optional[Coverage] = element(default=None)
+
+    @field_validator("facility", "instrument", mode="before")
+    def _validate_lists(cls, value):
+        if not isinstance(value, list):
+            if isinstance(value, str):
+                value = ResourceName(value=value)
+            value = [value]
+        return value
 
 
 class DataService(DataResource, ns="vs", nsmap=NSMAP):

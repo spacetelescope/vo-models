@@ -145,7 +145,11 @@ class ValidationLevel(Enum):
 
 
 AuthorityID = Annotated[
-    str, Field(pattern=r"[\w\d][\w\d\-_\.!~\*'\(\)\+=]{2,}", description="The authority identifier for the resource.")
+    str,
+    Field(
+        pattern=r"[\w\d][\w\d\-_\.!~\*'\(\)\+=]{2,}",
+        description="The authority identifier for the resource.",
+    ),
 ]
 
 ResourceKey = Annotated[
