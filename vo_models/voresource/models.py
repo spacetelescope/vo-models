@@ -14,12 +14,13 @@ NSMAP = {
     "xml": "http://www.w3.org/XML/1998/namespace",
     "": "http://www.w3.org/2001/XMLSchema",
     "xs": "http://www.w3.org/2001/XMLSchema",
+    "xsi": "http://www.w3.org/2001/XMLSchema-instance",
     "vr": "http://www.ivoa.net/xml/VOResource/v1.0",
     "vm": "http://www.ivoa.net/xml/VOMetadata/v0.1",
 }
 
 
-class Validation(BaseXmlModel, ns="vr", nsmap=NSMAP):
+class Validation(BaseXmlModel, tag="validation", nsmap=NSMAP):
     """A validation stamp combining a validation level and the ID of the validator.
 
     Parameters:
@@ -35,7 +36,7 @@ class Validation(BaseXmlModel, ns="vr", nsmap=NSMAP):
     )
 
 
-class ResourceName(BaseXmlModel, ns="vr", nsmap=NSMAP):
+class ResourceName(BaseXmlModel, nsmap=NSMAP):
     """The name of a potentially registered resource.
 
     That is, the entity referred to may have an associated identifier.
@@ -47,10 +48,10 @@ class ResourceName(BaseXmlModel, ns="vr", nsmap=NSMAP):
     """
 
     value: str
-    ivo_id: Optional[IdentifierURI] = attr(name="ivo_id", default=None)
+    ivo_id: Optional[IdentifierURI] = attr(name="ivo-id", default=None)
 
 
-class Date(BaseXmlModel, ns="vr", nsmap=NSMAP):
+class Date(BaseXmlModel, tag="date", nsmap=NSMAP):
     """A string indicating what the date refers to.
 
     The value of role should be taken from the vocabulary maintained at http://www.ivoa.net/rdf/voresource/date_role.
@@ -73,7 +74,7 @@ class Date(BaseXmlModel, ns="vr", nsmap=NSMAP):
     )
 
 
-class Source(BaseXmlModel, ns="vr", nsmap=NSMAP):
+class Source(BaseXmlModel, tag="source", nsmap=NSMAP):
     """
 
     Parameters:
@@ -85,11 +86,11 @@ class Source(BaseXmlModel, ns="vr", nsmap=NSMAP):
                 (http://cdsweb.u-strasbg.fr/simbad/refcode.html).
     """
 
-    value: networks.AnyUrl
+    value: str
     format: Optional[str] = attr(name="format", default=None)
 
 
-class Rights(BaseXmlModel, ns="vr", nsmap=NSMAP):
+class Rights(BaseXmlModel, tag="rights", nsmap=NSMAP):
     """A statement of usage conditions.
 
     This will typically include a license, which should be given as a full string
@@ -106,7 +107,7 @@ class Rights(BaseXmlModel, ns="vr", nsmap=NSMAP):
     rights_uri: Optional[networks.AnyUrl] = attr(name="rightsURI", default=None)
 
 
-class AccessURL(BaseXmlModel, ns="vr", nsmap=NSMAP):
+class AccessURL(BaseXmlModel, tag="accessURL", nsmap=NSMAP):
     """The URL (or base URL) that a client uses to access the service.
 
     Parameters:
@@ -127,7 +128,7 @@ class AccessURL(BaseXmlModel, ns="vr", nsmap=NSMAP):
     use: Literal["full", "base", "dir"] = attr(name="use")
 
 
-class MirrorURL(BaseXmlModel, ns="vr", nsmap=NSMAP):
+class MirrorURL(BaseXmlModel, tag="mirrorURL", nsmap=NSMAP):
     """A URL of a mirror (i.e., a functionally identical additional service interface) to a service.
 
     Parameters:
@@ -141,7 +142,7 @@ class MirrorURL(BaseXmlModel, ns="vr", nsmap=NSMAP):
     title: Optional[str] = attr(name="title", default=None)
 
 
-class Contact(BaseXmlModel, ns="vr", nsmap=NSMAP):
+class Contact(BaseXmlModel, tag="contact", nsmap=NSMAP):
     """Information allowing establishing contact, e.g., for purposes of support.
 
     Parameters:
@@ -163,22 +164,35 @@ class Contact(BaseXmlModel, ns="vr", nsmap=NSMAP):
 
                 Complete international dialing codes should be given, e.g.
                 “+1-410-338-1234”.
-        alt_identifier: (Optional[list[networks.AnyUrl]]):
+        alt_identifier: (Optional[list[str] | str]):
             (element) - A reference to this entitiy in a non-IVOA identifier scheme, e.g., orcid.
 
                 Always use a URI form including a scheme here.
     """
 
-    ivo_id: Optional[IdentifierURI] = attr(name="ivo_id")
+    ivo_id: Optional[IdentifierURI] = attr(name="ivo-id")
 
     name: ResourceName = element(tag="name")
     address: Optional[str] = element(tag="address", default=None)
     email: Optional[str] = element(tag="email", default=None)
     telephone: Optional[str] = element(tag="telephone", default=None)
-    alt_identifier: Optional[list[networks.AnyUrl]] = element(tag="altIdentifier", default_factory=list)
+    alt_identifier: Optional[list[str]] = element(tag="altIdentifier", default_factory=list)
+
+    @field_validator("name", mode="before")
+    def _validate_name(cls, value):
+        """Ensure that name is a ResourceName or convert it to one."""
+        if isinstance(value, str):
+            value = ResourceName(value=value)
+        return value
+
+    @field_validator("alt_identifier", mode="before")
+    def _validate_alt_identifier(cls, value):
+        """Ensure that the alt_identifier is a list of strings."""
+        if isinstance(value, str):
+            value = [value]
 
 
-class Creator(BaseXmlModel, ns="vr", nsmap=NSMAP):
+class Creator(BaseXmlModel, tag="creator", nsmap=NSMAP):
     """The entity (e.g. person or organisation) primarily responsible for creating something
 
     Parameters:
@@ -197,14 +211,27 @@ class Creator(BaseXmlModel, ns="vr", nsmap=NSMAP):
                 Always use a URI form including a scheme here.
     """
 
-    ivo_id: Optional[IdentifierURI] = attr(name="ivo_id", default=None)
+    ivo_id: Optional[IdentifierURI] = attr(name="ivo-id", default=None)
 
     name: ResourceName = element(tag="name")
     logo: Optional[networks.AnyUrl] = element(tag="logo", default=None)
     alt_identifier: Optional[list[networks.AnyUrl]] = element(tag="altIdentifier", default_factory=list)
 
+    @field_validator("name", mode="before")
+    def _validate_name(cls, value):
+        """Ensure that name is a ResourceName or convert it to one."""
+        if isinstance(value, str):
+            value = ResourceName(value=value)
+        return value
 
-class Relationship(BaseXmlModel, ns="vr", nsmap=NSMAP):
+    @field_validator("alt_identifier", mode="before")
+    def _validate_alt_identifier(cls, value):
+        """Ensure that the alt_identifier is a list of strings."""
+        if isinstance(value, str):
+            value = [value]
+
+
+class Relationship(BaseXmlModel, tag="relationship", nsmap=NSMAP):
     """A description of the relationship between one resource and one or more other resources.
 
     Parameters:
@@ -221,8 +248,21 @@ class Relationship(BaseXmlModel, ns="vr", nsmap=NSMAP):
 
     related_resource: list[ResourceName] = element(tag="relatedResource")
 
+    @field_validator("related_resource", mode="before")
+    def _validate_related_resource(cls, value):
+        """Ensure that the related_resource is a list of ResourceNames."""
+        if isinstance(value, str):
+            value = [ResourceName(value=value)]
+        elif isinstance(value, ResourceName):
+            value = [value]
+        elif isinstance(value, list):
+            for index, item in enumerate(value):
+                if isinstance(item, str):
+                    value[index] = ResourceName(value=item)
+        return value
 
-class SecurityMethod(BaseXmlModel, ns="vr", nsmap=NSMAP):
+
+class SecurityMethod(BaseXmlModel, tag="securityMethod", nsmap=NSMAP):
     """A description of a security mechanism.
 
     This type only allows one to refer to the mechanism via a URI.  Derived types would allow for more metadata.
@@ -238,7 +278,7 @@ class SecurityMethod(BaseXmlModel, ns="vr", nsmap=NSMAP):
     standard_id: Optional[networks.AnyUrl] = attr(name="standardID", default=None)
 
 
-class Curation(BaseXmlModel, ns="vr", nsmap=NSMAP):
+class Curation(BaseXmlModel, tag="curation", nsmap=NSMAP):
     """Information regarding the general curation of a resource
 
     Parameters:
@@ -269,8 +309,49 @@ class Curation(BaseXmlModel, ns="vr", nsmap=NSMAP):
     version: Optional[str] = element(tag="version", default=None)
     contact: list[Contact] = element(tag="contact")
 
+    @field_validator("publisher", mode="before")
+    def _validate_publisher(cls, value):
+        """Ensure that publisher is a ResourceName or convert it to one."""
+        if isinstance(value, str):
+            value = ResourceName(value=value)
+        return value
 
-class Content(BaseXmlModel, ns="vr", nsmap=NSMAP):
+    @field_validator("creator", mode="before")
+    def _validate_creator(cls, value):
+        """Ensure that creator is a list of Creators."""
+        if isinstance(value, Creator):
+            value = [value]
+        return value
+
+    @field_validator("contributor", mode="before")
+    def _validate_contributor(cls, value):
+        """Ensure that contributor is a list of ResourceNames."""
+        if isinstance(value, str):
+            value = [ResourceName(value=value)]
+        elif isinstance(value, ResourceName):
+            value = [value]
+        elif isinstance(value, list):
+            for index, item in enumerate(value):
+                if isinstance(item, str):
+                    value[index] = ResourceName(value=item)
+        return value
+
+    @field_validator("date", mode="before")
+    def _validate_date(cls, value):
+        """Ensure that date is a list of Dates."""
+        if not isinstance(value, list):
+            value = [value]
+        return value
+
+    @field_validator("contact", mode="before")
+    def _validate_contact(cls, value):
+        """Ensure that contact is a list of Contacts."""
+        if not isinstance(value, list):
+            value = [value]
+        return value
+
+
+class Content(BaseXmlModel, tag="content", nsmap=NSMAP):
     """Information regarding the general content of a resource
 
     Parameters:
@@ -311,8 +392,43 @@ class Content(BaseXmlModel, ns="vr", nsmap=NSMAP):
     content_level: Optional[list[str]] = element(tag="contentLevel", default_factory=list)
     relationship: Optional[list[Relationship]] = element(tag="relationship", default_factory=list)
 
+    @field_validator("subject", mode="before")
+    def _validate_subject(cls, value):
+        """Ensure that subject is a list of strings."""
+        if isinstance(value, str):
+            value = [value]
+        return value
 
-class Interface(BaseXmlModel, ns="vr", nsmap=NSMAP):
+    @field_validator("source", mode="before")
+    def _validate_source(cls, value):
+        """Ensure that source is a Source or convert it to one."""
+        if isinstance(value, str):
+            value = Source(value=value)
+        return value
+
+    @field_validator("type", mode="before")
+    def _validate_type(cls, value):
+        """Ensure that type is a list of strings."""
+        if isinstance(value, str):
+            value = [value]
+        return value
+
+    @field_validator("content_level", mode="before")
+    def _validate_content_level(cls, value):
+        """Ensure that content_level is a list of strings."""
+        if isinstance(value, str):
+            value = [value]
+        return value
+
+    @field_validator("relationship", mode="before")
+    def _validate_relationship(cls, value):
+        """Ensure that relationship is a list of Relationships."""
+        if not isinstance(value, list):
+            value = [value]
+        return value
+
+
+class Interface(BaseXmlModel, tag="interface", nsmap=NSMAP):
 
     """A description of a service interface.
 
@@ -331,6 +447,10 @@ class Interface(BaseXmlModel, ns="vr", nsmap=NSMAP):
 
                 If the value is equal to 'std' or begins with 'std:', then the interface refers to a standard
                 interface defined by the standard referred to by the capability's standardID attribute.
+        type: (str):
+            (attr) - The type of interface.
+
+                This is set by the subclass of Interface using the Interface definition.
         access_url: (list[AccessURL]):
             (element) - The URL (or base URL) that a client uses to access the service.
 
@@ -347,14 +467,36 @@ class Interface(BaseXmlModel, ns="vr", nsmap=NSMAP):
 
     version: Optional[str] = attr(name="version", default=None)
     role: Optional[str] = attr(name="role", default=None)
+    type: str = attr(name="type", default=None, ns="xsi")
 
     access_url: list[AccessURL] = element(tag="accessURL")
     mirror_url: Optional[list[MirrorURL]] = element(tag="mirrorURL", default_factory=list)
     security_method: Optional[list[SecurityMethod]] = element(tag="securityMethod", default_factory=list)
     test_querystring: Optional[str] = element(tag="testQueryString", default=None)
 
+    @field_validator("access_url", mode="before")
+    def _validate_access_url(cls, value):
+        """Ensure that access_url is a list of AccessURLs."""
+        if not isinstance(value, list):
+            value = [value]
+        return value
 
-class WebBrowser(Interface, ns="vr", nsmap=NSMAP):
+    @field_validator("mirror_url", mode="before")
+    def _validate_mirror_url(cls, value):
+        """Ensure that mirror_url is a list of MirrorURLs."""
+        if not isinstance(value, list):
+            value = [value]
+        return value
+
+    @field_validator("security_method", mode="before")
+    def _validate_security_method(cls, value):
+        """Ensure that security_method is a list of SecurityMethods."""
+        if not isinstance(value, list):
+            value = [value]
+        return value
+
+
+class WebBrowser(Interface, tag="interface", nsmap=NSMAP):
     """A (form-based) interface intended to be accesed interactively by a user via a web browser.
 
     Parameters:
@@ -382,8 +524,10 @@ class WebBrowser(Interface, ns="vr", nsmap=NSMAP):
             (element) - Test data for exercising the service.
     """
 
+    type: Optional[Literal["vr:WebBrowser"]] = attr(name="type", default="vr:WebBrowser", ns="xsi")
 
-class WebService(Interface, ns="vr", nsmap=NSMAP):
+
+class WebService(Interface, nsmap=NSMAP):
     """A Web Service that is describable by a WSDL document.
 
     The accessURL element gives the Web Service's endpoint URL.
@@ -418,12 +562,20 @@ class WebService(Interface, ns="vr", nsmap=NSMAP):
             (element) - Test data for exercising the service.
     """
 
+    type: Optional[Literal["vr:WebService"]] = attr(name="type", default="vr:WebService", ns="xsi")
+
     wsdl_url: Optional[list[networks.AnyUrl]] = element(tag="wsdlURL", default_factory=list)
 
+    @field_validator("wsdl_url", mode="before")
+    def _validate_wsdl_url(cls, value):
+        """Ensure that wsdl_url is a list of networks.AnyUrls."""
+        if not isinstance(value, list):
+            value = [value]
+        return value
 
-class Resource(BaseXmlModel, ns="vr", nsmap=NSMAP):
-    """Any entity or component of a VO application that is describable and
-                        identifiable by an IVOA Identifier.
+
+class Resource(BaseXmlModel, tag="resource", nsmap=NSMAP):
+    """Any entity or component of a VO application that is describable and identifiable by an IVOA Identifier.
 
     Parameters:
         created: (UTCTimestamp):
@@ -481,20 +633,35 @@ class Resource(BaseXmlModel, ns="vr", nsmap=NSMAP):
     content: Content = element(tag="content")
 
     @field_validator("created", "updated")
-    def _validate_timestamps(cls, values):
+    def _validate_timestamps(cls, value):
         """Ensure that the created and updated timestamps are not in the future"""
-        for timestamp in ("created", "updated"):
-            if values[timestamp] > datetime.datetime.utcnow():
-                raise ValueError(f"{timestamp} timestamp must not be in the future")
+        if value > datetime.datetime.now(tz=datetime.timezone.utc):
+            raise ValueError("Timestamps must not be in the future")
+        return value
 
     @field_validator("short_name")
-    def _validate_short_name(cls, values):
+    def _validate_short_name(cls, value):
         """Ensure that the short name is no more than 16 characters"""
-        if values["short_name"] and len(values["short_name"]) > 16:
+        if value and len(value) > 16:
             raise ValueError("Short name must be no more than 16 characters")
+        return value
+
+    @field_validator("validation_level", mode="before")
+    def _validate_validation_level(cls, value):
+        """Ensure that validation_level is a list of Validations."""
+        if not isinstance(value, list):
+            value = [value]
+        return value
+
+    @field_validator("alt_identifier", mode="before")
+    def _validate_alt_identifier(cls, value):
+        """Ensure that alt_identifier is a list of networks.AnyUrls."""
+        if not isinstance(value, list):
+            value = [value]
+        return value
 
 
-class Organisation(Resource, ns="vr", nsmap=NSMAP):
+class Organisation(Resource, tag="organisation", nsmap=NSMAP):
     """A named group of one or more persons brought together to pursue participation in VO applications.
 
     Parameters:
@@ -524,8 +691,28 @@ class Organisation(Resource, ns="vr", nsmap=NSMAP):
     facility: Optional[list[ResourceName]] = element(tag="facility", default_factory=list)
     instrument: Optional[list[ResourceName]] = element(tag="instrument", default_factory=list)
 
+    @field_validator("facility", mode="before")
+    def _validate_facility(cls, value):
+        """Ensure that facility is a list of ResourceNames."""
+        if not isinstance(value, list):
+            if isinstance(value, str):
+                value = [ResourceName(value=value)]
+            else:
+                value = [value]
+        return value
 
-class Capability(BaseXmlModel, ns="vr", nsmap=NSMAP):
+    @field_validator("instrument", mode="before")
+    def _validate_instrument(cls, value):
+        """Ensure that instrument is a list of ResourceNames."""
+        if not isinstance(value, list):
+            if isinstance(value, str):
+                value = [ResourceName(value=value)]
+            else:
+                value = [value]
+        return value
+
+
+class Capability(BaseXmlModel, tag="capability", nsmap=NSMAP):
     """A description of what the service does (in terms of context-specific behavior), and how to use it
     (in terms of an interface)
 
@@ -560,8 +747,22 @@ class Capability(BaseXmlModel, ns="vr", nsmap=NSMAP):
     description: Optional[str] = element(tag="description", default=None)
     interface: Optional[list[Interface]] = element(tag="interface", default_factory=list)
 
+    @field_validator("validation_level", mode="before")
+    def _validate_validation_level(cls, value):
+        """Ensure that validation_level is a list of Validations."""
+        if not isinstance(value, list):
+            value = [value]
+        return value
 
-class Service(Resource, ns="vr", nsmap=NSMAP):
+    @field_validator("interface", mode="before")
+    def _validate_interface(cls, value):
+        """Ensure that interface is a list of Interfaces."""
+        if not isinstance(value, list):
+            value = [value]
+        return value
+
+
+class Service(Resource, tag="service", nsmap=NSMAP):
     """A resource that can be invoked by a client to perform some action on its behalf.
 
     Parameters:
@@ -599,3 +800,19 @@ class Service(Resource, ns="vr", nsmap=NSMAP):
 
     rights: Optional[list[Rights]] = element(tag="rights", default_factory=list)
     capability: Optional[list[Capability]] = element(tag="capability", default_factory=list)
+
+    @field_validator("rights", mode="before")
+    def _validate_rights(cls, value):
+        """Ensure that rights is a list of Rights."""
+        if not isinstance(value, list):
+            if isinstance(value, str):
+                value = Rights(value=value)
+            value = [value]
+        return value
+
+    @field_validator("capability", mode="before")
+    def _validate_capability(cls, value):
+        """Ensure that capability is a list of Capabilities."""
+        if not isinstance(value, list):
+            value = [value]
+        return value
