@@ -426,3 +426,15 @@ A resource that can be invoked by a client.
             :lines: 2-
             :start-after: service-xml-start
             :end-before: service-xml-end
+
+Simple Types
+^^^^^^^^^^^^
+
+The following simple types are provided in the ``vo_models.voresource`` package for use in VOResource models:
+
+- :py:class:`vo_models.voresource.types.UTCTimestamp`
+- :py:class:`vo_models.voresource.types.UTCDateTime`
+- :py:class:`vo_models.voresource.types.ValidationLevel`
+- :py:obj:`vo_models.voresource.types.AuthorityID`
+- :py:class:`vo_models.voresource.types.ResourceKey`
+- :py:class:`vo_models.voresource.types.IdentifierURI`
