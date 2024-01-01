@@ -296,30 +296,6 @@ web_browser_xml = """
 </interface>
 """  # [web-browser-xml-end]
 
-# [web-service-model-start]
-web_service = WebService(
-    version="1.1",
-    role="std",
-    access_url=access_url,
-    mirror_url=mirror_url,
-    security_method=security_method,
-    test_querystring="SELECT * FROM TAP_SCHEMA.tables",
-    wsdl_url="http://uri1?wsdl",
-)
-web_service.to_xml()
-# [web-service-model-end]
-
-# [web-service-xml-start]
-web_service_xml = """
-<interface version="1.1" role="std" xsi:type="vr:WebService">
-    <accessURL use="full">http://uri1/</accessURL>
-    <mirrorURL title="Mirror 1">http://uri1/</mirrorURL>
-    <securityMethod standardID="http://uri1/"/>
-    <testQueryString>SELECT * FROM TAP_SCHEMA.tables</testQueryString>
-    <wsdlURL>http://uri1?wsdl</wsdlURL>
-</interface>
-"""  # [web-service-xml-end]
-
 # [resource-model-start]
 resource = Resource(
     created=datetime(1900, 1, 1, tzinfo=timezone.utc),
