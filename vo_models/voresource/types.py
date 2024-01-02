@@ -89,6 +89,10 @@ class UTCTimestamp(datetime):
     def isoformat(self, sep: str = "T", timespec: str = "milliseconds") -> str:
         """Overwrites the datetime isoformat output to use a Z UTC indicator
 
+        Parameters:
+            sep (str): Separator between date and time (default: 'T')
+            timespec (str): Resolution of time to include (default: 'milliseconds')
+
         Returns:
             str: VO-compliant ISO-8601 datetime string
         """

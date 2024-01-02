@@ -1,0 +1,13 @@
+.. _api:
+
+Developer Documentation
+~~~~~~~~~~~~~~~~~~~~~~~
+
+This section contains documentation on the package's modules and classes.
+
+.. toctree::
+    :maxdepth: 3
+
+    uws_api
+    vosi_api
+    voresource_api
