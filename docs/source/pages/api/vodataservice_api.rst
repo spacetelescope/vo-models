@@ -5,8 +5,12 @@ VODataservice API
 
 Models
 ^^^^^^
-
 .. automodule:: vo_models.vodataservice.models
     :members:
     :no-inherited-members:
-    :exclude-members: model_config, model_fields, Job
+    :exclude-members: model_config, model_fields,
+
+Simple Types
+^^^^^^^^^^^^
+.. automodule:: vo_models.vodataservice.types
+    :members:
