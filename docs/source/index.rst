@@ -16,9 +16,10 @@ Using the models in your project for validation and serialization to XML is as s
 .. code-block:: python
 
     from vo_models.uws import ShortJobDescription
+    from vo_models.uws.types import ExecutionPhase
 
     job = ShortJobDescription(
-        phase="PENDING",
+        phase=ExecutionPhase.PENDING, # or use "PENDING"
         run_id = "run_1",
         job_id = "job_1",
         creation_time = "2021-01-01T00:00:00Z",
