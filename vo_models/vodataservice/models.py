@@ -1,11 +1,14 @@
-"""Pydantic-xml models for VODataService types"""
-from typing import Any, Optional
-# skip the bandit check here since we use escape() here only on XML we generated
-from xml.sax.saxutils import escape  # nosec B406
+"""Pydantic-xml models for VODataService types
 
-from asb.core.encoding import ADQL_SQL_KEYWORDS, handle_votable_arraysize
+TODO: This is an incomplete spec, covering only elements needed for VOSITables
+"""
+from typing import Any, Optional
+from xml.sax.saxutils import escape
+
 from pydantic import field_validator
 from pydantic_xml import BaseXmlModel, RootXmlModel, attr, element
+
+from vo_models.adql.misc import ADQL_SQL_KEYWORDS
 
 # pylint: disable=no-self-argument
 
@@ -38,7 +41,6 @@ class ForeignKey(BaseXmlModel, tag="foreignKey"):
         # If what we were given is of the form:
         # {'target_table': 'target_table', 'from_column': 'from_column', 'target_column': 'target_column'}
         # and we don't have an fk_column, make one
-        # this is a convenience for database calls to TAP_SCHEMA.keys / TAP_SCHEMA.key_columns
         if not data.get("fk_column", None):
             if data.get("from_column") and data.get("target_column"):
                 data["fk_column"] = [
@@ -48,6 +50,13 @@ class ForeignKey(BaseXmlModel, tag="foreignKey"):
                     )
                 ]
         super().__init__(**data)
+
+    @field_validator("fk_column", mode="before")
+    def validate_fk_column(cls, value):
+        """If we have a single fk_column, make it a list"""
+        if not isinstance(value, list):
+            value = [value]
+        return value
 
 
 class DataType(BaseXmlModel, tag="dataType", nsmap={"xsi": "http://www.w3.org/2001/XMLSchema-instance"}):
@@ -74,35 +83,14 @@ class TableParam(BaseXmlModel, ns="", tag="column"):
     flag: Optional[list[str]] = element(tag="flag", default=None)
 
     def __init__(__pydantic_self__, **data: Any) -> None:
-        data["datatype"] = __pydantic_self__.__make_datatype_element(data)
         data["flag"] = __pydantic_self__.__make_flags(data)
         super().__init__(**data)
-
-    # pylint: disable=unused-private-member
-    def __make_datatype_element(self, col_data) -> DataType:
-        """Helper to make datatype element from column data when first created"""
-        if col_data.get("datatype", None):
-            if isinstance(col_data["datatype"], DataType):
-                return col_data["datatype"]
-            col = handle_votable_arraysize(col_data)
-
-            datatype_type = col.get("datatype", None)
-            datatype_arraysize = col.get("arraysize", None)
-
-            datatype_elem = DataType(
-                arraysize=datatype_arraysize,
-                value=datatype_type,
-            )
-            return datatype_elem
-        # If no datatype provided, default to char(*)
-        return DataType(value="char", arraysize="*")
 
     def __make_flags(self, col_data) -> list[str]:
         """Set up the flag elements when creating the column.
 
-        These flags are represented in the database as a boolean integer, but in the XML are represented
-        as XML elements with the name of the flag, i.e. <principal/>, <indexed/>, <std/>.
-
+        In the case that column flags are boolean values, as may occur in TAP_SCHEMA.columns, parse them into
+        a list of strings.
         """
         if not col_data.get("flag", None):
             flag = [flag for flag in ["principal", "indexed", "std"] if col_data.get(flag, None) == 1]
@@ -110,7 +98,7 @@ class TableParam(BaseXmlModel, ns="", tag="column"):
         return col_data["flag"]
 
     @field_validator("column_name")
-    def validate_colname(cls, value):
+    def validate_colname(cls, value: str):
         """Escape the column name if it is an ADQL reserved word
 
         See: https://www.ivoa.net/documents/ADQL/20180112/PR-ADQL-2.1-20180112.html#tth_sEc2.1.3
@@ -172,7 +160,7 @@ class Table(BaseXmlModel, tag="table", ns="", skip_empty=True):
     VODataservice / DALI standard.
     """
 
-    table_type: Optional[str] = attr(name="type")
+    table_type: Optional[str] = attr(name="type", default=None)
 
     table_name: _TableName = element(tag="name", ns="")
     title: Optional[_TableTitle] = element(tag="title", ns="", default=None)
@@ -188,6 +176,14 @@ class Table(BaseXmlModel, tag="table", ns="", skip_empty=True):
             if isinstance(val, str):
                 data[key] = escape(val)
         super().__init__(**data)
+
+    @field_validator("column", "foreign_key", mode="before")
+    def validate_lists(cls, value):
+        """If we have a single column or foreign_key, make it a list"""
+        if not isinstance(value, list):
+            value = [value]
+        return value
+
 
 
 class TableSchema(BaseXmlModel, tag="schema", ns="", skip_empty=True):
@@ -205,8 +201,22 @@ class TableSchema(BaseXmlModel, tag="schema", ns="", skip_empty=True):
                 data[key] = escape(val)
         super().__init__(**data)
 
+    @field_validator("table", mode="before")
+    def validate_table(cls, value):
+        """If we have a single table, make it a list"""
+        if not isinstance(value, list):
+            value = [value]
+        return value
+
 
 class TableSet(BaseXmlModel, tag="tableset", skip_empty=True):
     """A model representing a tableset, a list of tables."""
 
     tableset_schema: list[TableSchema] = element(tag="schema")
+
+    @field_validator("tableset_schema", mode="before")
+    def validate_tableset_schema(cls, value):
+        """If we have a single tableset_schema, make it a list"""
+        if not isinstance(value, list):
+            value = [value]
+        return value

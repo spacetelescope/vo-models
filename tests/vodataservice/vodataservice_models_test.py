@@ -1,7 +1,7 @@
 """Tests for VODataService models"""
 
-from mast.vo_tap.services.tap_service_models.vo_models_test import VOModelTestBase
-from mast.vo_tap.services.tap_service_models.vodataservice import (
+#from mast.vo_tap.services.tap_service_models.vo_models_test import VOModelTestBase
+from vo_models.vodataservice import (
     DataType,
     FKColumn,
     ForeignKey,

@@ -1,6 +1,4 @@
 """Pydantic-xml models for the VOSI Tables specification"""
-
-
 from vo_models.vodataservice import Table, TableSet
 
 NSMAP = {
