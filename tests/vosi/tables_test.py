@@ -1,42 +1,48 @@
 """Tests for VOSI-Tables specific pydantic-xml models"""
 
 # We're only parsing a locally controlled XSD file
+from unittest import TestCase
+from xml.etree.ElementTree import canonicalize
+
 from lxml import etree  # nosec B410
 
-#from mast.vo_tap.services.tap_service_models.vo_models_test import VOModelTestBase
 from vo_models.vodataservice.models import DataType, Table, TableParam, TableSchema
 from vo_models.vosi.tables import VOSITable, VOSITableSet
 
-with open("mast/vo_tap/services/tap_service_models/vosi/VOSITables-v1.1.xsd", "r") as schema_file:
+with open("tests/vosi/VOSITables-v1.1.xsd", "r") as schema_file:
     vosi_tables_schema = etree.XMLSchema(file=schema_file)
 
+VOSIT_TABLES_HEADER = """xmlns:vosi='http://www.ivoa.net/xml/VOSITables/v1.0'
+xmlns:vr='http://www.ivoa.net/xml/VOResource/v1.0'
+xmlns:vs='http://www.ivoa.net/xml/VODataService/v1.1'
+xmlns:xsd='http://www.w3.org/2001/XMLSchema'
+xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+"""
 
-class TestVOSITableElement(VOModelTestBase.VOModelTestCase):
-    """Test the Table element model as specified in VOSI Tables"""
 
-    test_xml = """
-        <vosi:table xmlns:vosi='http://www.ivoa.net/xml/VOSITables/v1.0'
-        xmlns:vr='http://www.ivoa.net/xml/VOResource/v1.0'
-        xmlns:vs='http://www.ivoa.net/xml/VODataService/v1.1'
-        xmlns:xsd='http://www.w3.org/2001/XMLSchema'
-        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
-        type='table'>
-        <name>tap_schema.schemas</name>
-        <description>description of schemas in this dataset</description>
-        <column>
-        <name>schema_name</name>
-        <description>Fully qualified schema name</description>
-        <dataType xsi:type='vs:VOTableType' arraysize='*'>char</dataType>
-        <flag>std</flag>
-        </column>
-        <column>
-        <name>description</name>
-        <description>Brief description of the schema</description>
-        <dataType xsi:type='vs:VOTableType' arraysize='*'>char</dataType>
-        <flag>std</flag>
-        </column>
-        </vosi:table>
-        """
+class TestVOSITableElement(TestCase):
+    """Test the VOSI Table element"""
+
+    test_xml = (
+        f"<vosi:table {VOSIT_TABLES_HEADER}"
+        "type='table'>"
+        "<name>tap_schema.schemas</name>"
+        "<description>description of schemas in this dataset</description>"
+        "<column>"
+        "<name>schema_name</name>"
+        "<description>Fully qualified schema name</description>"
+        "<dataType xsi:type='vs:VOTableType' arraysize='*'>char</dataType>"
+        "<flag>std</flag>"
+        "</column>"
+        "<column>"
+        "<name>description</name>"
+        "<description>Brief description of the schema</description>"
+        "<dataType xsi:type='vs:VOTableType' arraysize='*'>char</dataType>"
+        "<flag>std</flag>"
+        "</column>"
+        "</vosi:table>"
+    )
+
     test_element = VOSITable(
         table_type="table",
         table_name="tap_schema.schemas",
@@ -64,32 +70,41 @@ class TestVOSITableElement(VOModelTestBase.VOModelTestCase):
         ],
         foreign_key=None,
     )
-    base_model = VOSITable
 
-    def test_vosi_table_ns(self):
-        """Test that the Table is specifically namespaced to VOSI"""
-        vosi_element = self.base_model.from_xml(self.test_xml)
-        self.assertEqual(vosi_element.__xml_ns__, "vosi")
+    def test_read_from_xml(self):
+        """Test reading a Table from XML"""
+        vosi_table = VOSITable.from_xml(self.test_xml)
+        self.assertEqual(vosi_table.table_name, "tap_schema.schemas")
+        self.assertEqual(vosi_table.table_type, "table")
+        self.assertEqual(vosi_table.description, "description of schemas in this dataset")
+        self.assertEqual(len(vosi_table.column), 2)
+        self.assertEqual(vosi_table.column[0].column_name, "schema_name")
+        self.assertEqual(vosi_table.column[0].description, "Fully qualified schema name")
+        self.assertEqual(vosi_table.column[0].datatype.type, "vs:VOTableType")
+        self.assertEqual(vosi_table.column[0].datatype.arraysize, "*")
+        self.assertEqual(vosi_table.column[0].datatype.value, "char")
+        self.assertEqual(vosi_table.column[0].flag, ["std"])
 
-        vosi_xml = vosi_element.to_xml(skip_empty=True, encoding=str)
-        self.assertIn("<vosi:table", vosi_xml)
+    def test_write_to_xml(self):
+        """Test writing a Table to XML"""
+
+        tables_xml = self.test_element.to_xml()
+        self.assertEqual(
+            canonicalize(tables_xml, strip_text=True),
+            canonicalize(self.test_xml, strip_text=True),
+        )
 
     def test_validate(self):
-        """Test that the Table element validates against the schema"""
-        tables_xml = etree.fromstring(self.test_element.to_xml(skip_empty=True, encoding=str))  # nosec B320
-        vosi_tables_schema.assertValid(tables_xml)
+        """Test validating a Table against the VOSI Tables schema"""
+        table_xml = etree.fromstring(self.test_element.to_xml(skip_empty=True, encoding=str))  # nosec B320
+        vosi_tables_schema.assertValid(table_xml)
 
 
-class TestVOSITableSet(VOModelTestBase.VOModelTestCase):
+class TestVOSITableSet(TestCase):
     """Test the TableSet element model as specified in VOSI Tables"""
 
     test_xml = (
-        "<vosi:tableset "
-        "xmlns:vosi='http://www.ivoa.net/xml/VOSITables/v1.0' "
-        "xmlns:vr='http://www.ivoa.net/xml/VOResource/v1.0' "
-        "xmlns:vs='http://www.ivoa.net/xml/VODataService/v1.1' "
-        "xmlns:xsd='http://www.w3.org/2001/XMLSchema' "
-        "xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>"
+        f"<vosi:tableset {VOSIT_TABLES_HEADER}>"
         "<schema>"
         "<name>tap_schema</name>"
         "<description>schema information for TAP services</description>"
@@ -137,17 +152,42 @@ class TestVOSITableSet(VOModelTestBase.VOModelTestCase):
         ]
     )
 
-    base_model = VOSITableSet
-
     def test_vositableset_ns(self):
         """Test that the TableSet is specifically namespaced to VOSI"""
-        vosi_element = self.base_model.from_xml(self.test_xml)
+        vosi_element = VOSITableSet.from_xml(self.test_xml)
         self.assertEqual(vosi_element.__xml_ns__, "vosi")
 
         vosi_xml = vosi_element.to_xml(skip_empty=True, encoding=str)
         self.assertIn("<vosi:tableset", vosi_xml)
 
+    def test_read_from_xml(self):
+        """Test reading a TableSet from XML"""
+        tableset = VOSITableSet.from_xml(self.test_xml)
+        self.assertEqual(len(tableset.tableset_schema), 1)
+        self.assertEqual(tableset.tableset_schema[0].schema_name, "tap_schema")
+        self.assertEqual(tableset.tableset_schema[0].description, "schema information for TAP services")
+        self.assertEqual(len(tableset.tableset_schema[0].table), 2)
+        self.assertEqual(tableset.tableset_schema[0].table[0].table_name, "tap_schema.schemas")
+        self.assertEqual(
+            tableset.tableset_schema[0].table[0].description,
+            "description of schemas in this dataset",
+        )
+        self.assertEqual(tableset.tableset_schema[0].table[1].table_name, "tap_schema.tables")
+        self.assertEqual(
+            tableset.tableset_schema[0].table[1].description,
+            "description of tables in this dataset",
+        )
+
+    def test_write_to_xml(self):
+        """Test writing a TableSet to XML"""
+
+        tableset_xml = self.test_element.to_xml()
+        self.assertEqual(
+            canonicalize(tableset_xml, strip_text=True),
+            canonicalize(self.test_xml, strip_text=True),
+        )
+
     def test_validate(self):
-        """Test that the TableSet element validates against the schema"""
-        tableset_xml = etree.fromstring(self.test_element.to_xml(skip_empty=True, encoding=str))  # nosec B320
+        """Test the tableset element validates against the schema"""
+        tableset_xml = etree.fromstring(self.test_element.to_xml(skip_empty=True, encoding=str))
         vosi_tables_schema.assertValid(tableset_xml)

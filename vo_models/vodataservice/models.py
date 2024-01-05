@@ -115,41 +115,6 @@ class TableParam(BaseXmlModel, ns="", tag="column"):
         return value
 
 
-class _TableName(RootXmlModel[str], tag="name"):
-    """Element containing a table name
-
-    Note: used internally to avoid namespacing issues with pydantic-xml
-    """
-
-
-class _TableTitle(RootXmlModel[str], tag="title"):
-    """Element containing a table title
-
-    Note: used internally to avoid namespacing issues with pydantic-xml
-    """
-
-
-class _TableDesc(RootXmlModel[str], tag="description"):
-    """Element containing a table description
-
-    Note: used internally to avoid namespacing issues with pydantic-xml
-    """
-
-
-class _TableUtype(RootXmlModel[str], tag="utype"):
-    """Element containing a table utype
-
-    Note: used internally to avoid namespacing issues with pydantic-xml
-    """
-
-
-class _TableNRows(RootXmlModel[int], tag="nrows"):
-    """Element containing an integer describing the number of rows in a table
-
-    Note: used internally to avoid namespacing issues with pydantic-xml
-    """
-
-
 class Table(BaseXmlModel, tag="table", ns="", skip_empty=True):
     """A model representing a single table element.
 
@@ -162,11 +127,11 @@ class Table(BaseXmlModel, tag="table", ns="", skip_empty=True):
 
     table_type: Optional[str] = attr(name="type", default=None)
 
-    table_name: _TableName = element(tag="name", ns="")
-    title: Optional[_TableTitle] = element(tag="title", ns="", default=None)
-    description: Optional[_TableDesc] = element(tag="description", ns="", default=None)
-    utype: Optional[_TableUtype] = element(tag="utype", ns="", default=None)
-    nrows: Optional[_TableNRows] = element(tag="nrows", gte=0, ns="", default=None)
+    table_name: str = element(tag="name", ns="")
+    title: Optional[str] = element(tag="title", ns="", default=None)
+    description: Optional[str] = element(tag="description", ns="", default=None)
+    utype: Optional[str] = element(tag="utype", ns="", default=None)
+    nrows: Optional[int] = element(tag="nrows", gte=0, ns="", default=None)
     column: Optional[list[TableParam]] = element(tag="column", ns="", default=None)
     foreign_key: Optional[list[ForeignKey]] = element(tag="foreignKey", ns="", default=None)
 
@@ -180,10 +145,10 @@ class Table(BaseXmlModel, tag="table", ns="", skip_empty=True):
     @field_validator("column", "foreign_key", mode="before")
     def validate_lists(cls, value):
         """If we have a single column or foreign_key, make it a list"""
-        if not isinstance(value, list):
-            value = [value]
+        if value:
+            if not isinstance(value, list):
+                value = [value]
         return value
-
 
 
 class TableSchema(BaseXmlModel, tag="schema", ns="", skip_empty=True):
