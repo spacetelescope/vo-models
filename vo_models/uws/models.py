@@ -1,7 +1,6 @@
 """UWS Job Schema using Pydantic-XML models"""
 from typing import Dict, Generic, Optional, TypeVar
 
-from pydantic import field_validator
 from pydantic_xml import BaseXmlModel, attr, element
 
 from vo_models.uws.types import ErrorType, ExecutionPhase, UWSVersion
@@ -18,43 +17,39 @@ NSMAP = {
 # pylint: disable=invalid-name
 ParametersType = TypeVar("ParametersType")
 
+
 class Parameter(BaseXmlModel, tag="parameter", ns="uws", nsmap=NSMAP):
     """A UWS Job parameter
 
-    The list of input parameters to the job - if the job description language does not naturally have
-    parameters, then this list should contain one element which is the content of the original POST that created the
-    job.
+    Parameters:
+        value (str, int, float, bool, bytes):
+            (content) - the value of the parameter.
+        by_reference (bool):
+            (attr) - If this attribute is true then the content of the parameter represents a URL to retrieve the
+            actual parameter value.
+        id (str):
+            (attr) - The identifier of the parameter.
+        is_post (bool):
+            (attr) - Undocumented.
 
-    Attributes:
-    byReference (bool): If this attribute is true then the content of the parameter represents a URL to retrieve the
-                        actual parameter value.
-                        It is up to the implementation to decide if a parameter value cannot be returned directly as
-                        the content - the basic rule is that the representation of the parameter must allow the whole
-                        job element to be valid XML. If this cannot be achieved then the parameter value must be
-                        returned by reference.
-    id (str):           The identifier of the parameter.
-    isPost (bool):      Undocumented.
 
-    Content:
-    value (str): the value of the parameter.
     """
 
-    value: Optional[str] = None
+    value: Optional[str | int | float | bool | bytes] = None  # only primitive types are allowed
 
     by_reference: Optional[bool] = attr(name="byReference", default=False)
     id: str = attr()
     is_post: Optional[bool] = attr(name="isPost", default=False)
 
-    @field_validator("value", mode="before")
-    def validate_value(cls, value):  # pylint: disable=no-self-argument
-        """Coerces value to a string"""
-        # TODO: Find better way to handle arbitrary types
-        if value is not None:
-            return str(value)
-
 
 class Parameters(BaseXmlModel, tag="parameters", ns="uws", nsmap=NSMAP):
-    """An abstract holder of UWS parameters."""
+    """
+    An abstract holder of UWS parameters.
+
+    The list of input parameters to the job - if the job description language does not naturally have
+    parameters, then this list should contain one element which is the content of the original POST that created the
+    job.
+    """
 
     def __init__(__pydantic_self__, **data) -> None:  # pylint: disable=no-self-argument
         # during init -- especially if reading from xml -- we may not get the parameters in the order
@@ -71,15 +66,18 @@ class Parameters(BaseXmlModel, tag="parameters", ns="uws", nsmap=NSMAP):
 
 
 class ErrorSummary(BaseXmlModel, tag="errorSummary", ns="uws", nsmap=NSMAP):
-    """A short summary of an error - a fuller representation of the
-        error may be retrieved from /{jobs}/{job-id}/error
+    """A short summary of an error
 
-    Elements:
-    message (str):  a short description of the error.
+    A fuller representation of the error may be retrieved from /{jobs}/{job-id}/error
 
-    Attributes:
-    type (ErrorType):   Characterization of the type of the error
-    has_detail (bool):  If true then there is a more detailed error message available at /{jobs}/{job-id}/error
+    Parameters:
+        message (str):
+            (element) - A short description of the error.
+
+        type (ErrorType):
+            (attr) - Characterization of the type of the error
+        has_detail (bool):
+            (attr) - If true then there is a more detailed error message available at /{jobs}/{job-id}/error
     """
 
     message: str = element(default="")
@@ -91,12 +89,13 @@ class ErrorSummary(BaseXmlModel, tag="errorSummary", ns="uws", nsmap=NSMAP):
 class ResultReference(BaseXmlModel, tag="result", ns="uws", skip_empty=True, nsmap=NSMAP):
     """A reference to a UWS result.
 
-    Attributes:
-    id (str):           The identifier of the result.
-    type (XlinkType):   The xlink type of the result.
-    href (str):         The link to the result.
-    size (int):         The size of the result in bytes.
-    mime_type (str):    The MIME type of the result.
+    Parameters:
+        id (str): (attr)           The identifier of the result.
+        type (XlinkType): (attr)   The xlink type of the result.
+        href (str): (attr)         The link to the result.
+        size (int): (attr)         The size of the result in bytes.
+        mime_type (str): (attr)    The MIME type of the result.
+        any_attrs (dict): (attr)   Any other attributes of the result.
     """
 
     id: str = attr()
@@ -114,17 +113,35 @@ class ResultReference(BaseXmlModel, tag="result", ns="uws", skip_empty=True, nsm
 class Results(BaseXmlModel, tag="results", ns="uws", nsmap=NSMAP):
     """The element returned for /{jobs}/{job-id}/results
 
-    Elements:
-    result list[ResultReference]: a list of references to UWS results.
+    Parameters:
+        results (list[ResultReference]): (element) A list of references to UWS results.
     """
 
     results: Optional[list[ResultReference]] = element(name="result", default_factory=list)
 
 
 class ShortJobDescription(BaseXmlModel, tag="jobref", ns="uws", nsmap=NSMAP):
-    """A short description of a job."""
+    """A short description of a job.
 
-    # pylint: disable = no-self-argument
+    Parameters:
+        phase (ExecutionPhase):
+            (element) - The execution phase - returned at /{jobs}/{job-id}/phase
+        run_id (str):
+            (element) - A client supplied identifier - the UWS system does nothing other than to return it as part of
+            the description of the job
+        owner_id (str):
+            (element) - The owner (creator) of the job - this should be expressed as a string that can be parsed in
+            accordance with IVOA security standards.
+        creation_time (datetime):
+            (element) - The instant at which the job was created.
+
+        job_id (str):
+            (attr) - The identifier for the job.
+        type (XlinkType):
+            (attr) - The xlink reference type of the job.
+        href (str):
+            (attr) - The link to the job.
+    """
 
     phase: ExecutionPhase = element()
     run_id: Optional[str] = element(tag="runId", default=None)
@@ -141,14 +158,15 @@ class Jobs(BaseXmlModel, tag="jobs", ns="uws", nsmap=NSMAP):
 
     The list presented may be affected by the current security context and may be filtered
 
-    Elements:
-    job list(Job): a list of UWS Jobs.
+    Parameters:
+        jobref (Job): (element) a list of UWS Jobs.
 
-    Attributes:
-    version (UWSVersion):   The version of the UWS standard that the server complies with.
-                            Note that this attribute is actually required by the 1.1 specification - however remains
-                            optional in the schema for backwards compatibility.
-                            It will be formally required in the next major revision.
+        version (UWSVersion):
+            (attr) - The version of the UWS standard that the server complies with.
+
+                    Note that this attribute is actually required by the 1.1 specification - however remains
+                    optional in the schema for backwards compatibility.
+                    It will be formally required in the next major revision.
     """
 
     jobref: Optional[list[ShortJobDescription]] = element(name="jobref", default_factory=list)
@@ -156,49 +174,57 @@ class Jobs(BaseXmlModel, tag="jobs", ns="uws", nsmap=NSMAP):
     version: Optional[UWSVersion] = attr(default=UWSVersion.V1_1)
 
 
-# pylint: disable=invalid-name
-ParametersType = TypeVar("ParametersType", bound=Parameters)
-
-
 class JobSummary(BaseXmlModel, Generic[ParametersType], tag="job", ns="uws", nsmap=NSMAP):
     """The complete representation of the state of a job
 
-    Elements:
-    job_id (JobIdentifier, str):    The identifier for the job.
-    run_id (str):                   This is a client supplied identifier - the UWS system does nothing other than to
-                                    return it as part of the description of the job
-    owner_id (str):                 The owner (creator) of the job - this should be expressed as a string that can be
-                                    parsed in accordance with IVOA security standards. If there was no authenticated
-                                    job creator then this should be set to NULL.
-    phase (ExecutionPhase):         The execution phase - returned at /{jobs}/{job-id}/phase
-    quote (datetime):               A Quote predicts when the job is likely to complete - returned at
-                                    /{jobs}/{job-id}/quote
-                                    "don't know" is encoded by setting to the XML null value xsi:nil="true"
-    creation_time (datetime):       The instant at which the job was created.
-                                    Note that the version 1.1 of the specification requires that this element
-                                    be present.
-                                    It is optional only in versions 1.x of the schema for backwards compatibility.
-                                    2.0+ versions of the schema will make this formally mandatory in an XML sense.
-    start_time (datetime):          The instant at which the job started execution.
-    end_time (datetime):            The instant at which the job finished execution.
-    execution_duration (timedelta): The duration (in seconds) for which the job should be allowed to run - a value of 0
-                                    is intended to mean unlimited - returned at /{jobs}/{job-id}/executionduration
-    destruction (datetime):         The time at which the whole job + records + results will be destroyed.
-                                    Returned at /{jobs}/{job-id}/destruction
-    parameters (Parameters):        The parameters to the job (where appropriate) can also be retrieved at
-                                    /{jobs}/{job-id}/parameters
-    results (Results):              The results for the job - can also be retrieved at /{jobs}/{job-id}/results
-    error_summary (ErrorSummary):   A short summary of an error
-    job_info (Any):                 This is arbitrary information that can be added to the job description by the UWS
-                                    implementation.
+    Parameters:
+        job_id (JobIdentifier, str):
+            (element) - The identifier for the job.
+        run_id (str):
+            (element) - This is a client supplied identifier - the UWS system does nothing other than to return it
+            as part of the description of the job
+        owner_id (str):
+            (element) - The owner (creator) of the job - this should be expressed as a string that can be
+            parsed in accordance with IVOA security standards.
 
-    Attributes:
-    version: (UWSVersion)   Note that this attribute is actually required by the 1.1 specification - however remains
-                            optional in the schema for backwards compatibility.
-                            It will be formally required in the next major revision.
+                        If there was no authenticated job creator then this should be set to NULL.
+        phase (ExecutionPhase):
+            (element) - The execution phase.
+        quote (UTCTimestamp):
+            (element) - A Quote predicts when the job is likely to complete.
+        creation_time (UTCTimestamp):
+            (element) - The instant at which the job was created.
+
+                        Note that the version 1.1 of the specification requires that this element
+                        be present. It is optional only in versions 1.x of the schema for backwards compatibility.
+                        2.0+ versions of the schema will make this formally mandatory in an XML sense.
+        start_time (UTCTimestamp):
+            (element) - The instant at which the job started execution.
+        end_time (UTCTimestamp):
+            (element) - The instant at which the job finished execution.
+        execution_duration (int):
+            (element) - The duration (in seconds) for which the job should be allowed to run.
+
+                        A value of 0 is intended to mean unlimited.
+        destruction (UTCTimestamp):
+            (element) - The time at which the whole job + records + results will be destroyed.
+        parameters (Parameters):
+            (element) - The parameters to the job (where appropriate)
+        results (Results):
+            (element) - The results for the job
+        error_summary (ErrorSummary):
+            (element) - A short summary of an error
+        job_info (list[str]):
+            (element) - This is arbitrary information that can be added to the job description by the UWS
+            implementation.
+
+        version: (UWSVersion)
+            (attr) - The version of the UWS standard that the server complies with.
+
+                    Note that this attribute is actually required by the 1.1 specification - however remains optional
+                    in the schema for backwards compatibility. It will be formally required in the next major revision.
     """
 
-    # pylint: disable = no-self-argument
     # pylint: disable = too-few-public-methods
 
     job_id: str = element(tag="jobId")

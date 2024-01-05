@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vo-models"
-version = "0.2.0"
+version = "0.2.2"
 authors = [
     {name = "Joshua Fraustro", email="jfraustro@stsci.edu"},
     {name = "MAST Archive Developers", email="archive@stsci.edu"}
@@ -34,12 +34,13 @@ keywords = [
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-cov"]
-dev = ["pylint"]
+dev = ["pylint", "ruff", "pre-commit"]
+docs = ["sphinx", "sphinx_design", "furo", "sphinx-copybutton","toml"]
 
 [project.urls]
 Homepage = "https://github.com/spacetelescope/vo-models"
 Issues = "https://github.com/spacetelescope/vo-models/issues"
 
-[tool.setuptools]
-packages = ["vo_models"]
-
+[tool.ruff]
+line-length = 120
+extend-exclude = ["docs/conf.py"]
