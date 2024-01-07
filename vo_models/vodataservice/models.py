@@ -6,7 +6,7 @@ from typing import Any, Optional
 from xml.sax.saxutils import escape
 
 from pydantic import field_validator
-from pydantic_xml import BaseXmlModel, RootXmlModel, attr, element
+from pydantic_xml import BaseXmlModel, attr, element
 
 from vo_models.adql.misc import ADQL_SQL_KEYWORDS
 
@@ -23,14 +23,35 @@ NSMAP = {
 
 
 class FKColumn(BaseXmlModel, tag="fkColumn"):
-    """An individual foreign key column."""
+    """A pair of columns that are used to join two tables.
+
+    Parameters:
+        from_column (str):
+            (elem) - The unqualified name of the column from the current table.
+        target_column (str):
+            (elem) - The unqualified name of the column from the target table.
+
+    """
 
     from_column: str = element(tag="fromColumn")
     target_column: str = element(tag="targetColumn")
 
 
 class ForeignKey(BaseXmlModel, tag="foreignKey"):
-    """An element containing one or more foreign key columns."""
+    """A description of the mapping a foreign key -- a set of columns from one table -- to columns in another table.
+
+    Parameters:
+        target_table (str):
+            (elem) - The fully qualified name (including catalogue and schema, as applicable) of the table that can
+            be joined with the table containing this foreign key.
+        fk_column (list[FKColumn]):
+            (elem) - A pair of column names, one from this table and one from the target table that should be used to
+            join the tables in a query.
+        description (str | None):
+            (elem) - A free-text description of what this key points to and what the relationship means.
+        utype (str | None):
+            (elem) - An identifier for a concept in a data model that the association enabled by this key represents.
+    """
 
     target_table: str = element(tag="targetTable")
     fk_column: list[FKColumn] = element(tag="fkColumn")
@@ -60,7 +81,16 @@ class ForeignKey(BaseXmlModel, tag="foreignKey"):
 
 
 class DataType(BaseXmlModel, tag="dataType", nsmap={"xsi": "http://www.w3.org/2001/XMLSchema-instance"}):
-    """A simple element containing a column datatype"""
+    """A type of data contained in the column.
+
+    Parameters:
+        type (str | None):
+            (attr) - A type of data contained in the parameter.
+        arraysize (str | None):
+            (attr) - The shape of the array that constitutes the value.
+        value (str):
+            (text) - The name of the data type (e.g. 'char', 'int', 'double').
+    """
 
     type: Optional[str] = attr(name="type", ns="xsi", default="vs:VOTableType")
     arraysize: Optional[str] = attr(name="arraysize", default=None)
@@ -68,9 +98,26 @@ class DataType(BaseXmlModel, tag="dataType", nsmap={"xsi": "http://www.w3.org/20
 
 
 class TableParam(BaseXmlModel, ns="", tag="column"):
-    """A column element as returned from TAP_SCHEMA.columns.
+    """A description of a table column.
 
-    'TableParam' is the IVOA standard name for this element, but it's basically a column.
+    Parameters:
+        column_name (str):
+            (elem) - The name of the parameter or column.
+        description (str | None):
+            (elem) - A free-text description of a parameter's or column's contents.
+        unit (str | None):
+            (elem) - The unit associated with the values in the parameter or column.
+        ucd (str | None):
+            (elem) - The name of a unified content descriptor that describes the scientific content of the parameter.
+        utype (str | None):
+            (elem) - An identifier for a concept in a data model that the data in this schema represent.
+        xtype (str | None):
+            (elem) - The xtype of the column.
+        datatype (DataType | None):
+            (elem) - A type of data contained in the column
+        flag (list[str] | None):
+            (elem) -A keyword representing traits of the column. Recognized values include
+            “indexed”, “primary”, and “nullable”.
     """
 
     column_name: str = element(tag="name")
@@ -118,11 +165,32 @@ class TableParam(BaseXmlModel, ns="", tag="column"):
 class Table(BaseXmlModel, tag="table", ns="", skip_empty=True):
     """A model representing a single table element.
 
-    The private classes _TableName, _TableTitle, _TableDesc, _TableUtype, and _TableNRows
-    are used to create elements that do not inherit the default namespace from their parent.
-    This is necessary when creating a VOSITable, which has a default namespace of 'vosi',
-    but needs child elements without that prefix, since the elements below are part of the
-    VODataservice / DALI standard.
+    Parameters:
+        table_type (str | None):
+            (attr) - A name for the role this table plays.
+
+                Recognized values include “output”, indicating this table is output from a query;
+                “base_table”, indicating a table whose records represent the main subjects of its schema;
+                and “view”, indicating that the table represents a useful combination or subset of other tables.
+                Other values are allowed.
+        table_name (str):
+            (elem) - The fully qualified name of the table.
+
+                This name should include all catalogue or schema prefixes needed to sufficiently uniquely
+                distinguish it in a query.
+        title (str | None):
+            (elem) - A descriptive, human-interpretable name for the table.
+        description (str | None):
+            (elem) - A free-text description of the table's contents
+        utype (str | None):
+            (elem) - An identifier for a concept in a data model that the data in this table represent.
+        nrows (int | None):
+            (elem) - The approximate size of the table in rows.
+        column (list[TableParam] | None):
+            (elem) - A description of a table column.
+        foreign_key (list[ForeignKey] | None):
+            (elem) - A description of a foreign keys, one or more columns from the current table that can be used to
+            join with another table.
     """
 
     table_type: Optional[str] = attr(name="type", default=None)
@@ -152,11 +220,30 @@ class Table(BaseXmlModel, tag="table", ns="", skip_empty=True):
 
 
 class TableSchema(BaseXmlModel, tag="schema", ns="", skip_empty=True):
-    """A model representing a table schema."""
+    """A detailed description of a logically related group of tables.
+
+    Parameters:
+        schema_name (str):
+            (elem) - A name for the group of tables.
+
+                If no title is given, this name can be used for display purposes. If there is no appropriate logical
+                name associated with this group, the name should be explicitly set to “default”.
+        title (str | None):
+            (elem) - A descriptive, human-interpretable name for the group of tables.
+        description (str | None):
+            (elem) - A free text description of the group of tables that should explain in general how all of the tables
+            in the group are related.
+        utype (str | None):
+            (elem) - An identifier for a concept in a data model that the data in this schema as a whole represent.
+        table (list[Table] | None):
+            (elem) - A description of a table.
+
+    """
 
     schema_name: str = element(tag="name", default="default")
     title: Optional[str] = element(tag="title", default=None)
     description: Optional[str] = element(tag="description", default=None)
+    utype: Optional[str] = element(tag="utype", default=None)
     table: Optional[list[Table]] = element(tag="table", default=None)
 
     def __init__(__pydantic_self__, **data: Any) -> None:
@@ -175,7 +262,19 @@ class TableSchema(BaseXmlModel, tag="schema", ns="", skip_empty=True):
 
 
 class TableSet(BaseXmlModel, tag="tableset", skip_empty=True):
-    """A model representing a tableset, a list of tables."""
+    """A description of the tables that are accessible through this service.
+
+    Each schema name must be unique within a tableset.
+
+    Parameters:
+        tableset_schema (list[TableSchema]):
+            (elem) - A named description of a group of logically related tables.
+
+                The name given by the “name” child element must be unique within this TableSet instance.
+                If there is only one schema in this set and/or there is no locally appropriate name to provide,
+                the name can be set to “default”.
+
+    """
 
     tableset_schema: list[TableSchema] = element(tag="schema")
 
