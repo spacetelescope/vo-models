@@ -63,7 +63,10 @@ data_type_xml = """
 
 # [TableParam-model-start]
 table_param = TableParam(
-    column_name="example_column", description="Example column description", datatype=data_type, flag=["std", "indexed"]
+    column_name="example_column",
+    description="Example column description",
+    datatype=data_type,
+    flag=["std", "indexed"],
 )
 # [TableParam-model-end]
 

@@ -1,7 +1,7 @@
 .. _vodataservice:
 
 VODataService
-------------
+-------------
 
 VODataService is an IVOA XML encoding standard for data collections and services that access them. It is an extension of the VOResource standard.
 
