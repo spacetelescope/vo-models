@@ -10,3 +10,4 @@ The following IVOA protocols are currently supported:
 
     uws
     vosi
+    vodataservice

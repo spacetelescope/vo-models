@@ -17,6 +17,7 @@ The following IVOA protocols are currently supported:
 - **UWS (Universal Worker Service) version 1.1**
 - **VOSI (IVOA Support Interfaces) version 1.1**
   - VOSI Availability
+  - VOSI Tables
 
 You can read more about using these models in our documentation: https://vo-models.readthedocs.io/
 
