@@ -130,8 +130,30 @@ class TableParam(BaseXmlModel, ns="", tag="column"):
     flag: Optional[list[str]] = element(tag="flag", default=None)
 
     def __init__(__pydantic_self__, **data: Any) -> None:
+        data["datatype"] = __pydantic_self__.__make_datatype_element(data)
         data["flag"] = __pydantic_self__.__make_flags(data)
         super().__init__(**data)
+
+    # pylint: disable=unused-private-member
+    def __make_datatype_element(self, col_data) -> DataType:
+        """Helper to make datatype element from column data when first created.
+
+        For TAP_SCHEMA.columns tables that record datatype, arraysize as separate columns
+        """
+        if col_data.get("datatype", None):
+            if isinstance(col_data["datatype"], DataType):
+                return col_data["datatype"]
+
+            datatype_value = col_data.get("datatype", None)
+            datatype_arraysize = col_data.get("arraysize", None)
+
+            datatype_elem = DataType(
+                arraysize=datatype_arraysize,
+                value=datatype_value,
+            )
+            return datatype_elem
+        # If no datatype provided, default to char(*)
+        return DataType(value="char", arraysize="*")
 
     def __make_flags(self, col_data) -> list[str]:
         """Set up the flag elements when creating the column.
