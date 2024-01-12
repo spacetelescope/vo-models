@@ -113,7 +113,7 @@ class Results(BaseXmlModel, tag="results", ns="uws", nsmap=NSMAP):
     """The element returned for /{jobs}/{job-id}/results
 
     Parameters:
-        results (list[ResultReference]): (element) A list of references to UWS results.
+        results (list[ResultReference] | None): (element) A list of references to UWS results.
     """
 
     results: Optional[list[ResultReference]] = element(name="result", default_factory=list)
@@ -236,7 +236,7 @@ class JobSummary(BaseXmlModel, Generic[ParametersType], tag="job", ns="uws", nsm
     execution_duration: Optional[int] = element(tag="executionDuration", default=0)
     destruction: Optional[UTCTimestamp] = element(tag="destruction", default=None, nillable=True)
     parameters: Optional[ParametersType] = element(tag="parameters", default=None)
-    results: Optional[Results] = element(tag="results", default=None)
+    results: Optional[Results] = element(tag="results", default=Results())
     error_summary: Optional[ErrorSummary] = element(tag="errorSummary", default=None)
     job_info: Optional[list[str]] = element(tag="jobInfo", default=[])
 
