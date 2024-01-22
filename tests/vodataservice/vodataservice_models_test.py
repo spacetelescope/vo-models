@@ -1,6 +1,7 @@
 """Tests for VODataService models
 
 # TODO: This is an incomplete spec, covering only elements needed for VOSITables
+# https://github.com/spacetelescope/vo-models/issues/17
 """
 
 from unittest import TestCase

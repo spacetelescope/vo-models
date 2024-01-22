@@ -1,6 +1,7 @@
 """Pydantic-xml models for VODataService types
 
 TODO: This is an incomplete spec, covering only elements needed for VOSITables
+https://github.com/spacetelescope/vo-models/issues/17
 """
 from typing import Any, Optional
 from xml.sax.saxutils import escape
