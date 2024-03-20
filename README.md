@@ -1,6 +1,6 @@
 # vo-models
 
-`vo-models` an open-source project to provide Python models for [IVOA](https://www.ivoa.net/) service protocols.
+`vo-models` is an open-source project to provide Python models for [IVOA](https://www.ivoa.net/) service protocols.
 
 The project is designed to be used by IVOA members, service implementors, and developers to help facilitate the development of IVOA-compliant services and clients.
 
@@ -8,7 +8,7 @@ The project is designed to be used by IVOA members, service implementors, and de
 
 - **Pydantic-xml Models:** The project includes Python models for IVOA protocols, using [pydantic-xml](https://github.com/dapper91/pydantic-xml). Based on [Pydantic](https://docs.pydantic.dev/latest/), these models describe transactions for an IVOA protocol, such as UWS, and feature automatic validation, parsing and serialization of XML data for use with Python clients and web frameworks.
 
-- **Expandability:** The project is designed with future expansion in mind. Plans include extending the schema and models to cover other IVOA standards.
+- **Expandability:** The project is designed with future expansion in mind. Plans include extending the schema and models to cover other IVOA standards and future versions of existing standards where possible.
 
 ## Protocols
 
@@ -17,6 +17,15 @@ The following IVOA protocols are currently supported:
 - **UWS (Universal Worker Service) version 1.1**
 - **VOSI (IVOA Support Interfaces) version 1.1**
   - VOSI Availability
+  - VOSI Tables
+- **VODataService version 1.2 (limited)**
+  - DataType
+  - FKColumn
+  - ForeignKey
+  - Table
+  - TableParam
+  - TableSchema
+  - TableSet
 
 You can read more about using these models in our documentation: https://vo-models.readthedocs.io/
 
@@ -47,12 +56,6 @@ For active development, install the project in development mode:
 ```bash
 pip install -e .[dev,test]
 ```
-
-### Pydantic-XML Models
-
-Python models using [pydantic-xml](https://github.com/dapper91/pydantic-xml), a library based on [Pydantic](https://docs.pydantic.dev/latest/), are provided in the `vo/models/xml` directory.
-
-These models can be used to parse and validate XML data into Python objects, as well as serialize Python objects into XML data. These models can be used with any Python web framework, but are particularly useful when used libraries that leverage the power of Pydantic, such as [FastAPI](https://fastapi.tiangolo.com/).
 
 ### Contributing
 

@@ -6,7 +6,7 @@ Quickstart
 Basic Usage
 -----------
 
-Working with ``vo-models`` classes is easy. They can be created and modified like any Pydantic model.
+``vo-models`` objects can be created and modified like any Python class or Pydantic model.
 
 The following example creates a UWS :ref:`pages/protocols/uws:shortjobdescription` model using keyword arguments and updates the phase:
 
