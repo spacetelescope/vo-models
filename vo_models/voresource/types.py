@@ -55,7 +55,7 @@ class UTCTimestamp(datetime):
         """Validator that expands the pydantic datetime model to include Z UTC identifiers
 
         Args:
-            value (str): datetime string. Comes from either a user's POST (destruction) or from the cache
+            value: datetime string. Comes from either a user's POST (destruction) or from the cache
 
         Returns:
             UTCTimestamp: VO-compliant datetime subclass
@@ -90,8 +90,8 @@ class UTCTimestamp(datetime):
         """Overwrites the datetime isoformat output to use a Z UTC indicator
 
         Parameters:
-            sep (str): Separator between date and time (default: 'T')
-            timespec (str): Resolution of time to include (default: 'milliseconds')
+            sep: Separator between date and time (default: 'T')
+            timespec: Resolution of time to include (default: 'milliseconds')
 
         Returns:
             str: VO-compliant ISO-8601 datetime string

@@ -17,16 +17,16 @@ class Availability(BaseXmlModel, tag="availability", nsmap=NSMAP, skip_empty=Tru
     """VOSI Availability complex type.
 
     Parameters:
-        available (bool):
+        available:
             (element) - Whether the service is currently available.
-        up_since (UTCTimestamp):
+        up_since:
             (element) - The instant at which the service last became available.
-        down_at (UTCTimestamp):
+        down_at:
             (element) - The instant at which the service is next scheduled to become unavailable.
-        back_at (UTCTimestamp):
+        back_at:
             (element) - The instant at which the service is scheduled to become available again after a period
             of unavailability.
-        note (Optional[list[str]]):
+        note:
             (element) - A textual note concerning availability.
     """
 

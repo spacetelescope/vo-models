@@ -27,9 +27,9 @@ class FKColumn(BaseXmlModel, tag="fkColumn"):
     """A pair of columns that are used to join two tables.
 
     Parameters:
-        from_column (str):
+        from_column:
             (elem) - The unqualified name of the column from the current table.
-        target_column (str):
+        target_column:
             (elem) - The unqualified name of the column from the target table.
 
     """
@@ -42,15 +42,15 @@ class ForeignKey(BaseXmlModel, tag="foreignKey"):
     """A description of the mapping a foreign key -- a set of columns from one table -- to columns in another table.
 
     Parameters:
-        target_table (str):
+        target_table:
             (elem) - The fully qualified name (including catalogue and schema, as applicable) of the table that can
             be joined with the table containing this foreign key.
-        fk_column (list[FKColumn]):
+        fk_column:
             (elem) - A pair of column names, one from this table and one from the target table that should be used to
             join the tables in a query.
-        description (str | None):
+        description:
             (elem) - A free-text description of what this key points to and what the relationship means.
-        utype (str | None):
+        utype:
             (elem) - An identifier for a concept in a data model that the association enabled by this key represents.
     """
 
@@ -85,11 +85,11 @@ class DataType(BaseXmlModel, tag="dataType", nsmap={"xsi": "http://www.w3.org/20
     """A type of data contained in the column.
 
     Parameters:
-        type (str | None):
+        type:
             (attr) - A type of data contained in the parameter.
-        arraysize (str | None):
+        arraysize:
             (attr) - The shape of the array that constitutes the value.
-        value (str):
+        value:
             (text) - The name of the data type (e.g. 'char', 'int', 'double').
     """
 
@@ -102,21 +102,21 @@ class TableParam(BaseXmlModel, ns="", tag="column"):
     """A description of a table column.
 
     Parameters:
-        column_name (str):
+        column_name:
             (elem) - The name of the parameter or column.
-        description (str | None):
+        description:
             (elem) - A free-text description of a parameter's or column's contents.
-        unit (str | None):
+        unit:
             (elem) - The unit associated with the values in the parameter or column.
-        ucd (str | None):
+        ucd:
             (elem) - The name of a unified content descriptor that describes the scientific content of the parameter.
-        utype (str | None):
+        utype:
             (elem) - An identifier for a concept in a data model that the data in this schema represent.
-        xtype (str | None):
+        xtype:
             (elem) - The xtype of the column.
-        datatype (DataType | None):
+        datatype:
             (elem) - A type of data contained in the column
-        flag (list[str] | None):
+        flag:
             (elem) -A keyword representing traits of the column. Recognized values include
             “indexed”, “primary”, and “nullable”.
     """
@@ -172,13 +172,15 @@ class TableParam(BaseXmlModel, ns="", tag="column"):
         """Escape the column name if it is an ADQL reserved word
 
         See: https://www.ivoa.net/documents/ADQL/20180112/PR-ADQL-2.1-20180112.html#tth_sEc2.1.3
+
+        value: - The column name to escape.
         """
         if value.upper() in ADQL_SQL_KEYWORDS:
             value = f'"{value}"'
         return value
 
     @field_validator("description")
-    def validate_description(cls, value):
+    def validate_description(cls, value: str):
         """Sanitize bad XML values in the description"""
         if value:
             value = escape(str(value))
@@ -189,29 +191,29 @@ class Table(BaseXmlModel, tag="table", ns="", skip_empty=True):
     """A model representing a single table element.
 
     Parameters:
-        table_type (str | None):
+        table_type:
             (attr) - A name for the role this table plays.
 
                 Recognized values include “output”, indicating this table is output from a query;
                 “base_table”, indicating a table whose records represent the main subjects of its schema;
                 and “view”, indicating that the table represents a useful combination or subset of other tables.
                 Other values are allowed.
-        table_name (str):
+        table_name:
             (elem) - The fully qualified name of the table.
 
                 This name should include all catalogue or schema prefixes needed to sufficiently uniquely
                 distinguish it in a query.
-        title (str | None):
+        title:
             (elem) - A descriptive, human-interpretable name for the table.
-        description (str | None):
+        description:
             (elem) - A free-text description of the table's contents
-        utype (str | None):
+        utype:
             (elem) - An identifier for a concept in a data model that the data in this table represent.
-        nrows (int | None):
+        nrows:
             (elem) - The approximate size of the table in rows.
-        column (list[TableParam] | None):
+        column:
             (elem) - A description of a table column.
-        foreign_key (list[ForeignKey] | None):
+        foreign_key:
             (elem) - A description of a foreign keys, one or more columns from the current table that can be used to
             join with another table.
     """
@@ -246,19 +248,19 @@ class TableSchema(BaseXmlModel, tag="schema", ns="", skip_empty=True):
     """A detailed description of a logically related group of tables.
 
     Parameters:
-        schema_name (str):
+        schema_name:
             (elem) - A name for the group of tables.
 
                 If no title is given, this name can be used for display purposes. If there is no appropriate logical
                 name associated with this group, the name should be explicitly set to “default”.
-        title (str | None):
+        title:
             (elem) - A descriptive, human-interpretable name for the group of tables.
-        description (str | None):
+        description:
             (elem) - A free text description of the group of tables that should explain in general how all of the tables
             in the group are related.
-        utype (str | None):
+        utype:
             (elem) - An identifier for a concept in a data model that the data in this schema as a whole represent.
-        table (list[Table] | None):
+        table:
             (elem) - A description of a table.
 
     """
@@ -290,7 +292,7 @@ class TableSet(BaseXmlModel, tag="tableset", skip_empty=True):
     Each schema name must be unique within a tableset.
 
     Parameters:
-        tableset_schema (list[TableSchema]):
+        tableset_schema:
             (elem) - A named description of a group of logically related tables.
 
                 The name given by the “name” child element must be unique within this TableSet instance.
