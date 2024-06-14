@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vo-models"
-version = "0.2.2"
+version = "0.3.0"
 authors = [
     {name = "Joshua Fraustro", email="jfraustro@stsci.edu"},
     {name = "MAST Archive Developers", email="archive@stsci.edu"}
@@ -26,10 +26,8 @@ classifiers = [
 ]
 keywords = [
     "ivoa",
-    "uws",
     "pydantic",
     "pydantic-xml",
-    "openapi",
     ]
 
 [project.optional-dependencies]

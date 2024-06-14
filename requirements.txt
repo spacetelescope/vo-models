@@ -213,9 +213,9 @@ pydantic-core==2.14.5 \
     --hash=sha256:fb2ed8b3fe4bf4506d6dab3b93b83bbc22237e230cba03866d561c3577517d18 \
     --hash=sha256:fe0a5a1025eb797752136ac8b4fa21aa891e3d74fd340f864ff982d649691867
     # via pydantic
-pydantic-xml[lxml]==2.6.0 \
-    --hash=sha256:2a7019dcfcf68b0136378e72efbe0747ec21f7ba16bfcaf6ab5a47dd1f2d68e9 \
-    --hash=sha256:8a88d0e8af20406eca06af20e57b1d2ccb7d1630c00f927e1f839629c0decb1e
+pydantic-xml[lxml]==2.7.0 \
+    --hash=sha256:6bb16cee3166482365b7def95416285d56b325041d995fbfa58979a06ff1d51c \
+    --hash=sha256:e336bca6e01984f5995ea197394bedff415a7d8449d0910a9647a1216990069c
     # via
     #   pydantic-xml
     #   vo-models (pyproject.toml)
