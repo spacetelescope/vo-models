@@ -4,12 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vo-models"
-version = "0.3.0"
+version = "0.3.1"
 authors = [
     {name = "Joshua Fraustro", email="jfraustro@stsci.edu"},
     {name = "MAST Archive Developers", email="archive@stsci.edu"}
 ]
-description = "Data models for IVOA protocols"
+description = "Pydantic data models for IVOA protocols"
 readme = "README.md"
 requires-python = ">=3.10"
 
