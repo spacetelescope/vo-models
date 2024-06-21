@@ -33,7 +33,7 @@ keywords = [
 [project.optional-dependencies]
 test = ["pytest", "pytest-cov"]
 dev = ["pylint", "ruff", "pre-commit"]
-docs = ["sphinx", "sphinx_design", "furo", "sphinx-copybutton","toml"]
+docs = ["sphinx", "sphinx_design", "furo", "sphinx-copybutton", "toml", "sphinx_autodoc_typehints"]
 
 [project.urls]
 Homepage = "https://github.com/spacetelescope/vo-models"
