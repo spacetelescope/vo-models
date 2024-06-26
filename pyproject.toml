@@ -11,7 +11,7 @@ authors = [
 ]
 description = "Pydantic data models for IVOA protocols"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 
 dependencies = [
     "pydantic-xml[lxml]>=2.6.0",

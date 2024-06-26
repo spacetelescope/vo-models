@@ -1,3 +1,8 @@
+
+## NOTE: Experimental branch
+
+This branch is an experimental branch for implementing the recommendations of the IVOA P3T group. It is not yet ready or recommended for general use.
+
 # vo-models
 
 `vo-models` is an open-source project to provide Python models for [IVOA](https://www.ivoa.net/) service protocols.

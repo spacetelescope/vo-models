@@ -20,7 +20,7 @@ PYPROJECT = toml.load(CONF_PATH)["project"]
 project = PYPROJECT["name"]
 release = PYPROJECT["version"]
 author = f"{PYPROJECT['authors'][0]['name']} <{PYPROJECT['authors'][0]['email']}>"
-copyright = "2023, Joshua Fraustro"
+copyright = "2024, Joshua Fraustro"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
