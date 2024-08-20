@@ -59,6 +59,9 @@ Represents a single parameter of a UWS job.
             :start-after: parameter-xml-start
             :end-before: parameter-xml-end
 
+For multi-valued attributes, use the type `vo_models.uws.models.MultiValuedParameter` instead of ``list[Parameter]``.
+This is equivalent to ``list[Parameter]`` but adds some special validation support required for multi-valued UWS job parameters.
+
 Parameters
 **********
 
