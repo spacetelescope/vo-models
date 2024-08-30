@@ -1,6 +1,7 @@
 """UWS Job Schema using Pydantic-XML models"""
 from typing import Dict, Generic, Optional, TypeVar
 
+from pydantic import ConfigDict
 from pydantic_xml import BaseXmlModel, attr, element
 
 from vo_models.uws.types import ErrorType, ExecutionPhase, UWSVersion
@@ -238,10 +239,7 @@ class JobSummary(BaseXmlModel, Generic[ParametersType], tag="job", ns="uws", nsm
 
     version: Optional[UWSVersion] = attr(default=UWSVersion.V1_1)
 
-    class Config:
-        """JobSummary pydantic config options"""
-
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class Job(JobSummary, tag="job"):
