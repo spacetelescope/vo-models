@@ -40,6 +40,9 @@ docs = ["sphinx", "sphinx_design", "furo", "sphinx-copybutton", "toml", "sphinx_
 Homepage = "https://github.com/spacetelescope/vo-models"
 Issues = "https://github.com/spacetelescope/vo-models/issues"
 
+[tool.setuptools.package-data]
+"vo_models" = ["py.typed"]
+
 [tool.ruff]
 line-length = 120
 extend-exclude = ["docs/conf.py"]

@@ -287,6 +287,7 @@ class TestParametersElement(TestCase):
         """Test reading from XML"""
 
         parameters = self.TestParameters.from_xml(self.test_parameters_xml)
+
         self.assertEqual(len(parameters.dict()), 5)
 
         self.assertEqual(parameters.param3, None)
@@ -401,7 +402,7 @@ class TestJobSummaryElement(TestCase):
         )
         self.assertEqual(job_summary.execution_duration, 0)
         self.assertEqual(job_summary.destruction, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
-        self.assertEqual(len(job_summary.parameters.dict()), 2)
+        self.assertEqual(len(job_summary.parameters.model_dump()), 2)
         self.assertEqual(job_summary.parameters.param1.id, "param1")
         self.assertEqual(job_summary.parameters.param2.id, "param2")
         self.assertEqual(job_summary.parameters.param1.value, "value1")
