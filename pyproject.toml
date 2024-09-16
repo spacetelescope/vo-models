@@ -14,6 +14,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 
 dependencies = [
+    "pydantic>2",
     "pydantic-xml[lxml]>=2.6.0",
     ]
 
@@ -33,11 +34,14 @@ keywords = [
 [project.optional-dependencies]
 test = ["pytest", "pytest-cov"]
 dev = ["pylint", "ruff", "pre-commit"]
-docs = ["sphinx", "sphinx_design", "furo", "sphinx-copybutton","toml"]
+docs = ["sphinx", "sphinx_design", "furo", "sphinx-copybutton", "toml", "sphinx_autodoc_typehints"]
 
 [project.urls]
 Homepage = "https://github.com/spacetelescope/vo-models"
 Issues = "https://github.com/spacetelescope/vo-models/issues"
+
+[tool.setuptools.package-data]
+"vo_models" = ["py.typed"]
 
 [tool.ruff]
 line-length = 120

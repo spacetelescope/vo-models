@@ -1,5 +1,9 @@
 """UWS Job Schema using Pydantic-XML models"""
-from typing import Dict, Generic, Optional, TypeVar
+from typing import Annotated, Dict, Generic, Optional, TypeAlias, TypeVar
+
+
+from pydantic import BeforeValidator
+from pydantic import ConfigDict
 
 from pydantic_xml import BaseXmlModel, attr, element
 
@@ -41,23 +45,61 @@ class Parameter(BaseXmlModel, tag="parameter", ns="uws", nsmap=NSMAP):
     is_post: Optional[bool] = attr(name="isPost", default=False)
 
 
-class Parameters(BaseXmlModel, tag="parameters", ns="uws", nsmap=NSMAP):
-    """
-    An abstract holder of UWS parameters.
+MultiValuedParameter: TypeAlias = Annotated[
+    list[Parameter],
+    BeforeValidator(lambda v: v if isinstance(v, list) else [v])
+]
+"""Type for a multi-valued parameter.
 
-    The list of input parameters to the job - if the job description language does not naturally have
-    parameters, then this list should contain one element which is the content of the original POST that created the
-    job.
+This type must be used instead of ``list[Parameter]`` for parameters that may
+take multiple values. The resulting model attribute will be a list of
+`Parameter` objects with the same ``id``.
+"""
+
+
+class Parameters(BaseXmlModel, tag="parameters", ns="uws", nsmap=NSMAP):
+    """An abstract holder of UWS parameters.
+
+    The input parameters to the job. For simple key/value pair parameters, there must be one model field per key, with
+    a type of either `Parameter` or `MultiValuedParameter` depending on whether it can be repeated. If the job
+    description language does not naturally have parameters, then this model should contain one element, which is the
+    content of the original POST that created the job.
     """
 
     def __init__(__pydantic_self__, **data) -> None:  # pylint: disable=no-self-argument
-        # during init -- especially if reading from xml -- we may not get the parameters in the order
-        # pydantic-xml expects. This will remap the dict with keys based on the parameter id.
-        parameter_vals = [val for val in data.values() if val is not None]
+        # pydantic-xml's from_xml method only knows how to gather parameters by tag, not by attribute, but UWS job
+        # parameters all use the same tag and distinguish between different parameters by the id attribute. Therefore,
+        # the input data that we get from pydantic-xml will have assigned the Parameter objects to the model attributes
+        # in model declaration order. This may be wildly incorrect if the input parameters were specified in a
+        # different order than the model.
+        #
+        # This processing collapses all of the parameters down to a simple list, turns that into a dict to Parameter
+        # objects or lists of Parameter objects by id attribute values, and then calls the parent constructor with that
+        # as the input data instead. This should cause Pydantic to associate the job parameters with the correct model
+        # attributes.
+        parameter_vals = []
+        for val in data.values():
+            if val is None:
+                continue
+            elif isinstance(val, list):
+                parameter_vals.extend(v for v in val if v is not None)
+            else:
+                parameter_vals.append(val)
+
+        # Reconstruct the proper input parameters to the model based on the id attribute of the parameters. First
+        # convert each parameter to a Parameter object, and then turn the parameters into a dict mapping the id to a
+        # value or list of values. If we see multiple parameters with the same id, assume the parameter may be
+        # multivalued and build a list. If this assumption is incorrect, Pydantic will reject the list during input
+        # validation.
         remapped_vals = {}
         for param in parameter_vals:
             if isinstance(param, dict):
-                remapped_vals[param["id"]] = Parameter(**param)
+                param = Parameter(**param)
+            if param.id in remapped_vals:
+                if isinstance(remapped_vals[param.id], list):
+                    remapped_vals[param.id].append(param)
+                else:
+                    remapped_vals[param.id] = [remapped_vals[param.id], param]
             else:
                 remapped_vals[param.id] = param
         data = remapped_vals
@@ -238,10 +280,7 @@ class JobSummary(BaseXmlModel, Generic[ParametersType], tag="job", ns="uws", nsm
 
     version: Optional[UWSVersion] = attr(default=UWSVersion.V1_1)
 
-    class Config:
-        """JobSummary pydantic config options"""
-
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class Job(JobSummary, tag="job"):

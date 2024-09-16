@@ -12,6 +12,7 @@ from vo_models.uws import (
     ErrorSummary,
     Jobs,
     JobSummary,
+    MultiValuedParameter,
     Parameter,
     Parameters,
     ResultReference,
@@ -257,13 +258,28 @@ class TestParametersElement(TestCase):
 
         param1: Optional[Parameter] = element(tag="parameter", default=None)
         param2: Optional[Parameter] = element(tag="parameter", default=None)
-        param3: Optional[Parameter] = element(tag="parameter", default=None)
+        param3: Optional[MultiValuedParameter] = element(tag="parameter", default=None)
+        param4: Optional[MultiValuedParameter] = element(tag="parameter", default=None)
+        param5: MultiValuedParameter = element(tag="parameter")
 
     test_parameters_xml = (
         f"<uws:parameters {UWS_NAMESPACE_HEADER}>"
         '<uws:parameter byReference="false" isPost="false" id="param1">value1</uws:parameter>'
         '<uws:parameter byReference="false" isPost="false" id="param2">value2</uws:parameter>'
-        '<uws:parameter byReference="false" isPost="false" id="param3">value3</uws:parameter>'
+        '<uws:parameter byReference="false" isPost="false" id="param4">value4</uws:parameter>'
+        '<uws:parameter byReference="false" isPost="false" id="param4">second value4</uws:parameter>'
+        '<uws:parameter byReference="false" isPost="false" id="param5">value5</uws:parameter>'
+        "</uws:parameters>"
+    )
+
+    # Test that the same parameters are parsed correctly when given out of order.
+    test_parameters_xml_reordered = (
+        f"<uws:parameters {UWS_NAMESPACE_HEADER}>"
+        '<uws:parameter byReference="false" isPost="false" id="param5">value5</uws:parameter>'
+        '<uws:parameter byReference="false" isPost="false" id="param4">value4</uws:parameter>'
+        '<uws:parameter byReference="false" isPost="false" id="param1">value1</uws:parameter>'
+        '<uws:parameter byReference="false" isPost="false" id="param4">second value4</uws:parameter>'
+        '<uws:parameter byReference="false" isPost="false" id="param2">value2</uws:parameter>'
         "</uws:parameters>"
     )
 
@@ -271,15 +287,32 @@ class TestParametersElement(TestCase):
         """Test reading from XML"""
 
         parameters = self.TestParameters.from_xml(self.test_parameters_xml)
-        self.assertEqual(len(parameters.dict()), 3)
+
+        self.assertEqual(len(parameters.dict()), 5)
+
+        self.assertEqual(parameters.param3, None)
+        self.assertEqual(len(parameters.param4), 2)
+        self.assertEqual(len(parameters.param5), 1)
 
         self.assertEqual(parameters.param1.id, "param1")
         self.assertEqual(parameters.param2.id, "param2")
-        self.assertEqual(parameters.param3.id, "param3")
+        self.assertEqual(parameters.param4[0].id, "param4")
+        self.assertEqual(parameters.param4[1].id, "param4")
+        self.assertEqual(parameters.param5[0].id, "param5")
 
         self.assertEqual(parameters.param1.value, "value1")
         self.assertEqual(parameters.param2.value, "value2")
-        self.assertEqual(parameters.param3.value, "value3")
+        self.assertEqual(parameters.param4[0].value, "value4")
+        self.assertEqual(parameters.param4[1].value, "second value4")
+        self.assertEqual(parameters.param5[0].value, "value5")
+
+    def test_read_from_xml_reordered(self):
+        """Test reading from XML out of order"""
+
+        parameters = self.TestParameters.from_xml(self.test_parameters_xml)
+        parameters_reordered = self.TestParameters.from_xml(self.test_parameters_xml_reordered)
+
+        assert parameters == parameters_reordered
 
     def test_write_to_xml(self):
         """Test writing to XML"""
@@ -287,7 +320,12 @@ class TestParametersElement(TestCase):
         parameters_element = self.TestParameters(
             param1=Parameter(id="param1", value="value1"),
             param2=Parameter(id="param2", value="value2"),
-            param3=Parameter(id="param3", value="value3"),
+            param3=None,
+            param4=[
+                Parameter(id="param4", value="value4"),
+                Parameter(id="param4", value="second value4"),
+            ],
+            param5=[Parameter(id="param5", value="value5")],
         )
         parameters_xml = parameters_element.to_xml(skip_empty=True, encoding=str)
 
@@ -302,7 +340,11 @@ class TestParametersElement(TestCase):
         parameters = self.TestParameters(
             param1=Parameter(id="param1", value="value1"),
             param2=Parameter(id="param2", value="value2"),
-            param3=Parameter(id="param3", value="value3"),
+            param4=[
+                Parameter(id="param4", value="value4"),
+                Parameter(id="param4", value="second value4"),
+            ],
+            param5=[Parameter(id="param5", value="value5")],
         )
         parameters_xml = etree.fromstring(
             parameters.to_xml(skip_empty=True, encoding=str)
@@ -360,7 +402,7 @@ class TestJobSummaryElement(TestCase):
         )
         self.assertEqual(job_summary.execution_duration, 0)
         self.assertEqual(job_summary.destruction, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
-        self.assertEqual(len(job_summary.parameters.dict()), 2)
+        self.assertEqual(len(job_summary.parameters.model_dump()), 2)
         self.assertEqual(job_summary.parameters.param1.id, "param1")
         self.assertEqual(job_summary.parameters.param2.id, "param2")
         self.assertEqual(job_summary.parameters.param1.value, "value1")
