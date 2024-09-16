@@ -9,6 +9,7 @@ from vo_models.uws.models import (
     Job,
     Jobs,
     JobSummary,
+    MultiValuedParameter,
     Parameter,
     Parameters,
     ParametersType,
