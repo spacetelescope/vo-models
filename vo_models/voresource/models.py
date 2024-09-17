@@ -1,0 +1,1 @@
+"""VOResource models."""
