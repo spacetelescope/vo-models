@@ -2,10 +2,10 @@
 import datetime
 from typing import Literal, Optional
 
-from pydantic import field_validator, networks, types
-from pydantic_xml import BaseXmlModel, RootXmlModel, attr, element
+from pydantic import field_validator, networks
+from pydantic_xml import BaseXmlModel, attr, element
 
-from vo_models.voresource.types import IdentifierURI, UTCDateTime, UTCTimestamp, ValidationLevel
+from vo_models.voresource.types import IdentifierURI, UTCTimestamp, ValidationLevel
 
 # pylint: disable=no-self-argument
 # pylint: disable=too-few-public-methods
