@@ -18,10 +18,15 @@ from vo_models.voresource.models import (
     SecurityMethod,
     Service,
     Source,
-    UTCDateTime,
-    UTCTimestamp,
     Validation,
-    ValidationLevel,
     WebBrowser,
     WebService,
+)
+from vo_models.voresource.types import (
+    AuthorityID,
+    IdentifierURI,
+    ResourceKey,
+    UTCDateTime,
+    UTCTimestamp,
+    ValidationLevel,
 )
