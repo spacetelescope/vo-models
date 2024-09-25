@@ -128,7 +128,7 @@ class TableParam(BaseXmlModel, ns="", tag="column"):
     utype: Optional[str] = element(tag="utype", default=None)
     xtype: Optional[str] = element(tag="xtype", default=None)
     datatype: Optional[DataType] = element(tag="dataType", default=None)
-    flag: Optional[list[str]] = element(tag="flag", default=None)
+    flag: Optional[list[str]] = element(tag="flag", default_factory=list)
 
     def __init__(__pydantic_self__, **data: Any) -> None:
         data["datatype"] = __pydantic_self__.__make_datatype_element(data)
@@ -225,8 +225,8 @@ class Table(BaseXmlModel, tag="table", ns="", skip_empty=True):
     description: Optional[str] = element(tag="description", ns="", default=None)
     utype: Optional[str] = element(tag="utype", ns="", default=None)
     nrows: Optional[int] = element(tag="nrows", gte=0, ns="", default=None)
-    column: Optional[list[TableParam]] = element(tag="column", ns="", default=None)
-    foreign_key: Optional[list[ForeignKey]] = element(tag="foreignKey", ns="", default=None)
+    column: Optional[list[TableParam]] = element(tag="column", ns="", default_factory=list)
+    foreign_key: Optional[list[ForeignKey]] = element(tag="foreignKey", ns="", default_factory=list)
 
     def __init__(__pydantic_self__, **data: Any) -> None:
         """Escape any keys that are passed in."""
@@ -269,7 +269,7 @@ class TableSchema(BaseXmlModel, tag="schema", ns="", skip_empty=True):
     title: Optional[str] = element(tag="title", default=None)
     description: Optional[str] = element(tag="description", default=None)
     utype: Optional[str] = element(tag="utype", default=None)
-    table: Optional[list[Table]] = element(tag="table", default=None)
+    table: Optional[list[Table]] = element(tag="table", default_factory=list)
 
     def __init__(__pydantic_self__, **data: Any) -> None:
         """Escape any keys that are passed in."""

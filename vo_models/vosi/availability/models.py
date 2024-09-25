@@ -34,4 +34,4 @@ class Availability(BaseXmlModel, tag="availability", nsmap=NSMAP, skip_empty=Tru
     up_since: Optional[UTCTimestamp] = element(tag="upSince", default=None)
     down_at: Optional[UTCTimestamp] = element(tag="downAt", default=None)
     back_at: Optional[UTCTimestamp] = element(tag="backAt", default=None)
-    note: Optional[list[str]] = element(tag="note", default=None)
+    note: Optional[list[str]] = element(tag="note", default_factory=list)

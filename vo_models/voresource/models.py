@@ -159,7 +159,7 @@ class Contact(BaseXmlModel, ns="vr", nsmap=NSMAP):
             including a scheme here.
     """
 
-    ivo_id: Optional[IdentifierURI] = attr(name="ivo_id")
+    ivo_id: Optional[IdentifierURI] = attr(name="ivo_id", default=None)
 
     name: ResourceName = element(tag="name")
     address: Optional[str] = element(tag="address", default=None)
@@ -287,7 +287,7 @@ class Content(BaseXmlModel, ns="vr", nsmap=NSMAP):
     description: str = element(tag="description")
     source: Optional[Source] = element(tag="source", default=None)
     reference_url: networks.AnyUrl = element(tag="referenceURL")
-    type: Optional[list[str]] = element(tag="type", default=None)
+    type: Optional[list[str]] = element(tag="type", default_factory=list)
     content_level: Optional[list[str]] = element(tag="contentLevel", default_factory=list)
     relationship: Optional[list[Relationship]] = element(tag="relationship", default_factory=list)
 
@@ -406,14 +406,13 @@ class Resource(BaseXmlModel, ns="vr", nsmap=NSMAP):
     @field_validator("created", "updated")
     def _validate_timestamps(cls, values):
         """Ensure that the created and updated timestamps are not in the future"""
-        for timestamp in ("created", "updated"):
-            if values[timestamp] > datetime.datetime.utcnow():
-                raise ValueError(f"{timestamp} timestamp must not be in the future")
+        if values > datetime.datetime.now(datetime.timezone.utc):
+            raise ValueError(f"{values} timestamp must not be in the future")
 
     @field_validator("short_name")
     def _validate_short_name(cls, values):
         """Ensure that the short name is no more than 16 characters"""
-        if values["short_name"] and len(values["short_name"]) > 16:
+        if values and len(values) > 16:
             raise ValueError("Short name must be no more than 16 characters")
 
 

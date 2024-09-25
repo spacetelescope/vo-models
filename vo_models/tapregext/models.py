@@ -4,7 +4,7 @@ from typing import Literal, Optional
 
 from pydantic_xml import BaseXmlModel, attr, element
 
-from vo_models.voresource import Capability, Interface, Validation
+from vo_models.voresource.models import Capability, Interface, Validation
 from vo_models.voresource.types import IdentifierURI
 
 NSMAP = {
@@ -190,10 +190,10 @@ class TableAccess(TAPCapRestriction, tag="capability", ns="vr", nsmap=NSMAP):
             (element) - Limits on the size of uploaded data.
     """
 
-    data_model: Optional[list[DataModelType]] = element(tag="dataModel", default_factory=[])
+    data_model: Optional[list[DataModelType]] = element(tag="dataModel", default_factory=list)
     language: list[Language] = element(tag="language")
     output_format: list[OutputFormat] = element(tag="outputFormat")
-    upload_method: Optional[list[UploadMethod]] = element(tag="uploadMethod", default_factory=[])
+    upload_method: Optional[list[UploadMethod]] = element(tag="uploadMethod", default_factory=list)
     retention_period: Optional[TimeLimits] = element(tag="retentionPeriod", default=None)
     execution_duration: Optional[TimeLimits] = element(tag="executionDuration", default=None)
     output_limit: Optional[DataLimits] = element(tag="outputLimit", default=None)
