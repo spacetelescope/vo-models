@@ -26,6 +26,8 @@ The following IVOA protocols are currently supported:
   - TableParam
   - TableSchema
   - TableSet
+- **VOResource version 1.1**
+- **TAPRegExt version 1.0**
 
 You can read more about using these models in our documentation: https://vo-models.readthedocs.io/
 
