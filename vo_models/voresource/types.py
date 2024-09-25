@@ -3,10 +3,10 @@
 import re
 from datetime import datetime
 from enum import Enum
+from typing import Annotated
 
 from pydantic import Field, GetCoreSchemaHandler
 from pydantic_core import CoreSchema, core_schema
-from typing_extensions import Annotated
 
 # pylint: disable=too-few-public-methods
 
