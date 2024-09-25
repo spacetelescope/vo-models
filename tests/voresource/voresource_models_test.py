@@ -5,7 +5,7 @@ from xml.etree.ElementTree import canonicalize
 
 from lxml import etree
 
-from vo_models.voresource import (
+from vo_models.voresource.models import (
     AccessURL,
     Capability,
     Contact,
@@ -472,20 +472,21 @@ class TestWebService(TestCase):
             canonicalize(etree.fromstring(self.test_web_service_xml), strip_text=True, strip_comments=True),
         )
 
+
 class TestResource(TestCase):
     """Test the VOResource Resource model."""
 
     test_resource_model = Resource(
-        created = UTCDateTime("1996-03-11T19:00:00Z"),
-        updated = UTCDateTime("1996-03-11T19:00:00Z"),
-        status = "active",
-        version = "1.0",
-        validation_level = [Validation(value=0, validated_by="https://example.edu")],
-        title = "Example Resource",
-        short_name = "example",
-        identifier = "https://example.edu",
-        alt_identifier = ["bibcode:2008ivoa.spec.0222P"],
-        curation = Curation(
+        created=UTCDateTime("1996-03-11T19:00:00Z"),
+        updated=UTCDateTime("1996-03-11T19:00:00Z"),
+        status="active",
+        version="1.0",
+        validation_level=[Validation(value=0, validated_by="https://example.edu")],
+        title="Example Resource",
+        short_name="example",
+        identifier="https://example.edu",
+        alt_identifier=["bibcode:2008ivoa.spec.0222P"],
+        curation=Curation(
             publisher=ResourceName(value="STScI"),
             creator=[Creator(name="Doe, J.")],
             contributor=[ResourceName(value="Example Resource")],
@@ -493,7 +494,7 @@ class TestResource(TestCase):
             version="1.0",
             contact=[Contact(name="John Doe")],
         ),
-        content = Content(
+        content=Content(
             subject="Astronomy",
             description="Example description",
             source=[Source(value="https://example.edu", format="bibcode")],
@@ -511,34 +512,34 @@ class TestResource(TestCase):
 
     test_resource_xml = (
         '<vr:resource xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" status="active" version="1.0">'
-        '<created>1996-03-11T19:00:00Z</created>'
-        '<updated>1996-03-11T19:00:00Z</updated>'
+        "<created>1996-03-11T19:00:00Z</created>"
+        "<updated>1996-03-11T19:00:00Z</updated>"
         '<validation validatedBy="https://example.edu">0</validation>'
-        '<title>Example Resource</title>'
-        '<shortName>example</shortName>'
-        '<identifier>https://example.edu</identifier>'
-        '<altIdentifier>bibcode:2008ivoa.spec.0222P</altIdentifier>'
-        '<curation>'
-        '<publisher>STScI</publisher>'
-        '<creator><name>Doe, J.</name></creator>'
-        '<contributor>Example Resource</contributor>'
+        "<title>Example Resource</title>"
+        "<shortName>example</shortName>"
+        "<identifier>https://example.edu</identifier>"
+        "<altIdentifier>bibcode:2008ivoa.spec.0222P</altIdentifier>"
+        "<curation>"
+        "<publisher>STScI</publisher>"
+        "<creator><name>Doe, J.</name></creator>"
+        "<contributor>Example Resource</contributor>"
         '<date role="update">2021-01-01T00:00:00Z</date>'
-        '<version>1.0</version>'
-        '<contact><name>John Doe</name></contact>'
-        '</curation>'
-        '<content>'
-        '<subject>Astronomy</subject>'
-        '<description>Example description</description>'
+        "<version>1.0</version>"
+        "<contact><name>John Doe</name></contact>"
+        "</curation>"
+        "<content>"
+        "<subject>Astronomy</subject>"
+        "<description>Example description</description>"
         '<source format="bibcode">https://example.edu</source>'
-        '<referenceURL>https://example.edu</referenceURL>'
-        '<type>Education</type>'
-        '<contentLevel>General</contentLevel>'
-        '<relationship>'
-        '<relationshipType>isPartOf</relationshipType>'
+        "<referenceURL>https://example.edu</referenceURL>"
+        "<type>Education</type>"
+        "<contentLevel>General</contentLevel>"
+        "<relationship>"
+        "<relationshipType>isPartOf</relationshipType>"
         '<related_resource ivo-id="ivo://example.edu/resource">Example Resource</related_resource>'
-        '</relationship>'
-        '</content>'
-        '</vr:resource>'
+        "</relationship>"
+        "</content>"
+        "</vr:resource>"
     )
 
     def test_read_from_xml(self):
@@ -580,25 +581,26 @@ class TestResource(TestCase):
             canonicalize(etree.fromstring(self.test_resource_xml), strip_text=True, strip_comments=True),
         )
 
+
 class TestOrganization(TestCase):
     """Test the VOResource Organization model."""
 
     test_organization_model = Organisation(
-        created = UTCDateTime("1996-03-11T19:00:00Z"),
-        updated = UTCDateTime("1996-03-11T19:00:00Z"),
-        status = "active",
-        version = "1.0",
-        facility = [ResourceName(value="Example Facility", ivo_id="ivo://example.edu/facility")],
-        instrument = [ResourceName(value="Example Instrument", ivo_id="ivo://example.edu/instrument")],
+        created=UTCDateTime("1996-03-11T19:00:00Z"),
+        updated=UTCDateTime("1996-03-11T19:00:00Z"),
+        status="active",
+        version="1.0",
+        facility=[ResourceName(value="Example Facility", ivo_id="ivo://example.edu/facility")],
+        instrument=[ResourceName(value="Example Instrument", ivo_id="ivo://example.edu/instrument")],
     )
 
     test_organization_xml = (
         '<vr:organization xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" status="active" version="1.0">'
-        '<created>1996-03-11T19:00:00Z</created>'
-        '<updated>1996-03-11T19:00:00Z</updated>'
+        "<created>1996-03-11T19:00:00Z</created>"
+        "<updated>1996-03-11T19:00:00Z</updated>"
         '<facility ivo-id="ivo://example.edu/facility">Example Facility</facility>'
         '<instrument ivo-id="ivo://example.edu/instrument">Example Instrument</instrument>'
-        '</vr:organization>'
+        "</vr:organization>"
     )
 
     def test_read_from_xml(self):
@@ -622,22 +624,23 @@ class TestOrganization(TestCase):
             canonicalize(etree.fromstring(self.test_organization_xml), strip_text=True, strip_comments=True),
         )
 
+
 class TestCapability(TestCase):
     """Test the VOResource Capability model."""
 
     test_capability_model = Capability(
-        standard_id = "ivo://ivoa.net/std/TAP",
-        validation_level = [Validation(value=0, validated_by="https://example.edu")],
-        description = "Example description",
-        interface = [Interface(version="1.0", role="std")],
+        standard_id="ivo://ivoa.net/std/TAP",
+        validation_level=[Validation(value=0, validated_by="https://example.edu")],
+        description="Example description",
+        interface=[Interface(version="1.0", role="std")],
     )
 
     test_capability_xml = (
         '<vr:capability xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" standardID="ivo://ivoa.net/std/TAP">'
         '<validation validatedBy="https://example.edu">0</validation>'
-        '<description>Example description</description>'
+        "<description>Example description</description>"
         '<interface role="std" version="1.0"/>'
-        '</vr:capability>'
+        "</vr:capability>"
     )
 
     def test_read_from_xml(self):
@@ -658,21 +661,22 @@ class TestCapability(TestCase):
             canonicalize(etree.fromstring(self.test_capability_xml), strip_text=True, strip_comments=True),
         )
 
+
 class TestService(TestCase):
     """Test the VOResource Service model."""
 
     test_service_model = Service(
-        created = UTCDateTime("1996-03-11T19:00:00Z"),
-        updated = UTCDateTime("1996-03-11T19:00:00Z"),
-        status = "active",
-        version = "1.0",
-        capability = [Capability(standard_id="ivo://ivoa.net/std/TAP")],
-        interface = [Interface(version="1.0", role="std")],
-        title = "Example Service",
-        short_name = "example",
-        identifier = "https://example.edu",
-        alt_identifier = ["bibcode:2008ivoa.spec.0222P"],
-        curation = Curation(
+        created=UTCDateTime("1996-03-11T19:00:00Z"),
+        updated=UTCDateTime("1996-03-11T19:00:00Z"),
+        status="active",
+        version="1.0",
+        capability=[Capability(standard_id="ivo://ivoa.net/std/TAP")],
+        interface=[Interface(version="1.0", role="std")],
+        title="Example Service",
+        short_name="example",
+        identifier="https://example.edu",
+        alt_identifier=["bibcode:2008ivoa.spec.0222P"],
+        curation=Curation(
             publisher=ResourceName(value="STScI"),
             creator=[Creator(name="Doe, J.")],
             contributor=[ResourceName(value="Example Resource")],
@@ -680,7 +684,7 @@ class TestService(TestCase):
             version="1.0",
             contact=[Contact(name="John Doe")],
         ),
-        content = Content(
+        content=Content(
             subject="Astronomy",
             description="Example description",
             source=[Source(value="https://example.edu", format="bibcode")],
@@ -698,35 +702,35 @@ class TestService(TestCase):
 
     test_service_xml = (
         '<vr:service xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" status="active" version="1.0">'
-        '<created>1996-03-11T19:00:00Z</created>'
-        '<updated>1996-03-11T19:00:00Z</updated>'
+        "<created>1996-03-11T19:00:00Z</created>"
+        "<updated>1996-03-11T19:00:00Z</updated>"
         '<capability standardID="ivo://ivoa.net/std/TAP"/>'
         '<interface role="std" version="1.0"/>'
-        '<title>Example Service</title>'
-        '<shortName>example</shortName>'
-        '<identifier>https://example.edu</identifier>'
-        '<altIdentifier>bibcode:2008ivoa.spec.0222P</altIdentifier>'
-        '<curation>'
-        '<publisher>STScI</publisher>'
-        '<creator><name>Doe, J.</name></creator>'
-        '<contributor>Example Resource</contributor>'
+        "<title>Example Service</title>"
+        "<shortName>example</shortName>"
+        "<identifier>https://example.edu</identifier>"
+        "<altIdentifier>bibcode:2008ivoa.spec.0222P</altIdentifier>"
+        "<curation>"
+        "<publisher>STScI</publisher>"
+        "<creator><name>Doe, J.</name></creator>"
+        "<contributor>Example Resource</contributor>"
         '<date role="update">2021-01-01T00:00:00Z</date>'
-        '<version>1.0</version>'
-        '<contact><name>John Doe</name></contact>'
-        '</curation>'
-        '<content>'
-        '<subject>Astronomy</subject>'
-        '<description>Example description</description>'
+        "<version>1.0</version>"
+        "<contact><name>John Doe</name></contact>"
+        "</curation>"
+        "<content>"
+        "<subject>Astronomy</subject>"
+        "<description>Example description</description>"
         '<source format="bibcode">https://example.edu</source>'
-        '<referenceURL>https://example.edu</referenceURL>'
-        '<type>Education</type>'
-        '<contentLevel>General</contentLevel>'
-        '<relationship>'
-        '<relationshipType>isPartOf</relationshipType>'
+        "<referenceURL>https://example.edu</referenceURL>"
+        "<type>Education</type>"
+        "<contentLevel>General</contentLevel>"
+        "<relationship>"
+        "<relationshipType>isPartOf</relationshipType>"
         '<related_resource ivo-id="ivo://example.edu/resource">Example Resource</related_resource>'
-        '</relationship>'
-        '</content>'
-        '</vr:service>'
+        "</relationship>"
+        "</content>"
+        "</vr:service>"
     )
 
     def test_read_from_xml(self):

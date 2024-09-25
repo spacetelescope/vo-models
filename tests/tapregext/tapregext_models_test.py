@@ -5,7 +5,7 @@ from xml.etree.ElementTree import canonicalize
 
 from lxml import etree
 
-from vo_models.tapregext import (
+from vo_models.tapregext.models import (
     DataLimit,
     DataLimits,
     DataModelType,
@@ -14,12 +14,10 @@ from vo_models.tapregext import (
     LanguageFeatureList,
     OutputFormat,
     TableAccess,
-    TAPCapRestriction,
     TimeLimits,
     UploadMethod,
     Version,
 )
-from vo_models.voresource import Validation
 
 TAPREGEXT_NAMESPACE_HEADER = """xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0"
