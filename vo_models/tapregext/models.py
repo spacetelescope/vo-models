@@ -2,10 +2,9 @@
 
 from typing import Literal, Optional
 
-from pydantic_xml import BaseXmlModel, attr, computed_attr, element
+from pydantic_xml import BaseXmlModel, attr, element
 
-from vo_models.voresource.models import Capability, Interface, Validation
-from vo_models.voresource.types import IdentifierURI
+from vo_models.voresource.models import Capability
 
 NSMAP = {
     "xs": "http://www.w3.org/2001/XMLSchema",
