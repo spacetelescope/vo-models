@@ -33,7 +33,7 @@ class TestVersion(TestCase):
     """Tests the Version model."""
 
     test_version_model = Version(value="1.0", ivo_id="ivo://ivoa.net/std/TAP")
-    test_version_xml = f'<version {TAPREGEXT_NAMESPACE_HEADER} ivo-id="ivo://ivoa.net/std/TAP">1.0</version>'
+    test_version_xml = f'<Version {TAPREGEXT_NAMESPACE_HEADER} ivo-id="ivo://ivoa.net/std/TAP">1.0</Version>'
 
     def test_read_from_xml(self):
         """Test reading a Version element from XML."""
@@ -43,11 +43,11 @@ class TestVersion(TestCase):
 
     def test_write_xml(self):
         """Test we can write a Version element to XML."""
-        version_xml = self.test_version_model.to_xml()
-        self.assertEqual(
-            canonicalize(etree.tostring(etree.fromstring(self.test_version_xml))),
-            canonicalize(
-                etree.tostring(etree.fromstring(version_xml)),
+        test_xml = self.test_version_model.to_xml(encoding=str, skip_empty=True)
+        (
+            self.assertEqual(
+                canonicalize(test_xml),
+                canonicalize(self.test_version_xml),
             ),
         )
 
@@ -56,7 +56,7 @@ class TestLanguageFeature(TestCase):
     """Tests the LanguageFeature model."""
 
     test_language_feature_model = LanguageFeature(form="Formal notation", description="A description")
-    test_language_feature_xml = f"<languageFeature {TAPREGEXT_NAMESPACE_HEADER}><form>Formal notation</form><description>A description</description></languageFeature>"
+    test_language_feature_xml = f"<LanguageFeature {TAPREGEXT_NAMESPACE_HEADER}><form>Formal notation</form><description>A description</description></LanguageFeature>"
 
     def test_read_from_xml(self):
         """Test reading a LanguageFeature element from XML."""
@@ -66,12 +66,10 @@ class TestLanguageFeature(TestCase):
 
     def test_write_xml(self):
         """Test we can write a LanguageFeature element to XML."""
-        language_feature_xml = self.test_language_feature_model.to_xml()
+        test_xml = self.test_language_feature_model.to_xml(encoding=str, skip_empty=True)
         self.assertEqual(
-            canonicalize(etree.tostring(etree.fromstring(self.test_language_feature_xml))),
-            canonicalize(
-                etree.tostring(etree.fromstring(language_feature_xml)),
-            ),
+            canonicalize(test_xml),
+            canonicalize(self.test_language_feature_xml),
         )
 
 
@@ -83,10 +81,10 @@ class TestOutputFormat(TestCase):
         alias=["VOTABLE"],
     )
     test_output_format_xml = (
-        f"<outputFormat {TAPREGEXT_NAMESPACE_HEADER}>"
+        f"<OutputFormat {TAPREGEXT_NAMESPACE_HEADER}>"
         "<mime>application/x-votable+xml</mime>"
         "<alias>VOTABLE</alias>"
-        "</outputFormat>"
+        "</OutputFormat>"
     )
 
     def test_read_from_xml(self):
@@ -97,7 +95,7 @@ class TestOutputFormat(TestCase):
 
     def test_write_xml(self):
         """Test we can write an OutputFormat element to XML."""
-        output_format_xml = self.test_output_format_model.to_xml()
+        output_format_xml = self.test_output_format_model.to_xml(encoding=str, skip_empty=True)
         self.assertEqual(
             canonicalize(etree.tostring(etree.fromstring(self.test_output_format_xml))),
             canonicalize(
@@ -112,7 +110,7 @@ class TestUploadMethod(TestCase):
     test_upload_method_model = UploadMethod(
         ivo_id="ivo://ivoa.net/std/TAP",
     )
-    test_upload_method_xml = f'<uploadMethod {TAPREGEXT_NAMESPACE_HEADER} ivo-id="ivo://ivoa.net/std/TAP"/>'
+    test_upload_method_xml = f'<UploadMethod {TAPREGEXT_NAMESPACE_HEADER} ivo-id="ivo://ivoa.net/std/TAP"/>'
 
     def test_read_from_xml(self):
         """Test reading an UploadMethod element from XML."""
@@ -121,21 +119,19 @@ class TestUploadMethod(TestCase):
 
     def test_write_xml(self):
         """Test we can write an UploadMethod element to XML."""
-        upload_method_xml = self.test_upload_method_model.to_xml()
+        test_xml = self.test_upload_method_model.to_xml(encoding=str, skip_empty=True)
         self.assertEqual(
-            canonicalize(etree.tostring(etree.fromstring(self.test_upload_method_xml))),
-            canonicalize(
-                etree.tostring(etree.fromstring(upload_method_xml)),
-            ),
+            canonicalize(self.test_upload_method_xml),
+            canonicalize(test_xml),
         )
 
 
-class TestTimeLimitsElement(TestCase):
+class TestTimeLimits(TestCase):
     """Tests the TimeLimits model."""
 
     test_time_limits_model = TimeLimits(default=10, hard=100)
     test_time_limits_xml = (
-        f"<timeLimits {TAPREGEXT_NAMESPACE_HEADER}><default>10</default><hard>100</hard></timeLimits>"
+        f"<TimeLimits {TAPREGEXT_NAMESPACE_HEADER}><default>10</default><hard>100</hard></TimeLimits>"
     )
 
     def test_read_from_xml(self):
@@ -146,16 +142,14 @@ class TestTimeLimitsElement(TestCase):
 
     def test_write_xml(self):
         """Test we can write a TimeLimits element to XML."""
-        time_limits_xml = self.test_time_limits_model.to_xml()
+        test_xml = self.test_time_limits_model.to_xml(encoding=str, skip_empty=True)
         self.assertEqual(
-            canonicalize(etree.tostring(etree.fromstring(self.test_time_limits_xml))),
-            canonicalize(
-                etree.tostring(etree.fromstring(time_limits_xml)),
-            ),
+            canonicalize(test_xml),
+            canonicalize(self.test_time_limits_xml),
         )
 
 
-class TestDataLimitsElement(TestCase):
+class TestDataLimits(TestCase):
     """Tests the DataLimits model."""
 
     test_data_limits_model = DataLimits(
@@ -163,10 +157,10 @@ class TestDataLimitsElement(TestCase):
         hard={"value": 100, "unit": "row"},
     )
     test_data_limits_xml = (
-        f"<dataLimits {TAPREGEXT_NAMESPACE_HEADER}>"
+        f"<DataLimits {TAPREGEXT_NAMESPACE_HEADER}>"
         '<default unit="row">10</default>'
         '<hard unit="row">100</hard>'
-        "</dataLimits>"
+        "</DataLimits>"
     )
 
     def test_read_from_xml(self):
@@ -177,20 +171,18 @@ class TestDataLimitsElement(TestCase):
 
     def test_write_xml(self):
         """Test we can write a DataLimits element to XML."""
-        data_limits_xml = self.test_data_limits_model.to_xml()
+        test_xml = self.test_data_limits_model.to_xml(encoding=str, skip_empty=True)
         self.assertEqual(
-            canonicalize(etree.tostring(etree.fromstring(self.test_data_limits_xml))),
-            canonicalize(
-                etree.tostring(etree.fromstring(data_limits_xml)),
-            ),
+            canonicalize(test_xml),
+            canonicalize(self.test_data_limits_xml),
         )
 
 
-class TestDataLimitElement(TestCase):
+class TestDataLimit(TestCase):
     """Tests the DataLimit model."""
 
     test_data_limit_model = DataLimit(value=10, unit="byte")
-    test_data_limit_xml = f'<dataLimit {TAPREGEXT_NAMESPACE_HEADER} unit="byte">10</dataLimit>'
+    test_data_limit_xml = f'<DataLimit {TAPREGEXT_NAMESPACE_HEADER} unit="byte">10</DataLimit>'
 
     def test_read_from_xml(self):
         """Test reading a DataLimit element from XML."""
@@ -200,12 +192,10 @@ class TestDataLimitElement(TestCase):
 
     def test_write_xml(self):
         """Test we can write a DataLimit element to XML."""
-        data_limit_xml = self.test_data_limit_model.to_xml()
+        test_xml = self.test_data_limit_model.to_xml(encoding=str, skip_empty=True)
         self.assertEqual(
-            canonicalize(etree.tostring(etree.fromstring(self.test_data_limit_xml))),
-            canonicalize(
-                etree.tostring(etree.fromstring(data_limit_xml)),
-            ),
+            canonicalize(test_xml),
+            canonicalize(self.test_data_limit_xml),
         )
 
 
@@ -220,10 +210,10 @@ class TestLanguageFeatureList(TestCase):
         type="adql-some-feature",
     )
     test_language_feature_list_xml = (
-        f'<languageFeatures {TAPREGEXT_NAMESPACE_HEADER} type="adql-some-feature">'
+        f'<LanguageFeatureList {TAPREGEXT_NAMESPACE_HEADER} type="adql-some-feature">'
         "<feature><form>Formal notation</form><description>A description</description></feature>"
         "<feature><form>Informal notation</form><description>Another description</description></feature>"
-        "</languageFeatures>"
+        "</LanguageFeatureList>"
     )
 
     def test_read_from_xml(self):
@@ -236,12 +226,10 @@ class TestLanguageFeatureList(TestCase):
 
     def test_write_xml(self):
         """Test we can write a LanguageFeatureList element to XML."""
-        language_feature_list_xml = self.test_language_feature_list_model.to_xml()
+        test_xml = self.test_language_feature_list_model.to_xml(encoding=str, skip_empty=True)
         self.assertEqual(
-            canonicalize(etree.tostring(etree.fromstring(self.test_language_feature_list_xml))),
-            canonicalize(
-                etree.tostring(etree.fromstring(language_feature_list_xml)),
-            ),
+            canonicalize(test_xml),
+            canonicalize(self.test_language_feature_list_xml),
         )
 
 
@@ -263,7 +251,7 @@ class TestLanguage(TestCase):
         ],
     )
     test_language_xml = (
-        f"<language {TAPREGEXT_NAMESPACE_HEADER}>"
+        f"<Language {TAPREGEXT_NAMESPACE_HEADER}>"
         "<name>ADQL</name>"
         "<version ivo-id='ivo://ivoa.net/std/ADQL'>2.0</version>"
         "<description>Astronomical Data Query Language</description>"
@@ -271,7 +259,7 @@ class TestLanguage(TestCase):
         "<feature><form>Formal notation</form><description>A description</description></feature>"
         "<feature><form>Informal notation</form><description>Another description</description></feature>"
         "</languageFeatures>"
-        "</language>"
+        "</Language>"
     )
 
     def test_read_from_xml(self):
@@ -287,12 +275,10 @@ class TestLanguage(TestCase):
 
     def test_write_xml(self):
         """Test we can write a Language element to XML."""
-        language_xml = self.test_language_model.to_xml()
+        test_xml = self.test_language_model.to_xml(encoding=str, skip_empty=True)
         self.assertEqual(
-            canonicalize(etree.tostring(etree.fromstring(self.test_language_xml))),
-            canonicalize(
-                etree.tostring(etree.fromstring(language_xml)),
-            ),
+            canonicalize(test_xml),
+            canonicalize(self.test_language_xml),
         )
 
 
@@ -304,7 +290,7 @@ class TestTableAccess(TestCase):
         language=[
             Language(
                 name="ADQL",
-                version=[Version(value="2.0", ivo_id="ivo://ivoa.net/std/ADQL")],
+                version=[Version(value="2.0", ivo_id="ivo://ivoa.net/std/ADQL-2.0")],
                 description="Astronomical Data Query Language",
                 language_features=[
                     LanguageFeatureList(
@@ -323,12 +309,6 @@ class TestTableAccess(TestCase):
                 alias=["VOTABLE"],
             )
         ],
-        upload_method=[
-            UploadMethod(
-                value="HTTP",
-                ivo_id="ivo://ivoa.net/std/TAP",
-            )
-        ],
         retention_period=TimeLimits(default=10, hard=100),
         output_limit=DataLimits(
             default={"value": 10, "unit": "row"},
@@ -336,19 +316,18 @@ class TestTableAccess(TestCase):
         ),
     )
     test_table_access_xml = (
-        f"<capability {TAPREGEXT_NAMESPACE_HEADER}>"
+        f'<capability {TAPREGEXT_NAMESPACE_HEADER} standardID="ivo://ivoa.net/std/TAP">'
         "<dataModel ivo-id='ivo://ivoa.net/std/VOTable'>VOTable</dataModel>"
         "<language>"
         "<name>ADQL</name>"
-        "<version>2.0</version>"
+        '<version ivo-id="ivo://ivoa.net/std/ADQL-2.0">2.0</version>'
         "<description>Astronomical Data Query Language</description>"
-        "<languageFeatures>"
-        "<languageFeature><form>Formal notation</form><description>A description</description></languageFeature>"
-        "<languageFeature><form>Informal notation</form><description>Another description</description></languageFeature>"
+        '<languageFeatures type="adql-some-feature">'
+        "<feature><form>Formal notation</form><description>A description</description></feature>"
+        "<feature><form>Informal notation</form><description>Another description</description></feature>"
         "</languageFeatures>"
         "</language>"
-        "<outputFormat ivo-id='ivo://ivoa.net/std/TAP'>application/x-votable+xml;content=datalink</outputFormat>"
-        "<uploadMethod ivo-id='ivo://ivoa.net/std/TAP'/>"
+        "<outputFormat><mime>application/x-votable+xml</mime><alias>VOTABLE</alias></outputFormat>"
         "<retentionPeriod><default>10</default><hard>100</hard></retentionPeriod>"
         "<outputLimit>"
         '<default unit="row">10</default>'
@@ -371,8 +350,15 @@ class TestTableAccess(TestCase):
         self.assertEqual(table_access.language[0].language_features[0].feature[1].description, "Another description")
         self.assertEqual(table_access.output_format[0].mime, "application/x-votable+xml")
         self.assertEqual(table_access.output_format[0].alias[0], "VOTABLE")
-        self.assertEqual(table_access.upload_method[0].ivo_id, "ivo://ivoa.net/std/TAP")
         self.assertEqual(table_access.retention_period.default, 10)
         self.assertEqual(table_access.retention_period.hard, 100)
         self.assertEqual(table_access.output_limit.default.value, 10)
         self.assertEqual(table_access.output_limit.hard.value, 100)
+
+    def test_write_xml(self):
+        """Test we can write a TableAccess element to XML."""
+        test_xml = self.test_table_access_model.to_xml(encoding=str, skip_empty=True)
+        self.assertEqual(
+            canonicalize(test_xml),
+            canonicalize(self.test_table_access_xml),
+        )
