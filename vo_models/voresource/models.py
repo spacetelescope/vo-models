@@ -167,6 +167,13 @@ class Contact(BaseXmlModel, ns="vr", nsmap=NSMAP):
     telephone: Optional[str] = element(tag="telephone", default=None)
     alt_identifier: Optional[list[networks.AnyUrl]] = element(tag="altIdentifier", default_factory=list)
 
+    @field_validator("name", mode="before")
+    def _validate_name(cls, values):
+        """Ensure name is a ResourceName instance"""
+        if isinstance(values, str):
+            return ResourceName(value=values)
+        return values
+
 
 class Creator(BaseXmlModel, ns="vr", nsmap=NSMAP):
     """The entity (e.g. person or organisation) primarily responsible for creating something
@@ -192,6 +199,13 @@ class Creator(BaseXmlModel, ns="vr", nsmap=NSMAP):
     name: ResourceName = element(tag="name")
     logo: Optional[networks.AnyUrl] = element(tag="logo", default=None)
     alt_identifier: Optional[list[networks.AnyUrl]] = element(tag="altIdentifier", default_factory=list)
+
+    @field_validator("name", mode="before")
+    def _validate_name(cls, values):
+        """Ensure name is a ResourceName instance"""
+        if isinstance(values, str):
+            return ResourceName(value=values)
+        return values
 
 
 class Relationship(BaseXmlModel, ns="vr", nsmap=NSMAP):

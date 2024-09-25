@@ -194,7 +194,7 @@ class TestContact(TestCase):
     """Test VOResource Contact model"""
 
     test_contact_model = Contact(
-        name=ResourceName(value="John Doe"),
+        name="John Doe",
         address="1234 Example St.",
         email="jdoe@mail.com",
         telephone="555-555-5555",
