@@ -19,7 +19,7 @@ NSMAP = {
 }
 
 
-class Validation(BaseXmlModel, tag="validation", ns="vr", nsmap=NSMAP):
+class Validation(BaseXmlModel, ns="vr", nsmap=NSMAP):
     """A validation stamp combining a validation level and the ID of the validator.
 
     Parameters:
@@ -32,6 +32,14 @@ class Validation(BaseXmlModel, tag="validation", ns="vr", nsmap=NSMAP):
     validated_by: networks.AnyUrl = attr(
         name="validatedBy",
     )
+
+    @field_validator("value", mode="before")
+    def _validate_value(cls, values):
+        """Ensure value is a ValidationLevel instance"""
+        if isinstance(values, str):
+            if values.isdigit():
+                return ValidationLevel(int(values))
+        return values
 
 
 class ResourceName(BaseXmlModel, ns="vr", nsmap=NSMAP):
@@ -422,39 +430,26 @@ class Resource(BaseXmlModel, ns="vr", nsmap=NSMAP):
         """Ensure that the created and updated timestamps are not in the future"""
         if values > datetime.datetime.now(datetime.timezone.utc):
             raise ValueError(f"{values} timestamp must not be in the future")
+        return values
 
     @field_validator("short_name")
     def _validate_short_name(cls, values):
         """Ensure that the short name is no more than 16 characters"""
         if values and len(values) > 16:
             raise ValueError("Short name must be no more than 16 characters")
+        return values
 
 
 class Organisation(Resource, ns="vr", nsmap=NSMAP):
     """A named group of one or more persons brought together to pursue participation in VO applications.
 
     Parameters:
-        created:
-            (attr) - The UTC date and time this resource metadata description was created.
-        updated:
-            (attr) - The UTC date this resource metadata description was last updated.
-        status:
-            (attr) - a tag indicating whether this resource is believed to be still actively maintained.
-        version:
-            (attr) - The VOResource XML schema version against which this instance was written.
-            Implementors should set this to the value of the version attribute of their schema's root (xs:schema)
-            element. Clients may assume version 1.0 if this attribute is missing.
         facility:
             (element) - The observatory or facility used to collect the data contained or managed by this resource.
         instrument:
             (element) - The instrument used to collect the data contained or managed by a resource.
 
     """
-
-    created: UTCTimestamp = attr(name="created")
-    updated: UTCTimestamp = attr(name="updated")
-    status: str = attr(name="status")
-    version: Optional[str] = attr(name="version", default=None)
 
     facility: Optional[list[ResourceName]] = element(tag="facility", default_factory=list)
     instrument: Optional[list[ResourceName]] = element(tag="instrument", default_factory=list)
@@ -496,16 +491,6 @@ class Service(Resource, ns="vr", nsmap=NSMAP):
     """A resource that can be invoked by a client to perform some action on its behalf.
 
     Parameters:
-        created:
-            (attr) - The UTC date and time this resource metadata description was created.
-        updated:
-            (attr) - The UTC date this resource metadata description was last updated.
-        status: (str):
-            (attr) - A tag indicating whether this resource is believed to be still actively maintained.
-        version:
-            (attr) - The VOResource XML schema version against which this instance was written.
-            Implementors should set this to the value of the version attribute of their schema's root (xs:schema)
-            element. Clients may assume version 1.0 if this attribute is missing.
         rights:
             (element) - Information about rights held in and over the resource.
             Mainly for compatibility with DataCite, this elementis repeatable.  Resource record authors are advised
@@ -518,11 +503,6 @@ class Service(Resource, ns="vr", nsmap=NSMAP):
             A service can have many capabilities associated with it, each reflecting different aspects of the
             functionality it provides.
     """
-
-    created: UTCTimestamp = attr(name="created")
-    updated: UTCTimestamp = attr(name="updated")
-    status: str = attr(name="status")
-    version: Optional[str] = attr(name="version", default=None)
 
     rights: Optional[list[Rights]] = element(tag="rights", default_factory=list)
     capability: Optional[list[Capability]] = element(tag="capability", default_factory=list)
