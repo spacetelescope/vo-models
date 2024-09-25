@@ -194,7 +194,7 @@ class TestContact(TestCase):
     """Test VOResource Contact model"""
 
     test_contact_model = Contact(
-        name="John Doe",
+        name=ResourceName(value="John Doe"),
         address="1234 Example St.",
         email="jdoe@mail.com",
         telephone="555-555-5555",
@@ -231,7 +231,7 @@ class TestContact(TestCase):
 class TestCreator(TestCase):
     """Test VOResource Creator model"""
 
-    test_creator_model = Creator(name="Doe, J.", logo="https://example.edu/logo.png")
+    test_creator_model = Creator(name=ResourceName(value="Doe, J."), logo="https://example.edu/logo.png")
     test_creator_xml = (
         '<vr:creator xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0">'
         "<name>Doe, J.</name>"
@@ -309,11 +309,11 @@ class TestCuration(TestCase):
 
     test_curation_model = Curation(
         publisher=ResourceName(value="STScI"),
-        creator=[Creator(name="Doe, J.")],
+        creator=[Creator(name=ResourceName(value="Doe, J."))],
         contributor=[ResourceName(value="Example Resource")],
         date=[Date(value="2021-01-01T00:00:00Z", role="update")],
         version="1.0",
-        contact=[Contact(name="John Doe")],
+        contact=[Contact(name=ResourceName(value="John Doe"))],
     )
 
     test_curation_xml = (
@@ -351,12 +351,12 @@ class TestContent(TestCase):
     """Test VOResource Content model"""
 
     test_content_model = Content(
-        subject="Astronomy",
+        subject=["Astronomy"],
         description="Example description",
-        source=[Source(value="https://example.edu", format="bibcode")],
+        source=Source(value="https://example.edu", format="bibcode"),
         reference_url="https://example.edu",
-        type="Education",
-        content_level="General",
+        type=["Education"],
+        content_level=["General"],
         relationship=[
             Relationship(
                 relationship_type="isPartOf",
@@ -448,8 +448,8 @@ class TestWebService(TestCase):
     """Test the VOResource WebService model."""
 
     test_web_service_model = WebService(
-        wsdl_url="https://example.edu/wsdl",
-        access_url="https://example.edu",
+        wsdl_url=["https://example.edu/wsdl"],
+        access_url=[AccessURL(value="https://example.edu", use="full")],
     )
     test_web_service_xml = (
         '<vr:webService xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0">'
@@ -488,19 +488,19 @@ class TestResource(TestCase):
         alt_identifier=["bibcode:2008ivoa.spec.0222P"],
         curation=Curation(
             publisher=ResourceName(value="STScI"),
-            creator=[Creator(name="Doe, J.")],
+            creator=[Creator(name=ResourceName(value="Doe, J."))],
             contributor=[ResourceName(value="Example Resource")],
             date=[Date(value="2021-01-01T00:00:00Z", role="update")],
             version="1.0",
-            contact=[Contact(name="John Doe")],
+            contact=[Contact(name=ResourceName(value="John Doe"))],
         ),
         content=Content(
-            subject="Astronomy",
+            subject=["Astronomy"],
             description="Example description",
-            source=[Source(value="https://example.edu", format="bibcode")],
+            source=Source(value="https://example.edu", format="bibcode"),
             reference_url="https://example.edu",
-            type="Education",
-            content_level="General",
+            type=["Education"],
+            content_level=["General"],
             relationship=[
                 Relationship(
                     relationship_type="isPartOf",
@@ -586,6 +586,16 @@ class TestOrganization(TestCase):
     """Test the VOResource Organization model."""
 
     test_organization_model = Organisation(
+        title="Example Organization",
+        identifier="https://example.edu",
+        curation=Curation(
+            publisher=ResourceName(value="Example Publisher"), contact=[Contact(name=ResourceName(value="John Doe"))]
+        ),
+        content=Content(
+            subject=["Astronomy"],
+            description="Example description",
+            reference_url="https://example.edu",
+        ),
         created=UTCDateTime("1996-03-11T19:00:00Z"),
         updated=UTCDateTime("1996-03-11T19:00:00Z"),
         status="active",
@@ -598,6 +608,17 @@ class TestOrganization(TestCase):
         '<vr:organization xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" status="active" version="1.0">'
         "<created>1996-03-11T19:00:00Z</created>"
         "<updated>1996-03-11T19:00:00Z</updated>"
+        "<title>Example Organization</title>"
+        "<identifier>https://example.edu</identifier>"
+        "<curation>"
+        "<publisher>Example Publisher</publisher>"
+        "<contact><name>John Doe</name></contact>"
+        "</curation>"
+        "<content>"
+        "<subject>Astronomy</subject>"
+        "<description>Example description</description>"
+        "<referenceURL>https://example.edu</referenceURL>"
+        "</content>"
         '<facility ivo-id="ivo://example.edu/facility">Example Facility</facility>'
         '<instrument ivo-id="ivo://example.edu/instrument">Example Instrument</instrument>'
         "</vr:organization>"
@@ -606,6 +627,13 @@ class TestOrganization(TestCase):
     def test_read_from_xml(self):
         """Test reading from XML."""
         organization = Organisation.from_xml(self.test_organization_xml)
+        self.assertEqual(organization.title, "Example Organization")
+        self.assertEqual(organization.identifier, "https://example.edu")
+        self.assertEqual(organization.curation.publisher.value, "Example Publisher")
+        self.assertEqual(organization.curation.contact[0].name, "John Doe")
+        self.assertEqual(organization.content.subject, "Astronomy")
+        self.assertEqual(organization.content.description, "Example description")
+        self.assertEqual(organization.content.reference_url, "https://example.edu")
         self.assertEqual(organization.created, UTCDateTime("1996-03-11T19:00:00Z"))
         self.assertEqual(organization.updated, UTCDateTime("1996-03-11T19:00:00Z"))
         self.assertEqual(organization.status, "active")
@@ -617,7 +645,6 @@ class TestOrganization(TestCase):
 
     def test_write_to_xml(self):
         """Test writing to XML."""
-
         xml = self.test_organization_model.to_xml()
         self.assertEqual(
             canonicalize(xml, strip_text=True, strip_comments=True),
@@ -632,7 +659,9 @@ class TestCapability(TestCase):
         standard_id="ivo://ivoa.net/std/TAP",
         validation_level=[Validation(value=0, validated_by="https://example.edu")],
         description="Example description",
-        interface=[Interface(version="1.0", role="std")],
+        interface=[
+            Interface(version="1.0", role="std", access_url=[AccessURL(value="https://example.edu", use="full")])
+        ],
     )
 
     test_capability_xml = (
@@ -671,26 +700,28 @@ class TestService(TestCase):
         status="active",
         version="1.0",
         capability=[Capability(standard_id="ivo://ivoa.net/std/TAP")],
-        interface=[Interface(version="1.0", role="std")],
+        interface=[
+            Interface(version="1.0", role="std", access_url=[AccessURL(value="https://example.edu", use="full")])
+        ],
         title="Example Service",
         short_name="example",
         identifier="https://example.edu",
         alt_identifier=["bibcode:2008ivoa.spec.0222P"],
         curation=Curation(
             publisher=ResourceName(value="STScI"),
-            creator=[Creator(name="Doe, J.")],
+            creator=[Creator(name=ResourceName(value="Doe, J."))],
             contributor=[ResourceName(value="Example Resource")],
             date=[Date(value="2021-01-01T00:00:00Z", role="update")],
             version="1.0",
-            contact=[Contact(name="John Doe")],
+            contact=[Contact(name=ResourceName(value="John Doe"))],
         ),
         content=Content(
-            subject="Astronomy",
+            subject=["Astronomy"],
             description="Example description",
-            source=[Source(value="https://example.edu", format="bibcode")],
+            source=Source(value="https://example.edu", format="bibcode"),
             reference_url="https://example.edu",
-            type="Education",
-            content_level="General",
+            type=["Education"],
+            content_level=["General"],
             relationship=[
                 Relationship(
                     relationship_type="isPartOf",
