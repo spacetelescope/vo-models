@@ -33,7 +33,7 @@ VORESOURCE_NAMESPACE_HEADER = """
     xmlns:xml="http://www.w3.org/XML/1998/namespace",
     xmlns="http://www.w3.org/2001/XMLSchema",
     xmlns:xs="http://www.w3.org/2001/XMLSchema",
-    xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0",
+    xmlns="http://www.ivoa.net/xml/VOResource/v1.0",
     xmlns:vm="http://www.ivoa.net/xml/VOMetadata/v0.1",
 """
 
@@ -42,7 +42,9 @@ class TestValidation(TestCase):
     """Test VOResource Validation model."""
 
     test_validation_model = Validation(value=0, validated_by="https://example.edu")
-    test_validation_xml = '<vr:Validation xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" validatedBy="https://example.edu/">0</vr:Validation>'
+    test_validation_xml = (
+        '<Validation xmlns="http://www.ivoa.net/xml/VOResource/v1.0" validatedBy="https://example.edu/">0</Validation>'
+    )
 
     def test_read_from_xml(self):
         """Test reading from XML."""
@@ -63,7 +65,7 @@ class TestResourceName(TestCase):
     """Test VOResource ResourceName model."""
 
     test_resource_name_model = ResourceName(value="Example Resource", ivo_id="ivo://example.edu/resource")
-    test_resource_name_xml = '<vr:ResourceName xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" ivo-id="ivo://example.edu/resource">Example Resource</vr:ResourceName>'
+    test_resource_name_xml = '<ResourceName xmlns="http://www.ivoa.net/xml/VOResource/v1.0" ivo-id="ivo://example.edu/resource">Example Resource</ResourceName>'
 
     def test_read_from_xml(self):
         """Test reading from XML."""
@@ -85,7 +87,7 @@ class TestDate(TestCase):
 
     test_date_model = Date(value="2021-01-01T00:00:00Z", role="update")
     test_date_xml = (
-        '<vr:Date xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" role="update">2021-01-01T00:00:00.000Z</vr:Date>'
+        '<Date xmlns="http://www.ivoa.net/xml/VOResource/v1.0" role="update">2021-01-01T00:00:00.000Z</Date>'
     )
 
     def test_read_from_xml(self):
@@ -107,7 +109,9 @@ class TestSource(TestCase):
     """Test VOResource Source model"""
 
     test_source_model = Source(value="https://example.edu", format="bibcode")
-    test_source_xml = '<vr:Source xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" format="bibcode">https://example.edu/</vr:Source>'
+    test_source_xml = (
+        '<Source xmlns="http://www.ivoa.net/xml/VOResource/v1.0" format="bibcode">https://example.edu/</Source>'
+    )
 
     def test_read_from_xml(self):
         """Test reading from XML."""
@@ -128,7 +132,7 @@ class TestRights(TestCase):
     """Test VOResource Rights model"""
 
     test_rights_model = Rights(value="CC BY 4.0", rights_uri="https://creativecommons.org/licenses/by/4.0/")
-    test_rights_xml = '<vr:Rights xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" rightsURI="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</vr:Rights>'
+    test_rights_xml = '<Rights xmlns="http://www.ivoa.net/xml/VOResource/v1.0" rightsURI="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</Rights>'
 
     def test_read_from_xml(self):
         """Test reading from XML."""
@@ -149,7 +153,9 @@ class TestAccessURL(TestCase):
     """Test VOResource AccessURL model"""
 
     test_access_url_model = AccessURL(value="https://example.edu", use="full")
-    test_access_url_xml = '<vr:AccessURL xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" use="full">https://example.edu/</vr:AccessURL>'
+    test_access_url_xml = (
+        '<AccessURL xmlns="http://www.ivoa.net/xml/VOResource/v1.0" use="full">https://example.edu/</AccessURL>'
+    )
 
     def test_read_from_xml(self):
         """Test reading from XML."""
@@ -170,7 +176,9 @@ class TestMirrorURL(TestCase):
     """Test VOResource MirrorURL model"""
 
     test_mirror_url_model = MirrorURL(value="https://example.edu", title="Mirror")
-    test_mirror_url_xml = '<vr:MirrorURL xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" title="Mirror">https://example.edu/</vr:MirrorURL>'
+    test_mirror_url_xml = (
+        '<MirrorURL xmlns="http://www.ivoa.net/xml/VOResource/v1.0" title="Mirror">https://example.edu/</MirrorURL>'
+    )
 
     def test_read_from_xml(self):
         """Test reading from XML."""
@@ -198,13 +206,13 @@ class TestContact(TestCase):
         alt_identifier=["http://orcid.org/0000-0001-9718-6515"],
     )
     test_contact_xml = (
-        '<vr:Contact xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0">'
-        "<vr:name>John Doe</vr:name>"
-        "<vr:address>1234 Example St.</vr:address>"
-        "<vr:email>jdoe@mail.com</vr:email>"
-        "<vr:telephone>555-555-5555</vr:telephone>"
-        "<vr:altIdentifier>http://orcid.org/0000-0001-9718-6515</vr:altIdentifier>"
-        "</vr:Contact>"
+        '<Contact xmlns="http://www.ivoa.net/xml/VOResource/v1.0">'
+        "<name>John Doe</name>"
+        "<address>1234 Example St.</address>"
+        "<email>jdoe@mail.com</email>"
+        "<telephone>555-555-5555</telephone>"
+        "<altIdentifier>http://orcid.org/0000-0001-9718-6515</altIdentifier>"
+        "</Contact>"
     )
 
     def test_read_from_xml(self):
@@ -230,10 +238,10 @@ class TestCreator(TestCase):
 
     test_creator_model = Creator(name=ResourceName(value="Doe, J."), logo="https://example.edu/logo.png")
     test_creator_xml = (
-        '<vr:Creator xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0">'
-        "<vr:name>Doe, J.</vr:name>"
-        "<vr:logo>https://example.edu/logo.png</vr:logo>"
-        "</vr:Creator>"
+        '<Creator xmlns="http://www.ivoa.net/xml/VOResource/v1.0">'
+        "<name>Doe, J.</name>"
+        "<logo>https://example.edu/logo.png</logo>"
+        "</Creator>"
     )
 
     def test_read_from_xml(self):
@@ -259,10 +267,10 @@ class TestRelationship(TestCase):
         related_resource=[ResourceName(value="Example Resource", ivo_id="ivo://example.edu/resource")],
     )
     test_relationship_xml = (
-        '<vr:Relationship xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0">'
-        "<vr:relationshipType>isPartOf</vr:relationshipType>"
-        '<vr:relatedResource ivo-id="ivo://example.edu/resource">Example Resource</vr:relatedResource>'
-        "</vr:Relationship>"
+        '<Relationship xmlns="http://www.ivoa.net/xml/VOResource/v1.0">'
+        "<relationshipType>isPartOf</relationshipType>"
+        '<relatedResource ivo-id="ivo://example.edu/resource">Example Resource</relatedResource>'
+        "</Relationship>"
     )
 
     def test_read_from_xml(self):
@@ -285,7 +293,7 @@ class TestSecurityMethod(TestCase):
     """Test VOResource SecurityMethod model"""
 
     test_security_method_model = SecurityMethod(standard_id="ivo://ivoa.net/std/Security#basic")
-    test_security_method_xml = '<vr:SecurityMethod xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" standardID="ivo://ivoa.net/std/Security#basic"/>'
+    test_security_method_xml = '<SecurityMethod xmlns="http://www.ivoa.net/xml/VOResource/v1.0" standardID="ivo://ivoa.net/std/Security#basic"/>'
 
     def test_read_from_xml(self):
         """Test reading from XML."""
@@ -314,14 +322,14 @@ class TestCuration(TestCase):
     )
 
     test_curation_xml = (
-        '<vr:Curation xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0">'
-        "<vr:publisher>STScI</vr:publisher>"
-        "<vr:creator><vr:name>Doe, J.</vr:name></vr:creator>"
-        "<vr:contributor>Example Resource</vr:contributor>"
-        '<vr:date role="update">2021-01-01T00:00:00.000Z</vr:date>'
-        "<vr:version>1.0</vr:version>"
-        "<vr:contact><vr:name>John Doe</vr:name></vr:contact>"
-        "</vr:Curation>"
+        '<Curation xmlns="http://www.ivoa.net/xml/VOResource/v1.0">'
+        "<publisher>STScI</publisher>"
+        "<creator><name>Doe, J.</name></creator>"
+        "<contributor>Example Resource</contributor>"
+        '<date role="update">2021-01-01T00:00:00.000Z</date>'
+        "<version>1.0</version>"
+        "<contact><name>John Doe</name></contact>"
+        "</Curation>"
     )
 
     def test_read_from_xml(self):
@@ -363,18 +371,18 @@ class TestContent(TestCase):
     )
 
     test_content_xml = (
-        '<vr:Content xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0">'
-        "<vr:subject>Astronomy</vr:subject>"
-        "<vr:description>Example description</vr:description>"
-        '<vr:source format="bibcode">https://example.edu/</vr:source>'
-        "<vr:referenceURL>https://example.edu/</vr:referenceURL>"
-        "<vr:type>Education</vr:type>"
-        "<vr:contentLevel>General</vr:contentLevel>"
-        "<vr:relationship>"
-        "<vr:relationshipType>isPartOf</vr:relationshipType>"
-        '<vr:relatedResource ivo-id="ivo://example.edu/resource">Example Resource</vr:relatedResource>'
-        "</vr:relationship>"
-        "</vr:Content>"
+        '<Content xmlns="http://www.ivoa.net/xml/VOResource/v1.0">'
+        "<subject>Astronomy</subject>"
+        "<description>Example description</description>"
+        '<source format="bibcode">https://example.edu/</source>'
+        "<referenceURL>https://example.edu/</referenceURL>"
+        "<type>Education</type>"
+        "<contentLevel>General</contentLevel>"
+        "<relationship>"
+        "<relationshipType>isPartOf</relationshipType>"
+        '<relatedResource ivo-id="ivo://example.edu/resource">Example Resource</relatedResource>'
+        "</relationship>"
+        "</Content>"
     )
 
     def test_read_from_xml(self):
@@ -412,12 +420,12 @@ class TestInterface(TestCase):
         test_querystring="test",
     )
     test_interface_xml = (
-        '<vr:Interface xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" role="std" version="1.0">'
-        '<vr:accessURL use="full">https://example.edu/</vr:accessURL>'
-        '<vr:mirrorURL title="Mirror">https://example.edu/</vr:mirrorURL>'
-        '<vr:securityMethod standardID="ivo://ivoa.net/std/Security#basic"/>'
-        "<vr:testQueryString>test</vr:testQueryString>"
-        "</vr:Interface>"
+        '<interface xmlns="http://www.ivoa.net/xml/VOResource/v1.0" role="std" version="1.0">'
+        '<accessURL use="full">https://example.edu/</accessURL>'
+        '<mirrorURL title="Mirror">https://example.edu/</mirrorURL>'
+        '<securityMethod standardID="ivo://ivoa.net/std/Security#basic"/>'
+        "<testQueryString>test</testQueryString>"
+        "</interface>"
     )
 
     def test_read_from_xml(self):
@@ -449,10 +457,12 @@ class TestWebService(TestCase):
         access_url=[AccessURL(value="https://example.edu/", use="full")],
     )
     test_web_service_xml = (
-        '<vr:WebService xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0">'
-        '<vr:accessURL use="full">https://example.edu/</vr:accessURL>'
-        "<vr:wsdlURL>https://example.edu/wsdl/</vr:wsdlURL>"
-        "</vr:WebService>"
+        '<interface xmlns="http://www.ivoa.net/xml/VOResource/v1.0" '
+        'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+        'xsi:type="vr:WebService">'
+        '<accessURL use="full">https://example.edu/</accessURL>'
+        "<wsdlURL>https://example.edu/wsdl/</wsdlURL>"
+        "</interface>"
     )
 
     def test_read_from_xml(self):
@@ -461,6 +471,7 @@ class TestWebService(TestCase):
         self.assertEqual(web_service.wsdl_url[0], AnyUrl("https://example.edu/wsdl/"))
         self.assertEqual(web_service.access_url[0].value, AnyUrl("https://example.edu/"))
         self.assertEqual(web_service.access_url[0].use, "full")
+        self.assertEqual(web_service.type, "vr:WebService")
 
     def test_write_to_xml(self):
         """Test writing to XML."""
@@ -509,33 +520,33 @@ class TestResource(TestCase):
     )
 
     test_resource_xml = (
-        '<vr:Resource xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" created="1996-03-11T19:00:00.000Z" updated="1996-03-11T19:00:00.000Z" status="active" version="1.0" >'
-        '<vr:validationLevel validatedBy="https://example.edu/">0</vr:validationLevel>'
-        "<vr:title>Example Resource</vr:title>"
-        "<vr:shortName>example</vr:shortName>"
-        "<vr:identifier>https://example.edu/</vr:identifier>"
-        "<vr:altIdentifier>bibcode:2008ivoa.spec.0222P</vr:altIdentifier>"
-        "<vr:curation>"
-        "<vr:publisher>STScI</vr:publisher>"
-        "<vr:creator><vr:name>Doe, J.</vr:name></vr:creator>"
-        "<vr:contributor>Example Resource</vr:contributor>"
-        '<vr:date role="update">2021-01-01T00:00:00.000Z</vr:date>'
-        "<vr:version>1.0</vr:version>"
-        "<vr:contact><vr:name>John Doe</vr:name></vr:contact>"
-        "</vr:curation>"
-        "<vr:content>"
-        "<vr:subject>Astronomy</vr:subject>"
-        "<vr:description>Example description</vr:description>"
-        '<vr:source format="bibcode">https://example.edu/</vr:source>'
-        "<vr:referenceURL>https://example.edu/</vr:referenceURL>"
-        "<vr:type>Education</vr:type>"
-        "<vr:contentLevel>General</vr:contentLevel>"
-        "<vr:relationship>"
-        "<vr:relationshipType>isPartOf</vr:relationshipType>"
-        '<vr:relatedResource ivo-id="ivo://example.edu/resource">Example Resource</vr:relatedResource>'
-        "</vr:relationship>"
-        "</vr:content>"
-        "</vr:Resource>"
+        '<Resource xmlns="http://www.ivoa.net/xml/VOResource/v1.0" created="1996-03-11T19:00:00.000Z" updated="1996-03-11T19:00:00.000Z" status="active" version="1.0" >'
+        '<validationLevel validatedBy="https://example.edu/">0</validationLevel>'
+        "<title>Example Resource</title>"
+        "<shortName>example</shortName>"
+        "<identifier>https://example.edu/</identifier>"
+        "<altIdentifier>bibcode:2008ivoa.spec.0222P</altIdentifier>"
+        "<curation>"
+        "<publisher>STScI</publisher>"
+        "<creator><name>Doe, J.</name></creator>"
+        "<contributor>Example Resource</contributor>"
+        '<date role="update">2021-01-01T00:00:00.000Z</date>'
+        "<version>1.0</version>"
+        "<contact><name>John Doe</name></contact>"
+        "</curation>"
+        "<content>"
+        "<subject>Astronomy</subject>"
+        "<description>Example description</description>"
+        '<source format="bibcode">https://example.edu/</source>'
+        "<referenceURL>https://example.edu/</referenceURL>"
+        "<type>Education</type>"
+        "<contentLevel>General</contentLevel>"
+        "<relationship>"
+        "<relationshipType>isPartOf</relationshipType>"
+        '<relatedResource ivo-id="ivo://example.edu/resource">Example Resource</relatedResource>'
+        "</relationship>"
+        "</content>"
+        "</Resource>"
     )
 
     def test_read_from_xml(self):
@@ -601,21 +612,21 @@ class TestOrganization(TestCase):
     )
 
     test_organization_xml = (
-        '<vr:Organisation xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" status="active" version="1.0" created="1996-03-11T19:00:00.000Z" updated="1996-03-11T19:00:00.000Z">'
-        "<vr:title>Example Organization</vr:title>"
-        "<vr:identifier>https://example.edu/</vr:identifier>"
-        "<vr:curation>"
-        "<vr:publisher>Example Publisher</vr:publisher>"
-        "<vr:contact><vr:name>John Doe</vr:name></vr:contact>"
-        "</vr:curation>"
-        "<vr:content>"
-        "<vr:subject>Astronomy</vr:subject>"
-        "<vr:description>Example description</vr:description>"
-        "<vr:referenceURL>https://example.edu/</vr:referenceURL>"
-        "</vr:content>"
-        '<vr:facility ivo-id="ivo://example.edu/facility">Example Facility</vr:facility>'
-        '<vr:instrument ivo-id="ivo://example.edu/instrument">Example Instrument</vr:instrument>'
-        "</vr:Organisation>"
+        '<Organisation xmlns="http://www.ivoa.net/xml/VOResource/v1.0" status="active" version="1.0" created="1996-03-11T19:00:00.000Z" updated="1996-03-11T19:00:00.000Z">'
+        "<title>Example Organization</title>"
+        "<identifier>https://example.edu/</identifier>"
+        "<curation>"
+        "<publisher>Example Publisher</publisher>"
+        "<contact><name>John Doe</name></contact>"
+        "</curation>"
+        "<content>"
+        "<subject>Astronomy</subject>"
+        "<description>Example description</description>"
+        "<referenceURL>https://example.edu/</referenceURL>"
+        "</content>"
+        '<facility ivo-id="ivo://example.edu/facility">Example Facility</facility>'
+        '<instrument ivo-id="ivo://example.edu/instrument">Example Instrument</instrument>'
+        "</Organisation>"
     )
 
     def test_read_from_xml(self):
@@ -659,13 +670,13 @@ class TestCapability(TestCase):
     )
 
     test_capability_xml = (
-        '<vr:Capability xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" standardID="ivo://ivoa.net/std/TAP">'
-        '<vr:validationLevel validatedBy="https://example.edu/">0</vr:validationLevel>'
-        "<vr:description>Example description</vr:description>"
-        '<vr:interface role="std" version="1.0">'
-        '<vr:accessURL use="full">https://example.edu/</vr:accessURL>'
-        "</vr:interface>"
-        "</vr:Capability>"
+        '<capability xmlns="http://www.ivoa.net/xml/VOResource/v1.0" standardID="ivo://ivoa.net/std/TAP">'
+        '<validationLevel validatedBy="https://example.edu/">0</validationLevel>'
+        "<description>Example description</description>"
+        '<interface role="std" version="1.0">'
+        '<accessURL use="full">https://example.edu/</accessURL>'
+        "</interface>"
+        "</capability>"
     )
 
     def test_read_from_xml(self):
@@ -723,32 +734,32 @@ class TestService(TestCase):
     )
 
     test_service_xml = (
-        '<vr:Service xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" created="1996-03-11T19:00:00.000Z" updated="1996-03-11T19:00:00.000Z" status="active">'
-        "<vr:title>Example Service</vr:title>"
-        "<vr:identifier>https://example.edu/</vr:identifier>"
-        "<vr:curation>"
-        "<vr:publisher>STScI</vr:publisher>"
-        "<vr:creator><vr:name>Doe, J.</vr:name></vr:creator>"
-        "<vr:contributor>Example Resource</vr:contributor>"
-        '<vr:date role="update">2021-01-01T00:00:00.000Z</vr:date>'
-        "<vr:version>1.0</vr:version>"
-        "<vr:contact><vr:name>John Doe</vr:name></vr:contact>"
-        "</vr:curation>"
-        "<vr:content>"
-        "<vr:subject>Astronomy</vr:subject>"
-        "<vr:description>Example description</vr:description>"
-        '<vr:source format="bibcode">https://example.edu/</vr:source>'
-        "<vr:referenceURL>https://example.edu/</vr:referenceURL>"
-        "<vr:type>Education</vr:type>"
-        "<vr:contentLevel>General</vr:contentLevel>"
-        "<vr:relationship>"
-        "<vr:relationshipType>isPartOf</vr:relationshipType>"
-        '<vr:relatedResource ivo-id="ivo://example.edu/resource">Example Resource</vr:relatedResource>'
-        "</vr:relationship>"
-        "</vr:content>"
-        "<vr:rights rightsURI='https://creativecommons.org/licenses/by/4.0/'>CC BY 4.0</vr:rights>"
-        "<vr:capability standardID='ivo://ivoa.net/std/TAP'/>"
-        "</vr:Service>"
+        '<Service xmlns="http://www.ivoa.net/xml/VOResource/v1.0" created="1996-03-11T19:00:00.000Z" updated="1996-03-11T19:00:00.000Z" status="active">'
+        "<title>Example Service</title>"
+        "<identifier>https://example.edu/</identifier>"
+        "<curation>"
+        "<publisher>STScI</publisher>"
+        "<creator><name>Doe, J.</name></creator>"
+        "<contributor>Example Resource</contributor>"
+        '<date role="update">2021-01-01T00:00:00.000Z</date>'
+        "<version>1.0</version>"
+        "<contact><name>John Doe</name></contact>"
+        "</curation>"
+        "<content>"
+        "<subject>Astronomy</subject>"
+        "<description>Example description</description>"
+        '<source format="bibcode">https://example.edu/</source>'
+        "<referenceURL>https://example.edu/</referenceURL>"
+        "<type>Education</type>"
+        "<contentLevel>General</contentLevel>"
+        "<relationship>"
+        "<relationshipType>isPartOf</relationshipType>"
+        '<relatedResource ivo-id="ivo://example.edu/resource">Example Resource</relatedResource>'
+        "</relationship>"
+        "</content>"
+        "<rights rightsURI='https://creativecommons.org/licenses/by/4.0/'>CC BY 4.0</rights>"
+        "<capability standardID='ivo://ivoa.net/std/TAP'/>"
+        "</Service>"
     )
 
     def test_read_from_xml(self):
