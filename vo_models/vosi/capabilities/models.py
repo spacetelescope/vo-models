@@ -1,19 +1,19 @@
 """VOSICapabilities pydantic-xml models."""
 
-from typing import Optional, Union
+from typing import Any, Union
 
 from pydantic_xml import BaseXmlModel, element
 
 from vo_models.tapregext.models import TableAccess
+from vo_models.voresource.models import NSMAP as VORESOURCE_NSMAP
 from vo_models.voresource.models import Capability
 
 NSMAP = {
     "vosi": "http://www.ivoa.net/xml/VOSICapabilities/v1.0",
-    "vr": "http://www.ivoa.net/xml/VOResource/v1.0",
     "xsd": "http://www.w3.org/2001/XMLSchema",
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",
     "tr": "http://www.ivoa.net/xml/TAPRegExt/v1.0",
-}
+} | VORESOURCE_NSMAP
 
 
 class VOSICapabilities(BaseXmlModel, tag="capabilities", ns="vosi", nsmap=NSMAP):
@@ -26,4 +26,9 @@ class VOSICapabilities(BaseXmlModel, tag="capabilities", ns="vosi", nsmap=NSMAP)
                 attribute on this element.
     """
 
-    capability: Optional[list[Union[Capability | TableAccess]]] = element(tag="capability", default_factory=list)
+    capability: list[Union[TableAccess, Capability]] = element(
+        tag="capability",
+        ns="",
+        nsmap=NSMAP,
+        default=[],
+    )

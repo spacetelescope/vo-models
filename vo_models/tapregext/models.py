@@ -4,6 +4,7 @@ from typing import Literal, Optional
 
 from pydantic_xml import BaseXmlModel, attr, element
 
+from vo_models.voresource.models import NSMAP as VORESOURCE_NSMAP
 from vo_models.voresource.models import Capability
 
 NSMAP = {
@@ -11,10 +12,11 @@ NSMAP = {
     "vr": "http://www.ivoa.net/xml/VOResource/v1.0",
     "vm": "http://www.ivoa.net/xml/VOMetadata/v0.1",
     "tr": "http://www.ivoa.net/xml/TAPRegExt/v1.0",
-}
+    "xsi": "http://www.w3.org/2001/XMLSchema-instance"
+} | VORESOURCE_NSMAP
 
 
-class DataModelType(BaseXmlModel, ns="tr", nsmap=NSMAP):
+class DataModelType(BaseXmlModel, nsmap=NSMAP):
     """IVOA defined data model, identified by an IVORN.
 
     Parameters:
@@ -28,7 +30,7 @@ class DataModelType(BaseXmlModel, ns="tr", nsmap=NSMAP):
     ivo_id: str = attr(name="ivo-id")
 
 
-class Version(BaseXmlModel, ns="tr", nsmap=NSMAP):
+class Version(BaseXmlModel, nsmap=NSMAP):
     """One version of the language supported by the service.
 
     Parameters:
@@ -42,7 +44,7 @@ class Version(BaseXmlModel, ns="tr", nsmap=NSMAP):
     ivo_id: Optional[str] = attr(name="ivo-id", default=None)
 
 
-class LanguageFeature(BaseXmlModel, ns="tr", nsmap=NSMAP):
+class LanguageFeature(BaseXmlModel, nsmap=NSMAP):
     """A non-standard or non-mandatory feature implemented by the language.
 
     Parameters:
@@ -56,7 +58,7 @@ class LanguageFeature(BaseXmlModel, ns="tr", nsmap=NSMAP):
     description: Optional[str] = element(tag="description", default=None)
 
 
-class OutputFormat(BaseXmlModel, ns="tr", nsmap=NSMAP):
+class OutputFormat(BaseXmlModel, nsmap=NSMAP):
     """An output format supported by the service.
 
     Parameters:
@@ -70,7 +72,7 @@ class OutputFormat(BaseXmlModel, ns="tr", nsmap=NSMAP):
     alias: Optional[list[str]] = element(tag="alias", default_factory=list)
 
 
-class UploadMethod(BaseXmlModel, ns="tr", nsmap=NSMAP):
+class UploadMethod(BaseXmlModel, nsmap=NSMAP):
     """An upload method as defined by IVOA.
 
     Parameters:
@@ -81,7 +83,7 @@ class UploadMethod(BaseXmlModel, ns="tr", nsmap=NSMAP):
     ivo_id: str = attr(name="ivo-id")
 
 
-class TimeLimits(BaseXmlModel, ns="tr", nsmap=NSMAP):
+class TimeLimits(BaseXmlModel, nsmap=NSMAP):
     """Time-valued limits, all values given in seconds.
 
     Parameters:
@@ -95,7 +97,7 @@ class TimeLimits(BaseXmlModel, ns="tr", nsmap=NSMAP):
     hard: Optional[int] = element(tag="hard", default=None)
 
 
-class DataLimit(BaseXmlModel, ns="tr", nsmap=NSMAP):
+class DataLimit(BaseXmlModel, nsmap=NSMAP):
     """A limit on some data size, either in rows or in bytes.
 
     Parameters:
@@ -109,7 +111,7 @@ class DataLimit(BaseXmlModel, ns="tr", nsmap=NSMAP):
     unit: Literal["byte", "row"] = attr(name="unit")
 
 
-class DataLimits(BaseXmlModel, ns="tr", nsmap=NSMAP):
+class DataLimits(BaseXmlModel, nsmap=NSMAP):
     """Limits on data sizes, given in rows or bytes.
 
     Parameters:
@@ -123,7 +125,7 @@ class DataLimits(BaseXmlModel, ns="tr", nsmap=NSMAP):
     hard: Optional[DataLimit] = element(tag="hard", default=None)
 
 
-class LanguageFeatureList(BaseXmlModel, ns="tr", nsmap=NSMAP):
+class LanguageFeatureList(BaseXmlModel, nsmap=NSMAP):
     """An enumeration of non-standard or non-mandatory features of a specific type implemented by the language.
 
     Parameters:
@@ -137,7 +139,7 @@ class LanguageFeatureList(BaseXmlModel, ns="tr", nsmap=NSMAP):
     type: str = attr(name="type")
 
 
-class Language(BaseXmlModel, ns="tr", nsmap=NSMAP):
+class Language(BaseXmlModel, nsmap=NSMAP):
     """A query language supported by the service.
 
     Parameters:
@@ -157,7 +159,7 @@ class Language(BaseXmlModel, ns="tr", nsmap=NSMAP):
     language_features: Optional[list[LanguageFeatureList]] = element(tag="languageFeatures", default_factory=[])
 
 
-class TableAccess(Capability, ns="tr", tag="capability", nsmap=NSMAP):
+class TableAccess(Capability, tag="capability", nsmap=NSMAP):
     """The capabilities of a TAP server.
 
     Parameters:
@@ -180,6 +182,7 @@ class TableAccess(Capability, ns="tr", tag="capability", nsmap=NSMAP):
     """
 
     standard_id: Literal["ivo://ivoa.net/std/TAP"] = attr(name="standardID", default="ivo://ivoa.net/std/TAP")
+    type: Literal["tr:TableAccess"] = attr(default="tr:TableAccess", ns="xsi")
 
     data_model: Optional[list[DataModelType]] = element(tag="dataModel", default_factory=list)
     language: list[Language] = element(tag="language")

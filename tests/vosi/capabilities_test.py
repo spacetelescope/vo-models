@@ -16,7 +16,7 @@ from vo_models.tapregext.models import (
     TableAccess,
     Version,
 )
-from vo_models.voresource.models import AccessURL, Capability, Interface
+from vo_models.voresource.models import AccessURL, Capability, Interface, WebBrowser
 from vo_models.vosi.capabilities.models import VOSICapabilities
 
 CAPABILITIES_HEADER = """xmlns:vosi="http://www.ivoa.net/xml/VOSICapabilities/v1.0"
@@ -176,8 +176,7 @@ class TestVOSICapabilities(TestCase):
     test_dali_examples = Capability(
         standard_id="ivo://ivoa.net/std/DALI#examples",
         interface=[
-            Interface(
-                type="vr:WebBrowser",
+            WebBrowser(
                 access_url=[AccessURL(use="full", value="https://someservice.edu/tap/examples")],
             )
         ],
@@ -192,9 +191,9 @@ class TestVOSICapabilities(TestCase):
         ]
     )
 
-    def _get_capability(self, standard_id: str) -> Capability:
+    def _get_capability(self, capabilities: VOSICapabilities, standard_id: str) -> Capability:
         """Get a capability from the test capabilities."""
-        for cap in self.test_vosi_capabilities_model.capability:
+        for cap in capabilities.capability:
             if str(cap.standard_id) == standard_id:
                 return cap
         return None
@@ -206,27 +205,30 @@ class TestVOSICapabilities(TestCase):
         self.assertEqual(len(capabilities.capability), 5)
 
         # Check the TAP capability
-        tap_capability = self._get_capability("ivo://ivoa.net/std/TAP")
+        tap_capability: TableAccess = self._get_capability(capabilities, "ivo://ivoa.net/std/TAP")
         self.assertIsNotNone(tap_capability)
         self.assertEqual(tap_capability, self.test_tap_capabilities)
+        self.assertEqual(len(tap_capability.interface), 1)
+        self.assertIsNotNone(tap_capability.output_limit)
+        self.assertEqual(len(tap_capability.language), 1)
 
         # Check the VOSI capabilities
-        vosi_capabilities = self._get_capability("ivo://ivoa.net/std/VOSI#capabilities")
+        vosi_capabilities = self._get_capability(capabilities, "ivo://ivoa.net/std/VOSI#capabilities")
         self.assertIsNotNone(vosi_capabilities)
         self.assertEqual(vosi_capabilities, self.test_vosi_capabilities)
 
         # Check the VOSI availability
-        vosi_availability = self._get_capability("ivo://ivoa.net/std/VOSI#availability")
+        vosi_availability = self._get_capability(capabilities, "ivo://ivoa.net/std/VOSI#availability")
         self.assertIsNotNone(vosi_availability)
         self.assertEqual(vosi_availability, self.test_vosi_availability)
 
         # Check the VOSI tables
-        vosi_tables = self._get_capability("ivo://ivoa.net/std/VOSI#tables")
+        vosi_tables = self._get_capability(capabilities, "ivo://ivoa.net/std/VOSI#tables")
         self.assertIsNotNone(vosi_tables)
         self.assertEqual(vosi_tables, self.test_vosi_tables)
 
         # Check the DALI examples
-        dali_examples = self._get_capability("ivo://ivoa.net/std/DALI#examples")
+        dali_examples = self._get_capability(capabilities, "ivo://ivoa.net/std/DALI#examples")
         self.assertIsNotNone(dali_examples)
         self.assertEqual(dali_examples, self.test_dali_examples)
 
