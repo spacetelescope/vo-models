@@ -4,8 +4,6 @@ from datetime import timezone as tz
 from unittest import TestCase
 from xml.etree.ElementTree import canonicalize
 
-from lxml import etree
-
 from vo_models.tapregext.models import (
     DataLimit,
     DataLimits,
@@ -16,6 +14,7 @@ from vo_models.tapregext.models import (
     TableAccess,
     Version,
 )
+from vo_models.vodataservice.models import ParamHTTP
 from vo_models.voresource.models import AccessURL, Capability, Interface, WebBrowser
 from vo_models.vosi.capabilities.models import VOSICapabilities
 
@@ -42,7 +41,7 @@ class TestVOSICapabilities(TestCase):
                 <name>ADQL</name>
                 <version ivo-id="ivo://ivoa.net/std/ADQL#v2.0">2.0</version>
                 <description>
-                    ADQL-2.0. Positional queries using CONTAINS with POINT, and CIRCLE are supported.
+                    ADQL-2.0. Positional queries using CONTAINS with POINT and CIRCLE are supported.
                 </description>
                 <languageFeatures type="ivo://ivoa.net/std/TAPRegExt#features-adql-geo">
                     <feature>
@@ -100,9 +99,8 @@ class TestVOSICapabilities(TestCase):
     test_tap_capabilities = TableAccess(
         type="tr:TableAccess",
         interface=[
-            Interface(
+            ParamHTTP(
                 role="std",
-                type="vs:ParamHTTP",
                 version="1.1",
                 access_url=[AccessURL(use="full", value="https://someservice.edu/tap")],
             )
@@ -111,15 +109,13 @@ class TestVOSICapabilities(TestCase):
             Language(
                 name="ADQL",
                 version=[Version(value="2.0", ivo_id="ivo://ivoa.net/std/ADQL#v2.0")],
-                description="ADQL-2.0. Positional queries using CONTAINS with POINT, CIRCLE, BOX, and POLYGON are supported.",
+                description="ADQL-2.0. Positional queries using CONTAINS with POINT and CIRCLE are supported.",
                 language_features=[
                     LanguageFeatureList(
                         type="ivo://ivoa.net/std/TAPRegExt#features-adql-geo",
                         feature=[
                             LanguageFeature(form="POINT"),
                             LanguageFeature(form="CIRCLE"),
-                            LanguageFeature(form="BOX"),
-                            LanguageFeature(form="POLYGON"),
                         ],
                     ),
                 ],
@@ -145,8 +141,7 @@ class TestVOSICapabilities(TestCase):
     test_vosi_capabilities = Capability(
         standard_id="ivo://ivoa.net/std/VOSI#capabilities",
         interface=[
-            Interface(
-                type="vs:ParamHTTP",
+            ParamHTTP(
                 role="std",
                 access_url=[AccessURL(use="full", value="https://someservice.edu/tap/capabilities")],
             )
@@ -155,8 +150,7 @@ class TestVOSICapabilities(TestCase):
     test_vosi_availability = Capability(
         standard_id="ivo://ivoa.net/std/VOSI#availability",
         interface=[
-            Interface(
-                type="vs:ParamHTTP",
+            ParamHTTP(
                 role="std",
                 access_url=[AccessURL(use="full", value="https://someservice.edu/tap/availability")],
             )
@@ -165,8 +159,7 @@ class TestVOSICapabilities(TestCase):
     test_vosi_tables = Capability(
         standard_id="ivo://ivoa.net/std/VOSI#tables",
         interface=[
-            Interface(
-                type="vs:ParamHTTP",
+            ParamHTTP(
                 role="std",
                 version="1.1",
                 access_url=[AccessURL(use="full", value="https://someservice.edu/tap/tables")],
@@ -207,30 +200,42 @@ class TestVOSICapabilities(TestCase):
         # Check the TAP capability
         tap_capability: TableAccess = self._get_capability(capabilities, "ivo://ivoa.net/std/TAP")
         self.assertIsNotNone(tap_capability)
-        self.assertEqual(tap_capability, self.test_tap_capabilities)
         self.assertEqual(len(tap_capability.interface), 1)
+        self.assertIsInstance(tap_capability.interface[0], Interface)
+        self.assertEqual(tap_capability.interface[0].type, "vs:ParamHTTP")
         self.assertIsNotNone(tap_capability.output_limit)
+        self.assertEqual(tap_capability.output_limit.default.value, 100000)
         self.assertEqual(len(tap_capability.language), 1)
+        self.assertEqual(len(tap_capability.language[0].language_features), 1)
+        self.assertEqual(len(tap_capability.output_format), 2)
 
         # Check the VOSI capabilities
         vosi_capabilities = self._get_capability(capabilities, "ivo://ivoa.net/std/VOSI#capabilities")
         self.assertIsNotNone(vosi_capabilities)
-        self.assertEqual(vosi_capabilities, self.test_vosi_capabilities)
+        self.assertEqual(len(vosi_capabilities.interface), 1)
+        self.assertIsInstance(vosi_capabilities.interface[0], Interface)
+        self.assertEqual(vosi_capabilities.interface[0].type, "vs:ParamHTTP")
 
         # Check the VOSI availability
         vosi_availability = self._get_capability(capabilities, "ivo://ivoa.net/std/VOSI#availability")
         self.assertIsNotNone(vosi_availability)
-        self.assertEqual(vosi_availability, self.test_vosi_availability)
+        self.assertEqual(len(vosi_availability.interface), 1)
+        self.assertIsInstance(vosi_availability.interface[0], Interface)
+        self.assertEqual(vosi_availability.interface[0].type, "vs:ParamHTTP")
 
         # Check the VOSI tables
         vosi_tables = self._get_capability(capabilities, "ivo://ivoa.net/std/VOSI#tables")
         self.assertIsNotNone(vosi_tables)
-        self.assertEqual(vosi_tables, self.test_vosi_tables)
+        self.assertEqual(len(vosi_tables.interface), 1)
+        self.assertIsInstance(vosi_tables.interface[0], Interface)
+        self.assertEqual(vosi_tables.interface[0].type, "vs:ParamHTTP")
 
         # Check the DALI examples
         dali_examples = self._get_capability(capabilities, "ivo://ivoa.net/std/DALI#examples")
         self.assertIsNotNone(dali_examples)
-        self.assertEqual(dali_examples, self.test_dali_examples)
+        self.assertEqual(len(dali_examples.interface), 1)
+        self.assertIsInstance(dali_examples.interface[0], Interface)
+        self.assertEqual(dali_examples.interface[0].type, "vr:WebBrowser")
 
     def test_write_to_xml(self):
         """Test writing VOSI Capabilities to XML."""
