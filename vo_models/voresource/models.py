@@ -294,7 +294,7 @@ class Content(BaseXmlModel, nsmap=NSMAP):
     relationship: Optional[list[Relationship]] = element(tag="relationship", default_factory=list)
 
 
-class Interface(BaseXmlModel, nsmap=NSMAP):
+class Interface(BaseXmlModel, tag="interface", nsmap=NSMAP):
     """A description of a service interface.
 
     Since this type is abstract, one must use an Interface subclass to describe an actual interface denoting
@@ -332,7 +332,7 @@ class Interface(BaseXmlModel, nsmap=NSMAP):
 class WebBrowser(Interface, nsmap=NSMAP):
     """A (form-based) interface intended to be accesed interactively by a user via a web browser."""
 
-    type: Literal["tr:WebBrowser"] = attr(name="type", default="tr:WebBrowser", ns="xsi")
+    type: Literal["vr:WebBrowser"] = attr(name="type", default="vr:WebBrowser", ns="xsi")
 
 
 class WebService(Interface, nsmap=NSMAP):
@@ -345,7 +345,7 @@ class WebService(Interface, nsmap=NSMAP):
             (element) - The location of the WSDL that describes this Web Service.
     """
 
-    type: Literal["tr:WebService"] = attr(name="type", default="tr:WebService", ns="xsi")
+    type: Literal["vr:WebService"] = attr(name="type", default="vr:WebService", ns="xsi")
 
     wsdl_url: Optional[list[networks.AnyUrl]] = element(tag="wsdlURL", default_factory=list)
 
