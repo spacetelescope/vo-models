@@ -13,7 +13,6 @@ from vo_models.voresource.types import IdentifierURI, UTCTimestamp, ValidationLe
 NSMAP = {
     "": "http://www.ivoa.net/xml/VOResource/v1.0",
     "xs": "http://www.w3.org/2001/XMLSchema",
-    "vr": "http://www.ivoa.net/xml/VOResource/v1.0",
     "vm": "http://www.ivoa.net/xml/VOMetadata/v0.1",
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",
 }

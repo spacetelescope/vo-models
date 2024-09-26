@@ -20,9 +20,9 @@ from vo_models.tapregext.models import (
 )
 
 TAPREGEXT_NAMESPACE_HEADER = """xmlns:xs="http://www.w3.org/2001/XMLSchema"
-xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0"
 xmlns:vm="http://www.ivoa.net/xml/VOMetadata/v0.1"
 xmlns="http://www.ivoa.net/xml/TAPRegExt/v1.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 """
 
 with open("tests/tapregext/TAPRegExt-v1.0-with-erratum1.xsd") as schema_file:
@@ -316,7 +316,7 @@ class TestTableAccess(TestCase):
         ),
     )
     test_table_access_xml = (
-        f'<capability {TAPREGEXT_NAMESPACE_HEADER} standardID="ivo://ivoa.net/std/TAP">'
+        f'<capability {TAPREGEXT_NAMESPACE_HEADER} xsi:type="tr:TableAccess" standardID="ivo://ivoa.net/std/TAP">'
         "<dataModel ivo-id='ivo://ivoa.net/std/VOTable'>VOTable</dataModel>"
         "<language>"
         "<name>ADQL</name>"
