@@ -13,7 +13,6 @@ from vo_models.tapregext.models import (
     LanguageFeatureList,
     OutputFormat,
     TableAccess,
-    TAPCapRestriction,
     TimeLimits,
     UploadMethod,
     Version,
