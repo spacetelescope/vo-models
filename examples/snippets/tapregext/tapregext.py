@@ -1,3 +1,4 @@
+"""Snippets for TAPRegExt models and XML serialization."""
 from vo_models.tapregext.models import (
     DataLimits,
     DataModelType,
@@ -9,6 +10,8 @@ from vo_models.tapregext.models import (
     TimeLimits,
     Version,
 )
+
+# pylint: disable=invalid-name
 
 # [TableAccess-model-start]
 table_access_model = TableAccess(

@@ -25,8 +25,9 @@ class Parameter(BaseXmlModel, tag="parameter", ns="uws", nsmap=NSMAP):
     Parameters:
         value:
             (content) - the value of the parameter.
-        by_reference: (attr) - If this attribute is true then the content of the parameter represents a URL to retrieve the
-            actual parameter value.
+        by_reference:
+            (attr) - If this attribute is true then the content of the parameter represents a URL to retrieve
+            the actual parameter value.
         id:
             (attr) - The identifier of the parameter.
         is_post:

@@ -1,6 +1,6 @@
 """VOSICapabilities pydantic-xml models."""
 
-from typing import Any, Union
+from typing import Union
 
 from pydantic_xml import BaseXmlModel, element
 

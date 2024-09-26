@@ -520,7 +520,7 @@ class TestResource(TestCase):
     )
 
     test_resource_xml = (
-        '<Resource created="1996-03-11T19:00:00.000Z" updated="1996-03-11T19:00:00.000Z" status="active" version="1.0" >'
+        '<Resource created="1996-03-11T19:00:00.000Z" updated="1996-03-11T19:00:00.000Z" status="active" version="1.0">'
         '<validationLevel validatedBy="https://example.edu/">0</validationLevel>'
         "<title>Example Resource</title>"
         "<shortName>example</shortName>"
@@ -612,7 +612,8 @@ class TestOrganization(TestCase):
     )
 
     test_organization_xml = (
-        '<Organisation status="active" version="1.0" created="1996-03-11T19:00:00.000Z" updated="1996-03-11T19:00:00.000Z">'
+        '<Organisation status="active" version="1.0" created="1996-03-11T19:00:00.000Z" '
+        'updated="1996-03-11T19:00:00.000Z">'
         "<title>Example Organization</title>"
         "<identifier>https://example.edu/</identifier>"
         "<curation>"

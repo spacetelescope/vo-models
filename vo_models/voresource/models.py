@@ -145,7 +145,8 @@ class Contact(BaseXmlModel, nsmap=NSMAP):
                 This can be a person's name, e.g. “John P. Jones” or a group, “Archive Support Team”.
         address:
             (element) - The contact mailing address.
-                All components of the mailing address are given in one string, e.g. “3700 San Martin Drive, Baltimore, MD 21218 USA”.
+                All components of the mailing address are given in one string,
+                e.g. “3700 San Martin Drive, Baltimore, MD 21218 USA”.
         email:
             (element) - The contact email address.
         telephone:
@@ -211,7 +212,8 @@ class Relationship(BaseXmlModel, nsmap=NSMAP):
     Parameters:
         relationship_type:
             (element) - The named type of relationship
-                The value  of relationshipType should be taken from the vocabulary at http://www.ivoa.net/rdf/voresource/relationship_type.
+                The value  of relationshipType should be taken from the vocabulary at
+                http://www.ivoa.net/rdf/voresource/relationship_type.
         related_resource:
             (element) - the name of resource that this resource is related to.
     """
@@ -276,10 +278,12 @@ class Content(BaseXmlModel, nsmap=NSMAP):
             (element) - URL pointing to a human-readable document describing this resource.
         type:
             (element) - Nature or genre of the content of the resource.
-                Values for type should be taken from the controlled vocabulary http://www.ivoa.net/rdf/voresource/content_type
+                Values for type should be taken from the controlled vocabulary
+                http://www.ivoa.net/rdf/voresource/content_type
         content_level:
             (element) - Description of the content level or intended audience.
-                Values for contentLevel should be taken from the controlled vocabulary http://www.ivoa.net/rdf/voresource/content_level.
+                Values for contentLevel should be taken from the controlled vocabulary
+                http://www.ivoa.net/rdf/voresource/content_level.
         relationship:
             (element) - a description of a relationship to another resource.
     """

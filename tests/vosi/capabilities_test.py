@@ -1,6 +1,5 @@
 """Tests for VOSI Capabilities models."""
 
-from datetime import timezone as tz
 from unittest import TestCase
 from xml.etree.ElementTree import canonicalize
 

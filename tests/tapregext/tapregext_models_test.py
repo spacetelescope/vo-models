@@ -43,11 +43,9 @@ class TestVersion(TestCase):
     def test_write_xml(self):
         """Test we can write a Version element to XML."""
         test_xml = self.test_version_model.to_xml(encoding=str, skip_empty=True)
-        (
-            self.assertEqual(
-                canonicalize(test_xml),
-                canonicalize(self.test_version_xml),
-            ),
+        self.assertEqual(
+            canonicalize(test_xml),
+            canonicalize(self.test_version_xml),
         )
 
 
@@ -55,7 +53,10 @@ class TestLanguageFeature(TestCase):
     """Tests the LanguageFeature model."""
 
     test_language_feature_model = LanguageFeature(form="Formal notation", description="A description")
-    test_language_feature_xml = f"<LanguageFeature {TAPREGEXT_NAMESPACE_HEADER}><form>Formal notation</form><description>A description</description></LanguageFeature>"
+    test_language_feature_xml = (
+        f"<LanguageFeature {TAPREGEXT_NAMESPACE_HEADER}><form>Formal notation</form>"
+        "<description>A description</description></LanguageFeature>"
+    )
 
     def test_read_from_xml(self):
         """Test reading a LanguageFeature element from XML."""

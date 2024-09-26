@@ -1,3 +1,4 @@
+"""Snippets for VOResource models and XML serialization."""
 from datetime import timezone as tz
 
 from vo_models.voresource.models import (
@@ -20,6 +21,8 @@ from vo_models.voresource.models import (
     Validation,
 )
 from vo_models.voresource.types import UTCTimestamp
+
+# pylint: disable=invalid-name
 
 # [Resource-model-start]
 resource = Resource(

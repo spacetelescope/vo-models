@@ -349,7 +349,8 @@ class InputParam(BaseParam):
             (attr) - An indication of whether this parameter is required to be provided for the application or service
             to work properly.
         std:
-            (attr) - If true, the meaning and behavior of this parameter is reserved and defined by a standard interface.
+            (attr) - If true, the meaning and behavior of this parameter is reserved and defined by a
+            standard interface.
     """
 
     datatype: Optional[DataType] = element(tag="dataType", default=None)
