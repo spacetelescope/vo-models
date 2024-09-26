@@ -12,7 +12,7 @@ NSMAP = {
     "vr": "http://www.ivoa.net/xml/VOResource/v1.0",
     "vm": "http://www.ivoa.net/xml/VOMetadata/v0.1",
     "tr": "http://www.ivoa.net/xml/TAPRegExt/v1.0",
-    "xsi": "http://www.w3.org/2001/XMLSchema-instance"
+    "xsi": "http://www.w3.org/2001/XMLSchema-instance",
 } | VORESOURCE_NSMAP
 
 
@@ -66,10 +66,13 @@ class OutputFormat(BaseXmlModel, nsmap=NSMAP):
             (element) - The MIME type of this format.
         alias:
             (element) - Other values of FORMAT that make the service return documents with this MIME type.
+        ivo_id:
+            (attr) - An optional IVORN of the output format.
     """
 
     mime: str = element(tag="mime")
     alias: Optional[list[str]] = element(tag="alias", default_factory=list)
+    ivo_id: Optional[str] = attr(name="ivo-id", default=None)
 
 
 class UploadMethod(BaseXmlModel, nsmap=NSMAP):
