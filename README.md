@@ -18,6 +18,7 @@ The following IVOA protocols are currently supported:
 - **VOSI (IVOA Support Interfaces) version 1.1**
   - VOSI Availability
   - VOSI Tables
+  - VOSI Capabilities
 - **VODataService version 1.2 (limited)**
   - DataType
   - FKColumn
@@ -26,6 +27,7 @@ The following IVOA protocols are currently supported:
   - TableParam
   - TableSchema
   - TableSet
+  - others
 - **VOResource version 1.1**
 - **TAPRegExt version 1.0**
 

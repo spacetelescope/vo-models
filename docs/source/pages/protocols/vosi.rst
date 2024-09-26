@@ -8,7 +8,7 @@ VOSI (VO Support Interface)
 Availability
 ^^^^^^^^^^^^
 
-The Availability model is used to represent the response given by a UWS service to a
+The Availability model is used to represent the response given by a service to a
 ``GET /availability`` request.
 
 .. grid:: 2
@@ -82,3 +82,27 @@ For requests to the ``GET /tables`` endpoint, you can use the ``TableSet`` model
             :lines: 2-
             :start-after: tableset-xml-start
             :end-before: tableset-xml-end
+
+Capabilities
+^^^^^^^^^^^^
+
+The VOSICapabilities model is used to represent the response given by a service to a
+``GET /capabilities`` request. Below is a relatively full example of a VOSI capabilities document for a TAP service.
+
+.. grid:: 2
+    :gutter: 2
+
+    .. grid-item-card:: Model
+
+        .. literalinclude:: ../../../../examples/snippets/vosi/capabilities.py
+            :language: python
+            :start-after: capabilities-model-start
+            :end-before: capabilities-model-end
+
+    .. grid-item-card:: XML Output
+
+            .. literalinclude:: ../../../../examples/snippets/vosi/capabilities.py
+                :language: xml
+                :lines: 2-
+                :start-after: capabilities-xml-start
+                :end-before: capabilities-xml-end

@@ -49,6 +49,8 @@ class ResourceName(BaseXmlModel, nsmap=NSMAP):
     Parameters:
         ivo_id:
             (attr) - The IVOA identifier for the resource referred to.
+        value:
+            (content) - The name of the resource.
     """
 
     value: str
