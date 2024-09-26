@@ -297,7 +297,8 @@ class Content(BaseXmlModel, ns="vr", nsmap=NSMAP):
 class Interface(BaseXmlModel, ns="vr", nsmap=NSMAP):
     """A description of a service interface.
 
-    Since this type is abstract, one must use an Interface subclass to describe an actual interface.
+    Since this type is abstract, one must use an Interface subclass to describe an actual interface denoting
+    it via xsi:type.
 
     Additional interface subtypes (beyond WebService and WebBrowser) are defined in the VODataService schema.
 
@@ -306,6 +307,8 @@ class Interface(BaseXmlModel, ns="vr", nsmap=NSMAP):
             (attr) - The version of a standard interface specification that this interface complies with.
         role:
             (attr) - A tag name that identifies the role the interface plays in the particular capability.
+        type:
+            (attr) - The xsi:type of the interface.
         access_url:
             (element) - The URL (or base URL) that a client uses to access the service.
         mirror_url:
@@ -318,6 +321,7 @@ class Interface(BaseXmlModel, ns="vr", nsmap=NSMAP):
 
     version: Optional[str] = attr(name="version", default=None)
     role: Optional[str] = attr(name="role", default=None)
+    type: Optional[str] = attr(name="type", default=None, ns="xsi")
 
     access_url: list[AccessURL] = element(tag="accessURL")
     mirror_url: Optional[list[MirrorURL]] = element(tag="mirrorURL", default_factory=list)
@@ -424,6 +428,9 @@ class Capability(BaseXmlModel, ns="vr", nsmap=NSMAP):
     Parameters:
         standard_id:
             (attr) - A URI identifier for a standard service.
+        type:
+            (attr) - A protocol-specific capability is included by specifying a vr:Capability sub-type via an xsi:type
+            attribute on this model.
         validation_level:
             (element) - A numeric grade describing the quality of the capability description and interface, when
             applicable, to be used to indicate the confidence an end-user can put in the resource as part of a
@@ -435,6 +442,7 @@ class Capability(BaseXmlModel, ns="vr", nsmap=NSMAP):
     """
 
     standard_id: Optional[networks.AnyUrl] = attr(name="standardID", default=None)
+    type: Optional[str] = attr(name="type", default=None, ns="xsi")
 
     validation_level: Optional[list[Validation]] = element(tag="validationLevel", default_factory=list)
     description: Optional[str] = element(tag="description", default=None)

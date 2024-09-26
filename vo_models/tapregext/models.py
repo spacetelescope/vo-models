@@ -14,12 +14,6 @@ NSMAP = {
 }
 
 
-class TAPCapRestriction(Capability, nsmap=NSMAP):
-    """An abstract capability that fixes the standardID to the IVOA ID for the TAP standard."""
-
-    standard_id: Literal["ivo://ivoa.net/std/TAP"] = attr(name="standardID", default="ivo://ivoa.net/std/TAP")
-
-
 class DataModelType(BaseXmlModel, nsmap=NSMAP):
     """IVOA defined data model, identified by an IVORN.
 
@@ -163,7 +157,7 @@ class Language(BaseXmlModel, nsmap=NSMAP):
     language_features: Optional[list[LanguageFeatureList]] = element(tag="languageFeatures", default_factory=[])
 
 
-class TableAccess(TAPCapRestriction, tag="capability", ns="", nsmap=NSMAP):
+class TableAccess(Capability, tag="capability", nsmap=NSMAP):
     """The capabilities of a TAP server.
 
     Parameters:
@@ -184,6 +178,8 @@ class TableAccess(TAPCapRestriction, tag="capability", ns="", nsmap=NSMAP):
         upload_limit:
             (element) - Limits on the size of uploaded data.
     """
+
+    standard_id: Literal["ivo://ivoa.net/std/TAP"] = attr(name="standardID", default="ivo://ivoa.net/std/TAP")
 
     data_model: Optional[list[DataModelType]] = element(tag="dataModel", default_factory=list)
     language: list[Language] = element(tag="language")
