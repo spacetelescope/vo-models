@@ -5,13 +5,14 @@ from typing import Literal, Optional
 from pydantic_xml import BaseXmlModel, attr, element
 
 from vo_models.voresource.models import Capability
+from vo_models.voresource.models import NSMAP as VORESOURCE_NSMAP
 
 NSMAP = {
     "xs": "http://www.w3.org/2001/XMLSchema",
     "vm": "http://www.ivoa.net/xml/VOMetadata/v0.1",
-    "": "http://www.ivoa.net/xml/TAPRegExt/v1.0",
+    "tr": "http://www.ivoa.net/xml/TAPRegExt/v1.0",
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",
-}
+} | VORESOURCE_NSMAP
 
 
 class DataModelType(BaseXmlModel, nsmap=NSMAP):

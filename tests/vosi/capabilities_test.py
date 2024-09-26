@@ -19,8 +19,8 @@ from vo_models.voresource.models import AccessURL, Capability, Interface, WebBro
 from vo_models.vosi.capabilities.models import VOSICapabilities
 
 CAPABILITIES_HEADER = """xmlns:vosi="http://www.ivoa.net/xml/VOSICapabilities/v1.0"
-xmlns="http://www.ivoa.net/xml/VOResource/v1.0"
 xmlns:vs="http://www.ivoa.net/xml/VODataService/v1.0"
+xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0"
 xmlns:tr="http://www.ivoa.net/xml/TAPRegExt/v1.0"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 """

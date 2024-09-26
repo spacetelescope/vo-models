@@ -21,7 +21,6 @@ from vo_models.tapregext.models import (
 
 TAPREGEXT_NAMESPACE_HEADER = """xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:vm="http://www.ivoa.net/xml/VOMetadata/v0.1"
-xmlns="http://www.ivoa.net/xml/TAPRegExt/v1.0"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 """
 

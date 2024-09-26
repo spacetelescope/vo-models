@@ -43,7 +43,7 @@ class TestValidation(TestCase):
 
     test_validation_model = Validation(value=0, validated_by="https://example.edu")
     test_validation_xml = (
-        '<Validation xmlns="http://www.ivoa.net/xml/VOResource/v1.0" validatedBy="https://example.edu/">0</Validation>'
+        '<Validation validatedBy="https://example.edu/">0</Validation>'
     )
 
     def test_read_from_xml(self):
@@ -65,7 +65,7 @@ class TestResourceName(TestCase):
     """Test VOResource ResourceName model."""
 
     test_resource_name_model = ResourceName(value="Example Resource", ivo_id="ivo://example.edu/resource")
-    test_resource_name_xml = '<ResourceName xmlns="http://www.ivoa.net/xml/VOResource/v1.0" ivo-id="ivo://example.edu/resource">Example Resource</ResourceName>'
+    test_resource_name_xml = '<ResourceName ivo-id="ivo://example.edu/resource">Example Resource</ResourceName>'
 
     def test_read_from_xml(self):
         """Test reading from XML."""
@@ -87,7 +87,7 @@ class TestDate(TestCase):
 
     test_date_model = Date(value="2021-01-01T00:00:00Z", role="update")
     test_date_xml = (
-        '<Date xmlns="http://www.ivoa.net/xml/VOResource/v1.0" role="update">2021-01-01T00:00:00.000Z</Date>'
+        '<Date role="update">2021-01-01T00:00:00.000Z</Date>'
     )
 
     def test_read_from_xml(self):
@@ -110,7 +110,7 @@ class TestSource(TestCase):
 
     test_source_model = Source(value="https://example.edu", format="bibcode")
     test_source_xml = (
-        '<Source xmlns="http://www.ivoa.net/xml/VOResource/v1.0" format="bibcode">https://example.edu/</Source>'
+        '<Source format="bibcode">https://example.edu/</Source>'
     )
 
     def test_read_from_xml(self):
@@ -132,7 +132,7 @@ class TestRights(TestCase):
     """Test VOResource Rights model"""
 
     test_rights_model = Rights(value="CC BY 4.0", rights_uri="https://creativecommons.org/licenses/by/4.0/")
-    test_rights_xml = '<Rights xmlns="http://www.ivoa.net/xml/VOResource/v1.0" rightsURI="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</Rights>'
+    test_rights_xml = '<Rights rightsURI="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</Rights>'
 
     def test_read_from_xml(self):
         """Test reading from XML."""
@@ -154,7 +154,7 @@ class TestAccessURL(TestCase):
 
     test_access_url_model = AccessURL(value="https://example.edu", use="full")
     test_access_url_xml = (
-        '<AccessURL xmlns="http://www.ivoa.net/xml/VOResource/v1.0" use="full">https://example.edu/</AccessURL>'
+        '<AccessURL use="full">https://example.edu/</AccessURL>'
     )
 
     def test_read_from_xml(self):
@@ -177,7 +177,7 @@ class TestMirrorURL(TestCase):
 
     test_mirror_url_model = MirrorURL(value="https://example.edu", title="Mirror")
     test_mirror_url_xml = (
-        '<MirrorURL xmlns="http://www.ivoa.net/xml/VOResource/v1.0" title="Mirror">https://example.edu/</MirrorURL>'
+        '<MirrorURL title="Mirror">https://example.edu/</MirrorURL>'
     )
 
     def test_read_from_xml(self):
@@ -206,7 +206,7 @@ class TestContact(TestCase):
         alt_identifier=["http://orcid.org/0000-0001-9718-6515"],
     )
     test_contact_xml = (
-        '<Contact xmlns="http://www.ivoa.net/xml/VOResource/v1.0">'
+        '<Contact >'
         "<name>John Doe</name>"
         "<address>1234 Example St.</address>"
         "<email>jdoe@mail.com</email>"
@@ -238,7 +238,7 @@ class TestCreator(TestCase):
 
     test_creator_model = Creator(name=ResourceName(value="Doe, J."), logo="https://example.edu/logo.png")
     test_creator_xml = (
-        '<Creator xmlns="http://www.ivoa.net/xml/VOResource/v1.0">'
+        '<Creator >'
         "<name>Doe, J.</name>"
         "<logo>https://example.edu/logo.png</logo>"
         "</Creator>"
@@ -267,7 +267,7 @@ class TestRelationship(TestCase):
         related_resource=[ResourceName(value="Example Resource", ivo_id="ivo://example.edu/resource")],
     )
     test_relationship_xml = (
-        '<Relationship xmlns="http://www.ivoa.net/xml/VOResource/v1.0">'
+        '<Relationship >'
         "<relationshipType>isPartOf</relationshipType>"
         '<relatedResource ivo-id="ivo://example.edu/resource">Example Resource</relatedResource>'
         "</Relationship>"
@@ -293,7 +293,7 @@ class TestSecurityMethod(TestCase):
     """Test VOResource SecurityMethod model"""
 
     test_security_method_model = SecurityMethod(standard_id="ivo://ivoa.net/std/Security#basic")
-    test_security_method_xml = '<SecurityMethod xmlns="http://www.ivoa.net/xml/VOResource/v1.0" standardID="ivo://ivoa.net/std/Security#basic"/>'
+    test_security_method_xml = '<SecurityMethod standardID="ivo://ivoa.net/std/Security#basic"/>'
 
     def test_read_from_xml(self):
         """Test reading from XML."""
@@ -322,7 +322,7 @@ class TestCuration(TestCase):
     )
 
     test_curation_xml = (
-        '<Curation xmlns="http://www.ivoa.net/xml/VOResource/v1.0">'
+        '<Curation >'
         "<publisher>STScI</publisher>"
         "<creator><name>Doe, J.</name></creator>"
         "<contributor>Example Resource</contributor>"
@@ -371,7 +371,7 @@ class TestContent(TestCase):
     )
 
     test_content_xml = (
-        '<Content xmlns="http://www.ivoa.net/xml/VOResource/v1.0">'
+        '<Content >'
         "<subject>Astronomy</subject>"
         "<description>Example description</description>"
         '<source format="bibcode">https://example.edu/</source>'
@@ -420,7 +420,7 @@ class TestInterface(TestCase):
         test_querystring="test",
     )
     test_interface_xml = (
-        '<interface xmlns="http://www.ivoa.net/xml/VOResource/v1.0" role="std" version="1.0">'
+        '<interface role="std" version="1.0">'
         '<accessURL use="full">https://example.edu/</accessURL>'
         '<mirrorURL title="Mirror">https://example.edu/</mirrorURL>'
         '<securityMethod standardID="ivo://ivoa.net/std/Security#basic"/>'
@@ -457,7 +457,7 @@ class TestWebService(TestCase):
         access_url=[AccessURL(value="https://example.edu/", use="full")],
     )
     test_web_service_xml = (
-        '<interface xmlns="http://www.ivoa.net/xml/VOResource/v1.0" '
+        '<interface '
         'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
         'xsi:type="vr:WebService">'
         '<accessURL use="full">https://example.edu/</accessURL>'
@@ -520,7 +520,7 @@ class TestResource(TestCase):
     )
 
     test_resource_xml = (
-        '<Resource xmlns="http://www.ivoa.net/xml/VOResource/v1.0" created="1996-03-11T19:00:00.000Z" updated="1996-03-11T19:00:00.000Z" status="active" version="1.0" >'
+        '<Resource created="1996-03-11T19:00:00.000Z" updated="1996-03-11T19:00:00.000Z" status="active" version="1.0" >'
         '<validationLevel validatedBy="https://example.edu/">0</validationLevel>'
         "<title>Example Resource</title>"
         "<shortName>example</shortName>"
@@ -612,7 +612,7 @@ class TestOrganization(TestCase):
     )
 
     test_organization_xml = (
-        '<Organisation xmlns="http://www.ivoa.net/xml/VOResource/v1.0" status="active" version="1.0" created="1996-03-11T19:00:00.000Z" updated="1996-03-11T19:00:00.000Z">'
+        '<Organisation status="active" version="1.0" created="1996-03-11T19:00:00.000Z" updated="1996-03-11T19:00:00.000Z">'
         "<title>Example Organization</title>"
         "<identifier>https://example.edu/</identifier>"
         "<curation>"
@@ -670,7 +670,7 @@ class TestCapability(TestCase):
     )
 
     test_capability_xml = (
-        '<capability xmlns="http://www.ivoa.net/xml/VOResource/v1.0" standardID="ivo://ivoa.net/std/TAP">'
+        '<capability standardID="ivo://ivoa.net/std/TAP">'
         '<validationLevel validatedBy="https://example.edu/">0</validationLevel>'
         "<description>Example description</description>"
         '<interface role="std" version="1.0">'
@@ -734,7 +734,7 @@ class TestService(TestCase):
     )
 
     test_service_xml = (
-        '<Service xmlns="http://www.ivoa.net/xml/VOResource/v1.0" created="1996-03-11T19:00:00.000Z" updated="1996-03-11T19:00:00.000Z" status="active">'
+        '<Service created="1996-03-11T19:00:00.000Z" updated="1996-03-11T19:00:00.000Z" status="active">'
         "<title>Example Service</title>"
         "<identifier>https://example.edu/</identifier>"
         "<curation>"
