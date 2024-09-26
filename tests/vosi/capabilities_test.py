@@ -20,7 +20,7 @@ from vo_models.voresource.models import AccessURL, Capability, Interface
 from vo_models.vosi.capabilities.models import VOSICapabilities
 
 CAPABILITIES_HEADER = """xmlns:vosi="http://www.ivoa.net/xml/VOSICapabilities/v1.0"
-xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0"
+xmlns="http://www.ivoa.net/xml/VOResource/v1.0"
 xmlns:vs="http://www.ivoa.net/xml/VODataService/v1.0"
 xmlns:tr="http://www.ivoa.net/xml/TAPRegExt/v1.0"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -185,17 +185,17 @@ class TestVOSICapabilities(TestCase):
     test_vosi_capabilities_model = VOSICapabilities(
         capability=[
             test_tap_capabilities,
-            # test_vosi_capabilities,
-            # test_vosi_availability,
-            # test_vosi_tables,
-            # test_dali_examples,
+            test_vosi_capabilities,
+            test_vosi_availability,
+            test_vosi_tables,
+            test_dali_examples,
         ]
     )
 
     def _get_capability(self, standard_id: str) -> Capability:
         """Get a capability from the test capabilities."""
         for cap in self.test_vosi_capabilities_model.capability:
-            if cap.standard_id == standard_id:
+            if str(cap.standard_id) == standard_id:
                 return cap
         return None
 

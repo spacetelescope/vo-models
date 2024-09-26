@@ -9,10 +9,10 @@ from vo_models.voresource.models import Capability
 
 NSMAP = {
     "vosi": "http://www.ivoa.net/xml/VOSICapabilities/v1.0",
-    "": "http://www.ivoa.net/xml/VOResource/v1.0",
-    "vs": "http://www.ivoa.net/xml/VODataService/v1.0",
-    "tr": "http://www.ivoa.net/xml/TAPRegExt/v1.0",
+    "vr": "http://www.ivoa.net/xml/VOResource/v1.0",
+    "xsd": "http://www.w3.org/2001/XMLSchema",
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    "tr": "http://www.ivoa.net/xml/TAPRegExt/v1.0",
 }
 
 

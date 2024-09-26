@@ -10,11 +10,11 @@ NSMAP = {
     "xs": "http://www.w3.org/2001/XMLSchema",
     "vr": "http://www.ivoa.net/xml/VOResource/v1.0",
     "vm": "http://www.ivoa.net/xml/VOMetadata/v0.1",
-    "": "http://www.ivoa.net/xml/TAPRegExt/v1.0",
+    "tr": "http://www.ivoa.net/xml/TAPRegExt/v1.0",
 }
 
 
-class DataModelType(BaseXmlModel, nsmap=NSMAP):
+class DataModelType(BaseXmlModel, ns="tr", nsmap=NSMAP):
     """IVOA defined data model, identified by an IVORN.
 
     Parameters:
@@ -28,7 +28,7 @@ class DataModelType(BaseXmlModel, nsmap=NSMAP):
     ivo_id: str = attr(name="ivo-id")
 
 
-class Version(BaseXmlModel, nsmap=NSMAP):
+class Version(BaseXmlModel, ns="tr", nsmap=NSMAP):
     """One version of the language supported by the service.
 
     Parameters:
@@ -42,7 +42,7 @@ class Version(BaseXmlModel, nsmap=NSMAP):
     ivo_id: Optional[str] = attr(name="ivo-id", default=None)
 
 
-class LanguageFeature(BaseXmlModel, nsmap=NSMAP):
+class LanguageFeature(BaseXmlModel, ns="tr", nsmap=NSMAP):
     """A non-standard or non-mandatory feature implemented by the language.
 
     Parameters:
@@ -56,7 +56,7 @@ class LanguageFeature(BaseXmlModel, nsmap=NSMAP):
     description: Optional[str] = element(tag="description", default=None)
 
 
-class OutputFormat(BaseXmlModel, nsmap=NSMAP):
+class OutputFormat(BaseXmlModel, ns="tr", nsmap=NSMAP):
     """An output format supported by the service.
 
     Parameters:
@@ -70,7 +70,7 @@ class OutputFormat(BaseXmlModel, nsmap=NSMAP):
     alias: Optional[list[str]] = element(tag="alias", default_factory=list)
 
 
-class UploadMethod(BaseXmlModel, nsmap=NSMAP):
+class UploadMethod(BaseXmlModel, ns="tr", nsmap=NSMAP):
     """An upload method as defined by IVOA.
 
     Parameters:
@@ -81,7 +81,7 @@ class UploadMethod(BaseXmlModel, nsmap=NSMAP):
     ivo_id: str = attr(name="ivo-id")
 
 
-class TimeLimits(BaseXmlModel, nsmap=NSMAP):
+class TimeLimits(BaseXmlModel, ns="tr", nsmap=NSMAP):
     """Time-valued limits, all values given in seconds.
 
     Parameters:
@@ -95,7 +95,7 @@ class TimeLimits(BaseXmlModel, nsmap=NSMAP):
     hard: Optional[int] = element(tag="hard", default=None)
 
 
-class DataLimit(BaseXmlModel, nsmap=NSMAP):
+class DataLimit(BaseXmlModel, ns="tr", nsmap=NSMAP):
     """A limit on some data size, either in rows or in bytes.
 
     Parameters:
@@ -109,7 +109,7 @@ class DataLimit(BaseXmlModel, nsmap=NSMAP):
     unit: Literal["byte", "row"] = attr(name="unit")
 
 
-class DataLimits(BaseXmlModel, nsmap=NSMAP):
+class DataLimits(BaseXmlModel, ns="tr", nsmap=NSMAP):
     """Limits on data sizes, given in rows or bytes.
 
     Parameters:
@@ -123,7 +123,7 @@ class DataLimits(BaseXmlModel, nsmap=NSMAP):
     hard: Optional[DataLimit] = element(tag="hard", default=None)
 
 
-class LanguageFeatureList(BaseXmlModel, nsmap=NSMAP):
+class LanguageFeatureList(BaseXmlModel, ns="tr", nsmap=NSMAP):
     """An enumeration of non-standard or non-mandatory features of a specific type implemented by the language.
 
     Parameters:
@@ -137,7 +137,7 @@ class LanguageFeatureList(BaseXmlModel, nsmap=NSMAP):
     type: str = attr(name="type")
 
 
-class Language(BaseXmlModel, nsmap=NSMAP):
+class Language(BaseXmlModel, ns="tr", nsmap=NSMAP):
     """A query language supported by the service.
 
     Parameters:
@@ -157,7 +157,7 @@ class Language(BaseXmlModel, nsmap=NSMAP):
     language_features: Optional[list[LanguageFeatureList]] = element(tag="languageFeatures", default_factory=[])
 
 
-class TableAccess(Capability, tag="capability", nsmap=NSMAP):
+class TableAccess(Capability, ns="tr", tag="capability", nsmap=NSMAP):
     """The capabilities of a TAP server.
 
     Parameters:

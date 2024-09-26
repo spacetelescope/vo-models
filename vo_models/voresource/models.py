@@ -11,7 +11,6 @@ from vo_models.voresource.types import IdentifierURI, UTCTimestamp, ValidationLe
 # pylint: disable=too-few-public-methods
 
 NSMAP = {
-    "xml": "http://www.w3.org/XML/1998/namespace",
     "": "http://www.w3.org/2001/XMLSchema",
     "xs": "http://www.w3.org/2001/XMLSchema",
     "vr": "http://www.ivoa.net/xml/VOResource/v1.0",
@@ -329,11 +328,11 @@ class Interface(BaseXmlModel, ns="vr", nsmap=NSMAP):
     test_querystring: Optional[str] = element(tag="testQueryString", default=None)
 
 
-class WebBrowser(Interface, ns="vr", nsmap=NSMAP):
+class WebBrowser(Interface, nsmap=NSMAP):
     """A (form-based) interface intended to be accesed interactively by a user via a web browser."""
 
 
-class WebService(Interface, ns="vr", nsmap=NSMAP):
+class WebService(Interface, nsmap=NSMAP):
     """A Web Service that is describable by a WSDL document.
 
     The accessURL element gives the Web Service's endpoint URL.
@@ -406,7 +405,7 @@ class Resource(BaseXmlModel, ns="vr", nsmap=NSMAP):
         return values
 
 
-class Organisation(Resource, ns="vr", nsmap=NSMAP):
+class Organisation(Resource, nsmap=NSMAP):
     """A named group of one or more persons brought together to pursue participation in VO applications.
 
     Parameters:
@@ -449,7 +448,7 @@ class Capability(BaseXmlModel, ns="vr", nsmap=NSMAP):
     interface: Optional[list[Interface]] = element(tag="interface", default_factory=list)
 
 
-class Service(Resource, ns="vr", nsmap=NSMAP):
+class Service(Resource, nsmap=NSMAP):
     """A resource that can be invoked by a client to perform some action on its behalf.
 
     Parameters:
