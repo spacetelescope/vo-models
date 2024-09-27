@@ -35,8 +35,8 @@ class FKColumn(BaseXmlModel, tag="fkColumn"):
 
     """
 
-    from_column: str = element(tag="fromColumn")
-    target_column: str = element(tag="targetColumn")
+    from_column: str = element(tag="fromColumn", examples="from_column")
+    target_column: str = element(tag="targetColumn", examples="target_column")
 
 
 class ForeignKey(BaseXmlModel, tag="foreignKey"):
@@ -55,7 +55,7 @@ class ForeignKey(BaseXmlModel, tag="foreignKey"):
             (elem) - An identifier for a concept in a data model that the association enabled by this key represents.
     """
 
-    target_table: str = element(tag="targetTable")
+    target_table: str = element(tag="targetTable", examples="target_table")
     fk_column: list[FKColumn] = element(tag="fkColumn")
     description: Optional[str] = element(tag="description", default=None)
     utype: Optional[str] = element(tag="utype", default=None)
