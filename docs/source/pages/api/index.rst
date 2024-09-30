@@ -1,6 +1,6 @@
 .. _api:
 
-Developer Documentation
+API Reference
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 This section contains documentation on the package's modules and classes.
