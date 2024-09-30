@@ -4,8 +4,8 @@ from typing import Literal, Optional
 
 from pydantic_xml import BaseXmlModel, attr, element
 
-from vo_models.voresource.models import Capability
 from vo_models.voresource.models import NSMAP as VORESOURCE_NSMAP
+from vo_models.voresource.models import Capability
 
 NSMAP = {
     "xs": "http://www.w3.org/2001/XMLSchema",
