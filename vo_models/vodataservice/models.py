@@ -3,13 +3,14 @@
 TODO: This is an incomplete spec, covering only elements needed for VOSITables
 https://github.com/spacetelescope/vo-models/issues/17
 """
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 from xml.sax.saxutils import escape
 
 from pydantic import field_validator
 from pydantic_xml import BaseXmlModel, attr, element
 
 from vo_models.adql.misc import ADQL_SQL_KEYWORDS
+from vo_models.voresource.models import Interface
 
 # pylint: disable=no-self-argument
 
@@ -128,7 +129,7 @@ class TableParam(BaseXmlModel, ns="", tag="column"):
     utype: Optional[str] = element(tag="utype", default=None)
     xtype: Optional[str] = element(tag="xtype", default=None)
     datatype: Optional[DataType] = element(tag="dataType", default=None)
-    flag: Optional[list[str]] = element(tag="flag", default=None)
+    flag: Optional[list[str]] = element(tag="flag", default_factory=list)
 
     def __init__(__pydantic_self__, **data: Any) -> None:
         data["datatype"] = __pydantic_self__.__make_datatype_element(data)
@@ -225,8 +226,8 @@ class Table(BaseXmlModel, tag="table", ns="", skip_empty=True):
     description: Optional[str] = element(tag="description", ns="", default=None)
     utype: Optional[str] = element(tag="utype", ns="", default=None)
     nrows: Optional[int] = element(tag="nrows", gte=0, ns="", default=None)
-    column: Optional[list[TableParam]] = element(tag="column", ns="", default=None)
-    foreign_key: Optional[list[ForeignKey]] = element(tag="foreignKey", ns="", default=None)
+    column: Optional[list[TableParam]] = element(tag="column", ns="", default_factory=list)
+    foreign_key: Optional[list[ForeignKey]] = element(tag="foreignKey", ns="", default_factory=list)
 
     def __init__(__pydantic_self__, **data: Any) -> None:
         """Escape any keys that are passed in."""
@@ -269,7 +270,7 @@ class TableSchema(BaseXmlModel, tag="schema", ns="", skip_empty=True):
     title: Optional[str] = element(tag="title", default=None)
     description: Optional[str] = element(tag="description", default=None)
     utype: Optional[str] = element(tag="utype", default=None)
-    table: Optional[list[Table]] = element(tag="table", default=None)
+    table: Optional[list[Table]] = element(tag="table", default_factory=list)
 
     def __init__(__pydantic_self__, **data: Any) -> None:
         """Escape any keys that are passed in."""
@@ -309,3 +310,75 @@ class TableSet(BaseXmlModel, tag="tableset", skip_empty=True):
         if not isinstance(value, list):
             value = [value]
         return value
+
+
+class BaseParam(BaseXmlModel):
+    """A description of a parameter that places no restriction on the parameter's data type.
+
+    TODO: Set as base for TableParam when implementing VODataservice fully.
+
+    Parameters:
+        name:
+            (elem) - The name of the parameter.
+        description:
+            (elem) - A free-text description of the parameter's contents.
+        unit:
+            (elem) - The unit associated with the values in the parameter.
+        ucd:
+            (elem) - The name of a unified content descriptor that describes the scientific content of the parameter.
+        utype:
+            (elem) - An identifier for a concept in a data model that the data in this parameter represent.
+    """
+
+    description: Optional[str] = element(tag="description", default=None)
+    unit: Optional[str] = element(tag="unit", default=None)
+    ucd: Optional[str] = element(tag="ucd", default=None)
+    utype: Optional[str] = element(tag="utype", default=None)
+
+
+ParamUse = Literal["required", "optional", "ignored"]
+
+
+class InputParam(BaseParam):
+    """A description of a service or function parameter having a fixed data type.
+
+    Parameters:
+        datatype:
+            (elem) - A type of data contained in the parameter.
+        use:
+            (attr) - An indication of whether this parameter is required to be provided for the application or service
+            to work properly.
+        std:
+            (attr) - If true, the meaning and behavior of this parameter is reserved and defined by a
+            standard interface.
+    """
+
+    datatype: Optional[DataType] = element(tag="dataType", default=None)
+    use: ParamUse = attr(name="use", default="optional")
+    std: Optional[bool] = attr(name="std", default=True)
+
+
+HTTPQueryType = Literal["GET", "POST"]
+
+
+class ParamHTTP(Interface):
+    """A service invoked via an HTTP Query (either Get or Post) with a set of arguments consisting of keyword
+    name-value pairs.
+
+    Parameters:
+        queryType:
+            (element) - The type of HTTP request, either 'GET' or 'POST'. Max occurs 2.
+        resultType:
+            (element) - The MIME media type of a document returned in the HTTP response.
+        param:
+            (element) - A description of a input parameter that can be provided as a name=value argument.
+        testQuery:
+            (element) - An ampersand-delimited list of arguments that can be used to test this service interface.
+    """
+
+    type: Literal["vs:ParamHTTP"] = attr(name="type", default="vs:ParamHTTP", ns="xsi")
+
+    query_type: Optional[list[HTTPQueryType]] = element(tag="queryType", max_length=2, default=None)
+    result_type: Optional[str] = element(tag="resultType", default=None)
+    param: Optional[list[InputParam]] = element(tag="param", default_factory=list)
+    test_query: Optional[str] = element(tag="testQuery", default=None)

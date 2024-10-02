@@ -18,3 +18,11 @@ Tables
    :members:
    :no-inherited-members:
    :exclude-members: model_config, model_fields,
+
+Capabilities
+^^^^^^^^^^^^
+
+.. automodule:: vo_models.vosi.capabilities.models
+   :members:
+   :no-inherited-members:
+   :exclude-members: model_config, model_fields,

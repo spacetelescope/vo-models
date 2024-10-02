@@ -1,10 +1,7 @@
 """UWS Job Schema using Pydantic-XML models"""
 from typing import Annotated, Dict, Generic, Optional, TypeAlias, TypeVar
 
-
-from pydantic import BeforeValidator
-from pydantic import ConfigDict
-
+from pydantic import BeforeValidator, ConfigDict
 from pydantic_xml import BaseXmlModel, attr, element
 
 from vo_models.uws.types import ErrorType, ExecutionPhase, UWSVersion
@@ -28,8 +25,9 @@ class Parameter(BaseXmlModel, tag="parameter", ns="uws", nsmap=NSMAP):
     Parameters:
         value:
             (content) - the value of the parameter.
-        by_reference: (attr) - If this attribute is true then the content of the parameter represents a URL to retrieve the
-            actual parameter value.
+        by_reference:
+            (attr) - If this attribute is true then the content of the parameter represents a URL to retrieve
+            the actual parameter value.
         id:
             (attr) - The identifier of the parameter.
         is_post:
@@ -46,8 +44,7 @@ class Parameter(BaseXmlModel, tag="parameter", ns="uws", nsmap=NSMAP):
 
 
 MultiValuedParameter: TypeAlias = Annotated[
-    list[Parameter],
-    BeforeValidator(lambda v: v if isinstance(v, list) else [v])
+    list[Parameter], BeforeValidator(lambda v: v if isinstance(v, list) else [v])
 ]
 """Type for a multi-valued parameter.
 
@@ -276,7 +273,7 @@ class JobSummary(BaseXmlModel, Generic[ParametersType], tag="job", ns="uws", nsm
     parameters: Optional[ParametersType] = element(tag="parameters", default=None)
     results: Optional[Results] = element(tag="results", default=Results())
     error_summary: Optional[ErrorSummary] = element(tag="errorSummary", default=None)
-    job_info: Optional[list[str]] = element(tag="jobInfo", default=[])
+    job_info: Optional[list[str]] = element(tag="jobInfo", default_factory=list)
 
     version: Optional[UWSVersion] = attr(default=UWSVersion.V1_1)
 

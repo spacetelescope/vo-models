@@ -1,6 +1,6 @@
 .. _api:
 
-Developer Documentation
+API Reference
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 This section contains documentation on the package's modules and classes.
@@ -12,3 +12,4 @@ This section contains documentation on the package's modules and classes.
     vosi_api
     voresource_api
     vodataservice_api
+    tapregext_api
