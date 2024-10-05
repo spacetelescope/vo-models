@@ -17,3 +17,17 @@ from vo_models.tapregext.models import (
     UploadMethod,
     Version,
 )
+
+__all__ = [
+    "DataLimit",
+    "DataLimits",
+    "DataModelType",
+    "Language",
+    "LanguageFeature",
+    "LanguageFeatureList",
+    "OutputFormat",
+    "TableAccess",
+    "TimeLimits",
+    "UploadMethod",
+    "Version",
+]
