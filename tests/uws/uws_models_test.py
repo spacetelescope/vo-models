@@ -288,7 +288,7 @@ class TestParametersElement(TestCase):
 
         parameters = self.TestParameters.from_xml(self.test_parameters_xml)
 
-        self.assertEqual(len(parameters.dict()), 5)
+        self.assertEqual(len(parameters.model_dump()), 5)
 
         self.assertEqual(parameters.param3, None)
         self.assertEqual(len(parameters.param4), 2)

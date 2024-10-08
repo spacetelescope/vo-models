@@ -17,3 +17,17 @@ from vo_models.uws.models import (
     Results,
     ShortJobDescription,
 )
+
+__all__ = [
+    "ErrorSummary",
+    "Job",
+    "Jobs",
+    "JobSummary",
+    "MultiValuedParameter",
+    "Parameter",
+    "Parameters",
+    "ParametersType",
+    "ResultReference",
+    "Results",
+    "ShortJobDescription",
+]
