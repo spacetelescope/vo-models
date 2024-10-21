@@ -176,7 +176,8 @@ class TableParam(BaseXmlModel, ns="", tag="column"):
 
         value: - The column name to escape.
         """
-        if value.upper() in ADQL_SQL_KEYWORDS:
+        if value.strip("'\"").upper() in ADQL_SQL_KEYWORDS:
+            value = value.strip("'\"")
             value = f'"{value}"'
         return value
 

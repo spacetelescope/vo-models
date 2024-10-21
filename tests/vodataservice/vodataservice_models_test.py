@@ -164,6 +164,24 @@ class TestTableParam(TestCase):
             canonicalize(self.test_xml, strip_text=True),
         )
 
+    def test_reserved_adql_words(self):
+        """Test that reserved ADQL/SQL words are properly escaped in column names"""
+
+        non_reserved = TableParam(column_name="aperture")
+        reserved_no_quotes = TableParam(column_name="distance")
+        reserved_single_quotes = TableParam(column_name="'offset'")
+        reserved_mixed_quotes = TableParam(column_name='"\'top\'"')
+
+        self.assertEqual(non_reserved.column_name, "aperture")
+        self.assertEqual(reserved_no_quotes.column_name, '"distance"')
+        self.assertEqual(reserved_single_quotes.column_name, '"offset"')
+        self.assertEqual(reserved_mixed_quotes.column_name, '"top"')
+
+        self.assertIn("<name>aperture</name>", non_reserved.to_xml(encoding=str))
+        self.assertIn("<name>\"distance\"</name>", reserved_no_quotes.to_xml(encoding=str))
+        self.assertIn("<name>\"offset\"</name>", reserved_single_quotes.to_xml(encoding=str))
+        self.assertIn("<name>\"top\"</name>", reserved_mixed_quotes.to_xml(encoding=str))
+
 
 class TestTableElement(TestCase):
     """Test the Table element model"""

@@ -32,8 +32,8 @@ ADQL_SQL_KEYWORDS = [
     "CATALOG",
     "CHAR",
     "CHARACTER",
-    "CHARACTER_LENGTH",
     "CHAR_LENGTH",
+    "CHARACTER_LENGTH",
     "CHECK",
     "CLOSE",
     "COALESCE",
@@ -238,6 +238,7 @@ ADQL_SQL_KEYWORDS = [
     "ATAN2",
     "CEILING",
     "COS",
+    "COT",
     "DEGREES",
     "EXP",
     "FLOOR",
@@ -252,7 +253,6 @@ ADQL_SQL_KEYWORDS = [
     "SIN",
     "SQRT",
     "TAN",
-    "TOP",
     "TRUNCATE",
     # ADQL geometry keywords
     "AREA",
@@ -268,4 +268,13 @@ ADQL_SQL_KEYWORDS = [
     "POINT",
     "POLYGON",
     "REGION",
+    # Cast functions and datatypes
+    "BIGINT",
+    # String functions and operators
+    "ILIKE",
+    # Conversion functions
+    "IN_UNIT",
+    # Cardinality
+    "OFFSET",
+    "TOP",
 ]
