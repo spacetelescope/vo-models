@@ -30,6 +30,8 @@ The following IVOA protocols are currently supported:
   - others
 - **VOResource version 1.1**
 - **TAPRegExt version 1.0**
+- **VORegistry 1.1**
+- **RegistryInterfaces version 1.0**
 
 You can read more about using these models in our documentation: https://vo-models.readthedocs.io/
 

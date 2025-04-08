@@ -1,4 +1,4 @@
-"""Pydantic-xml models for IVOA schema VOResource-v1.1.xsd"""
+"""Pydantic-xml models for IVOA schema VOResource v1.1"""
 import datetime
 from typing import Literal, Optional
 
