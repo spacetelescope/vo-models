@@ -3,6 +3,7 @@
 from typing import Optional, Literal
 
 from pydantic_xml import element, attr
+from pydantic import model_validator
 
 import vo_models.vodataservice as vs
 import vo_models.voresource as vr
@@ -29,10 +30,16 @@ class Registry(vr.Service, tag="Resource", nsmap=NSMAP, ns="ri"):
             (element) - For registry interfaces with a user-visible table structure, tableset allows its declaration.
     """
 
-    full: bool = element()
+    full: bool = element(ns="")
     type: Literal["vg:Registry"] = attr(ns="xsi", default="vg:Registry")
-    managed_authority: Optional[list[vr.AuthorityID]] = element(tag="managedAuthority", default=[])
-    tableset: Optional[vs.TableSet] = element(tag="tableset", default=None)
+    managed_authority: Optional[list[vr.AuthorityID]] = element(tag="managedAuthority", default=[], ns="")
+    tableset: Optional[vs.TableSet] = element(tag="tableset", default=None, ns="")
+
+    @model_validator(mode="before")
+    @classmethod
+    def sanity_check(cls, values):
+        """Ensure that the registry has either a managed authority or a tableset."""
+        return values
 
 
 class Harvest(vr.Capability, nsmap=NSMAP):
@@ -44,6 +51,7 @@ class Harvest(vr.Capability, nsmap=NSMAP):
     """
 
     type: Literal["vg:Harvest"] = attr(ns="xsi", default="vg:Harvest")
+    standard_id: Literal["ivo://ivoa.net/std/Registry"] = attr(default="ivo://ivoa.net/std/Registry")
     max_records: int = element(tag="maxRecords")
 
 
@@ -61,21 +69,22 @@ class Search(vr.Capability, nsmap=NSMAP):
 
     max_records: int = element(tag="maxRecords")
     type: Literal["vg:Search"] = attr(ns="xsi", default="vg:Search")
+    standard_id: Literal["ivo://ivoa.net/std/Registry"] = attr(default="ivo://ivoa.net/std/Registry")
     extension_search_support: Optional[ExtensionSearchSupport] = element(tag="extensionSearchSupport", default=None)
     optional_protocol: Optional[list[OptionalProtocol]] = element(tag="optionalProtocol", default=[])
 
 
-class OAIHTTP(vr.Interface):
+class OAIHTTP(vr.Interface, nsmap=NSMAP):
     """A description of the standard OAI PMH interface using HTTP (GET or POST) queries."""
 
     type: Literal["vg:OAIHTTP"] = attr(ns="xsi", default="vg:OAIHTTP")
 
-class OAISOAP(vr.WebService):
+class OAISOAP(vr.WebService, nsmap=NSMAP):
     """A description of the standard OAI PMH interface using a SOAP Web Service interface."""
 
     type: Literal["vg:OAISOAP"] = attr(ns="xsi", default="vg:OAISOAP")
 
-class Authority(vr.Resource):
+class Authority(vr.Resource, nsmap=NSMAP):
     """A naming authority; an assertion of control over a namespace represented by an authority identifier.
 
     managing_org:

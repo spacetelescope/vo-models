@@ -18,7 +18,7 @@ NSMAP = {
 }
 
 
-class Validation(BaseXmlModel, nsmap=NSMAP):
+class Validation(BaseXmlModel, ns="", nsmap=NSMAP):
     """A validation stamp combining a validation level and the ID of the validator.
 
     Parameters:
@@ -41,7 +41,7 @@ class Validation(BaseXmlModel, nsmap=NSMAP):
         return values
 
 
-class ResourceName(BaseXmlModel, nsmap=NSMAP):
+class ResourceName(BaseXmlModel, ns="", nsmap=NSMAP):
     """The name of a potentially registered resource.
 
     That is, the entity referred to may have an associated identifier.
@@ -57,7 +57,7 @@ class ResourceName(BaseXmlModel, nsmap=NSMAP):
     ivo_id: Optional[IdentifierURI] = attr(name="ivo-id", default=None)
 
 
-class Date(BaseXmlModel, nsmap=NSMAP):
+class Date(BaseXmlModel, ns="", nsmap=NSMAP):
     """A string indicating what the date refers to.
 
     The value of role should be taken from the vocabulary maintained at http://www.ivoa.net/rdf/voresource/date_role.
@@ -75,7 +75,7 @@ class Date(BaseXmlModel, nsmap=NSMAP):
     )
 
 
-class Source(BaseXmlModel, nsmap=NSMAP):
+class Source(BaseXmlModel, ns="", nsmap=NSMAP):
     """A bibliographic reference from which the present resource is derived or extracted.
 
     Parameters:
@@ -90,7 +90,7 @@ class Source(BaseXmlModel, nsmap=NSMAP):
     format: Optional[str] = attr(name="format", default=None)
 
 
-class Rights(BaseXmlModel, nsmap=NSMAP):
+class Rights(BaseXmlModel, ns="", nsmap=NSMAP):
     """A statement of usage conditions.
 
     This will typically include a license, which should be given as a full string
@@ -107,7 +107,7 @@ class Rights(BaseXmlModel, nsmap=NSMAP):
     rights_uri: Optional[networks.AnyUrl] = attr(name="rightsURI", default=None)
 
 
-class AccessURL(BaseXmlModel, nsmap=NSMAP):
+class AccessURL(BaseXmlModel, ns="", nsmap=NSMAP):
     """The URL (or base URL) that a client uses to access the service.
 
     Parameters:
@@ -122,7 +122,7 @@ class AccessURL(BaseXmlModel, nsmap=NSMAP):
     use: Literal["full", "base", "dir"] = attr(name="use")
 
 
-class MirrorURL(BaseXmlModel, nsmap=NSMAP):
+class MirrorURL(BaseXmlModel, ns="", nsmap=NSMAP):
     """A URL of a mirror (i.e., a functionally identical additional service interface) to
 
     Parameters:
@@ -136,7 +136,7 @@ class MirrorURL(BaseXmlModel, nsmap=NSMAP):
     title: Optional[str] = attr(name="title", default=None)
 
 
-class Contact(BaseXmlModel, nsmap=NSMAP):
+class Contact(BaseXmlModel, ns="", nsmap=NSMAP):
     """Information allowing establishing contact, e.g., for purposes of support.
 
     Parameters:
@@ -175,7 +175,7 @@ class Contact(BaseXmlModel, nsmap=NSMAP):
         return values
 
 
-class Creator(BaseXmlModel, nsmap=NSMAP):
+class Creator(BaseXmlModel, ns="", nsmap=NSMAP):
     """The entity (e.g. person or organisation) primarily responsible for creating something
 
     Parameters:
@@ -208,7 +208,7 @@ class Creator(BaseXmlModel, nsmap=NSMAP):
         return values
 
 
-class Relationship(BaseXmlModel, nsmap=NSMAP):
+class Relationship(BaseXmlModel, ns="", nsmap=NSMAP):
     """A description of the relationship between one resource and one or more other resources.
 
     Parameters:
@@ -225,7 +225,7 @@ class Relationship(BaseXmlModel, nsmap=NSMAP):
     related_resource: list[ResourceName] = element(tag="relatedResource")
 
 
-class SecurityMethod(BaseXmlModel, nsmap=NSMAP):
+class SecurityMethod(BaseXmlModel, ns="", nsmap=NSMAP):
     """A description of a security mechanism.
 
     This type only allows one to refer to the mechanism via a URI.  Derived types would allow for more metadata.
@@ -238,7 +238,7 @@ class SecurityMethod(BaseXmlModel, nsmap=NSMAP):
     standard_id: Optional[networks.AnyUrl] = attr(name="standardID", default=None)
 
 
-class Curation(BaseXmlModel, nsmap=NSMAP):
+class Curation(BaseXmlModel, ns="", nsmap=NSMAP):
     """Information regarding the general curation of a resource
 
     Parameters:
@@ -265,7 +265,7 @@ class Curation(BaseXmlModel, nsmap=NSMAP):
     contact: list[Contact] = element(tag="contact")
 
 
-class Content(BaseXmlModel, nsmap=NSMAP):
+class Content(BaseXmlModel, ns="", nsmap=NSMAP):
     """Information regarding the general content of a resource
 
     Parameters:
@@ -299,7 +299,7 @@ class Content(BaseXmlModel, nsmap=NSMAP):
     relationship: Optional[list[Relationship]] = element(tag="relationship", default_factory=list)
 
 
-class Interface(BaseXmlModel, tag="interface", nsmap=NSMAP):
+class Interface(BaseXmlModel, ns="", tag="interface", nsmap=NSMAP):
     """A description of a service interface.
 
     Since this type is abstract, one must use an Interface subclass to describe an actual interface denoting
@@ -334,13 +334,13 @@ class Interface(BaseXmlModel, tag="interface", nsmap=NSMAP):
     test_querystring: Optional[str] = element(tag="testQueryString", default=None)
 
 
-class WebBrowser(Interface, nsmap=NSMAP):
+class WebBrowser(Interface, ns="", nsmap=NSMAP):
     """A (form-based) interface intended to be accesed interactively by a user via a web browser."""
 
     type: Literal["vr:WebBrowser"] = attr(name="type", default="vr:WebBrowser", ns="xsi")
 
 
-class WebService(Interface, nsmap=NSMAP):
+class WebService(Interface, ns="", nsmap=NSMAP):
     """A Web Service that is describable by a WSDL document.
 
     The accessURL element gives the Web Service's endpoint URL.
@@ -355,7 +355,7 @@ class WebService(Interface, nsmap=NSMAP):
     wsdl_url: Optional[list[networks.AnyUrl]] = element(tag="wsdlURL", default_factory=list)
 
 
-class Resource(BaseXmlModel, nsmap=NSMAP):
+class Resource(BaseXmlModel, ns="", nsmap=NSMAP):
     """Any entity or component of a VO application that is describable and
                         identifiable by an IVOA Identifier.
 
@@ -393,10 +393,10 @@ class Resource(BaseXmlModel, nsmap=NSMAP):
     version: Optional[str] = attr(name="version", default=None)
 
     validation_level: Optional[list[Validation]] = element(tag="validationLevel", default_factory=list)
-    title: str = element(tag="title")
-    short_name: Optional[str] = element(tag="shortName", default=None)
-    identifier: networks.AnyUrl = element(tag="identifier")
-    alt_identifier: Optional[list[networks.AnyUrl]] = element(tag="altIdentifier", default_factory=list)
+    title: str = element(tag="title", ns="")
+    short_name: Optional[str] = element(tag="shortName", default=None, ns="")
+    identifier: networks.AnyUrl = element(tag="identifier", ns="")
+    alt_identifier: Optional[list[networks.AnyUrl]] = element(tag="altIdentifier", default_factory=list, ns="")
     curation: Curation = element(tag="curation")
     content: Content = element(tag="content")
 
@@ -415,7 +415,7 @@ class Resource(BaseXmlModel, nsmap=NSMAP):
         return values
 
 
-class Organisation(Resource, nsmap=NSMAP):
+class Organisation(Resource, ns="", nsmap=NSMAP):
     """A named group of one or more persons brought together to pursue participation in VO applications.
 
     Parameters:
@@ -430,7 +430,7 @@ class Organisation(Resource, nsmap=NSMAP):
     instrument: Optional[list[ResourceName]] = element(tag="instrument", default_factory=list)
 
 
-class Capability(BaseXmlModel, tag="capability", nsmap=NSMAP):
+class Capability(BaseXmlModel, ns="", tag="capability", nsmap=NSMAP):
     """A description of what the service does (in terms of context-specific behavior), and how to use it
     (in terms of an interface)
 
@@ -458,7 +458,7 @@ class Capability(BaseXmlModel, tag="capability", nsmap=NSMAP):
     interface: Optional[list[Interface]] = element(tag="interface", default_factory=list)
 
 
-class Service(Resource, nsmap=NSMAP):
+class Service(Resource, ns="", nsmap=NSMAP):
     """A resource that can be invoked by a client to perform some action on its behalf.
 
     Parameters:
