@@ -4,7 +4,7 @@ from datetime import timezone as tz
 from unittest import TestCase
 from xml.etree.ElementTree import canonicalize
 
-from vo_models.voregistry.models import OAIHTTP, Harvest, Registry, Authority
+from vo_models.voregistry.models import OAIHTTP, Authority, ExtensionSearchSupport, Harvest, Registry, Search
 from vo_models.voresource.models import (
     AccessURL,
     Capability,
@@ -12,12 +12,13 @@ from vo_models.voresource.models import (
     Content,
     Curation,
     Interface,
+    Resource,
     ResourceName,
-    Rights,
     Service,
     Validation,
+    WebService,
 )
-from vo_models.voresource.types import UTCTimestamp
+from vo_models.voresource.types import UTCTimestamp, ValidationLevel
 
 VOREGISTRY_NAMESPACE_HEADER = """
     xmlns:ri="http://www.ivoa.net/xml/RegistryInterface/v1.0"
@@ -63,50 +64,73 @@ class TestOAIHTTP(TestCase):
         test_xml = self.test_oaihttp_model.to_xml(encoding=str, skip_empty=True)
         self.assertEqual(canonicalize(test_xml), canonicalize(self.test_oaihttp_xml))
 
+
 class TestAuthority(TestCase):
     """Test the Authority model."""
 
     test_authority_model = Authority(
-        created=UTCTimestamp(2024, 4, 5, 14, 55, 33, tzinfo=tz.utc),
+        status="active",
+        created=UTCTimestamp(2014, 4, 5, 14, 55, 33, tzinfo=tz.utc),
         updated=UTCTimestamp(2015, 11, 19, 17, 43, 23, tzinfo=tz.utc),
         validation_level=[Validation(value=2, validated_by="ivo://archive.stsci.edu/nvoregistry")],
         title="CSIRO Authority Resource",
         identifier="ivo://au.csiro",
         curation=Curation(
             publisher=ResourceName(value="CSIRO"),
-            contact=Contact(
-                name=ResourceName(value="John Doe"),
-                email="john.doe@csiro.au"
-            )
+            contact=[Contact(name=ResourceName(value="John Doe"), email="john.doe@csiro.au")],
         ),
         content=Content(
             subject=["Authority"],
             description="CSIRO Authority Resource",
+            reference_url="http://data.csiro.au/astrogrid-registry",
         ),
-        managing_org = ResourceName(value="Example Managing Org", ivo_id="ivo://au.csiro/organisation"),
+        managing_org=ResourceName(ivo_id="ivo://au.csiro/organisation"),
     )
 
     test_authority_xml = (
-        '<ri:Resource created="2014-04-05T14:55:33Z" status="active" updated="2015-11-19T17:43:23Z" xmlns:ri="http://www.ivoa.net/xml/RegistryInterface/v1.0" xmlns:vg="http://www.ivoa.net/xml/VORegistry/v1.0" xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" xsi:type="vg:Authority" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ivoa.net/xml/RegistryInterface/v1.0 http://software.astrogrid.org/schema/registry/RegistryInterface/v1.0/RegistryInterface.xsd http://www.ivoa.net/xml/VOResource/v1.0 http://software.astrogrid.org/schema/vo-resource-types/VOResource/v1.0/VOResource.xsd  http://www.ivoa.net/xml/VORegistry/v1.0 http://software.astrogrid.org/schema/vo-resource-types/VORegistry/v1.0/VORegistry.xsd">'
+        '<ri:Resource created="2014-04-05T14:55:33.000Z" status="active" updated="2015-11-19T17:43:23.000Z" xmlns:ri="http://www.ivoa.net/xml/RegistryInterface/v1.0" xmlns:vg="http://www.ivoa.net/xml/VORegistry/v1.0" xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" xsi:type="vg:Authority" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
         '<validationLevel validatedBy="ivo://archive.stsci.edu/nvoregistry">2</validationLevel>'
-        '<title>CSIRO Authority Resource</title>'
-        '<shortName>CSIRO Authority</shortName>'
-        '<identifier>ivo://au.csiro</identifier>'
-        '<curation>'
-        '<publisher>CSIRO</publisher>'
-        '<contact>'
-        '<name>John Doe</name>'
-        '<email>john.doe@csiro.au</email>'
-        '</contact>'
-        '</curation>'
-        '<content>'
-        '<subject>Authority</subject>'
-        '<description>CSIRO Authority Resource</description>'
-        '<referenceURL>http://data.csiro.au/astrogrid-registry</referenceURL>'
-        '</content>'
+        "<title>CSIRO Authority Resource</title>"
+        "<identifier>ivo://au.csiro</identifier>"
+        "<curation>"
+        "<publisher>CSIRO</publisher>"
+        "<contact>"
+        "<name>John Doe</name>"
+        "<email>john.doe@csiro.au</email>"
+        "</contact>"
+        "</curation>"
+        "<content>"
+        "<subject>Authority</subject>"
+        "<description>CSIRO Authority Resource</description>"
+        "<referenceURL>http://data.csiro.au/astrogrid-registry</referenceURL>"
+        "</content>"
         '<managingOrg ivo-id="ivo://au.csiro/organisation" />'
-        '</ri:Resource>'
+        "</ri:Resource>"
     )
+
+    def test_read_from_xml(self):
+        """Test reading the Authority model from XML."""
+
+        authority = Authority.from_xml(self.test_authority_xml)
+        self.assertIsInstance(authority, Authority)
+        self.assertIsInstance(authority, Resource)
+
+        # Test for authority-specific attributes
+        self.assertEqual(authority.status, "active")
+        self.assertEqual(authority.created, UTCTimestamp(2014, 4, 5, 14, 55, 33, tzinfo=tz.utc))
+        self.assertEqual(authority.updated, UTCTimestamp(2015, 11, 19, 17, 43, 23, tzinfo=tz.utc))
+
+        # Cursory check for Content values
+        self.assertIsInstance(authority.content, Content)
+        self.assertIsInstance(authority.curation, Curation)
+        self.assertIsInstance(authority.managing_org, ResourceName)
+
+    def test_write_to_xml(self):
+        """Test writing the Authority model to XML."""
+
+        test_xml = self.test_authority_model.to_xml(encoding=str, skip_empty=True)
+        self.assertEqual(canonicalize(test_xml), canonicalize(self.test_authority_xml))
+
 
 class TestRegistry(TestCase):
     """Test the Registry model."""
@@ -117,6 +141,7 @@ class TestRegistry(TestCase):
         tableset=None,
         created=UTCTimestamp(2006, 1, 19, 0, 0, 0, tzinfo=tz.utc),
         updated=UTCTimestamp(2024, 10, 30, 18, 55, 23, tzinfo=tz.utc),
+        validation_level=[Validation(value=2, validated_by="ivo://archive.stsci.edu/nvoregistry")],
         status="active",
         title="STScI Searchable Registry",
         short_name="STScIReg",
@@ -131,18 +156,33 @@ class TestRegistry(TestCase):
             reference_url="http://vao.stsci.edu/directory/",
             content_level=["Research"],
         ),
-        rights=[Rights(value="CC BY 4.0", rights_uri="https://creativecommons.org/licenses/by/4.0/")],
-        capability=[Capability(standard_id="ivo://ivoa.net/std/TAP")],
+        capability=[
+            Harvest(
+                standard_id="ivo://ivoa.net/std/Registry",
+                validation_level=[Validation(value=2, validated_by="ivo://archive.stsci.edu/nvoregistry")],
+                interface=[
+                    OAIHTTP(
+                        version="1.0",
+                        role="std",
+                        access_url=[AccessURL(value="http://vao.stsci.edu/directory/oai.aspx?", use="base")],
+                    )
+                ],
+                max_records=1000,
+            )
+        ],
     )
 
     test_registry_xml = (
-        '<ri:Resource xsi:type="vg:Registry" xmlns:ri="http://www.ivoa.net/xml/RegistryInterface/v1.0" xmlns:vg="http://www.ivoa.net/xml/VORegistry/v1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ivoa.net/xml/VOResource/v1.0 http://www.ivoa.net/xml/VOResource/v1.0 http://www.ivoa.net/xml/VORegistry/v1.0 http://www.ivoa.net/xml/VORegistry/v1.0 http://www.ivoa.net/xml/VODataService/v1.1 http://www.ivoa.net/xml/VODataService/v1.1" status="active" created="2006-01-19T00:00:00Z" updated="2024-10-30T18:55:23Z">'
+        '<ri:Resource xsi:type="vg:Registry" xmlns:ri="http://www.ivoa.net/xml/RegistryInterface/v1.0" '
+        'xmlns:vg="http://www.ivoa.net/xml/VORegistry/v1.0" '
+        'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+        'status="active" created="2006-01-19T00:00:00.000Z" updated="2024-10-30T18:55:23.000Z">'
         '<validationLevel validatedBy="ivo://archive.stsci.edu/nvoregistry">2</validationLevel>'
         "<title>STScI Searchable Registry</title>"
         "<shortName>STScIReg</shortName>"
         "<identifier>ivo://archive.stsci.edu/nvoregistry</identifier>"
         "<curation>"
-        "<publisher> Space Telescope Science Institute</publisher>"
+        "<publisher>Space Telescope Science Institute</publisher>"
         "<contact>"
         "<name>MAST VO team</name>"
         "<email>vo-registry@stsci.edu</email>"
@@ -159,7 +199,6 @@ class TestRegistry(TestCase):
         '<interface xsi:type="vg:OAIHTTP" role="std" version="1.0">'
         '<accessURL use="base">http://vao.stsci.edu/directory/oai.aspx?</accessURL>'
         "</interface>"
-        "<maxRecords>1000</maxRecords>"
         "</capability>"
         "<full>true</full>"
         "<managedAuthority>archive.stsci.edu</managedAuthority>"
@@ -188,6 +227,8 @@ class TestRegistry(TestCase):
     def test_write_to_xml(self):
         """Test writing the Registry model to XML."""
 
+        self.maxDiff = None
+
         test_xml = self.test_registry_model.to_xml(encoding=str, skip_empty=True)
         self.assertEqual(canonicalize(test_xml), canonicalize(self.test_registry_xml))
 
@@ -197,23 +238,25 @@ class TestHarvest(TestCase):
 
     test_harvest_model = Harvest(
         standard_id="ivo://ivoa.net/std/Registry",
-        validation_level=[Validation(value=0, validated_by="https://example.edu")],
-        description="Example description",
+        validation_level=[Validation(value=2, validated_by="ivo://archive.stsci.edu/nvoregistry")],
         interface=[
-            Interface(version="1.0", role="std", access_url=[AccessURL(value="https://example.edu", use="full")])
+            OAIHTTP(
+                version="1.0",
+                role="std",
+                access_url=[AccessURL(value="http://vao.stsci.edu/directory/oai.aspx?", use="base")],
+            )
         ],
-        max_records=100,
+        max_records=1000,
     )
 
     test_harvest_xml = (
-        '<Harvest standardID="ivo://ivoa.net/std/Registry">'
-        '<validationLevel validatedBy="https://example.edu/">0</validationLevel>'
-        "<description>Example description</description>"
-        '<interface role="std" version="1.0">'
-        '<accessURL use="full">https://example.edu/</accessURL>'
+        '<capability xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:type="vg:Harvest" standardID="ivo://ivoa.net/std/Registry">'
+        '<validationLevel validatedBy="ivo://archive.stsci.edu/nvoregistry">2</validationLevel>'
+        '<interface xsi:type="vg:OAIHTTP" role="std" version="1.0">'
+        '<accessURL use="base">http://vao.stsci.edu/directory/oai.aspx?</accessURL>'
         "</interface>"
-        "<maxRecords>100</maxRecords>"
-        "</Harvest>"
+        "<maxRecords>1000</maxRecords>"
+        "</capability>"
     )
 
     def test_read_from_xml(self):
@@ -224,26 +267,74 @@ class TestHarvest(TestCase):
         self.assertIsInstance(harvest, Capability)
 
         # Test for harvest-specific attributes
-        self.assertEqual(harvest.max_records, 100)
+        self.assertEqual(harvest.max_records, 1000)
+        self.assertEqual(harvest.standard_id, "ivo://ivoa.net/std/Registry")
+        self.assertEqual(harvest.type, "vg:Harvest")
 
-        # Cursory check for Capability values
-        self.assertIsInstance(harvest.standard_id, str)
+        # Capability values
         self.assertIsInstance(harvest.validation_level, list)
+        self.assertEqual(harvest.validation_level[0].value, ValidationLevel.VALUE_2)
+
         self.assertIsInstance(harvest.interface[0], Interface)
+        self.assertIsInstance(OAIHTTP.model_construct(harvest.interface[0]), OAIHTTP)
+        self.assertEqual(str(harvest.interface[0].access_url[0].value), "http://vao.stsci.edu/directory/oai.aspx?")
+
+    def test_write_to_xml(self):
+        """Test writing the Harvest model to XML."""
+
+        test_xml = self.test_harvest_model.to_xml(encoding=str, skip_empty=True)
+        self.assertEqual(canonicalize(test_xml), canonicalize(self.test_harvest_xml))
 
 
-# class TestSearch(TestCase):
-#     """Test the Search model."""
-#     test_element = Search()
+class TestSearch(TestCase):
+    """Test the Search model."""
 
-# class TestOAIHTTP(TestCase):
-#     """Test the OAIHTTP model."""
-#     test_element = OAIHTTP()
+    test_search_xml = (
+        '<capability xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="vg:Search" standardID="ivo://ivoa.net/std/Registry">'
+        '<validationLevel validatedBy="ivo://archive.stsci.edu/nvoregistry">2</validationLevel>'
+        '<interface xsi:type="vr:WebService" role="std" version="1.0">'
+        '<accessURL use="full">http://vao.stsci.edu/directory/ristandardservice.asmx?</accessURL>'
+        "</interface>"
+        "<maxRecords>1000</maxRecords>"
+        "<extensionSearchSupport>partial</extensionSearchSupport>"
+        "</capability>"
+    )
 
-# class TestOAISOAP(TestCase):
-#     """Test the OAISOAP model."""
-#     test_element = OAISOAP()
+    test_search_model = Search(
+        validation_level=[Validation(value=2, validated_by="ivo://archive.stsci.edu/nvoregistry")],
+        interface=[
+            WebService(
+                role="std",
+                version="1.0",
+                access_url=[AccessURL(value="http://vao.stsci.edu/directory/ristandardservice.asmx?", use="full")],
+            )
+        ],
+        max_records=1000,
+        extension_search_support=ExtensionSearchSupport.PARTIAL,
+    )
 
-# class TestAuthority(TestCase):
-#     """Test the Authority model."""
-#     test_element = Authority()
+    def test_read_from_xml(self):
+        """Test reading the Search model from XML."""
+
+        search = Search.from_xml(self.test_search_xml)
+        self.assertIsInstance(search, Search)
+        self.assertIsInstance(search, Capability)
+
+        # Test for search-specific attributes
+        self.assertEqual(search.max_records, 1000)
+        self.assertEqual(search.extension_search_support, ExtensionSearchSupport.PARTIAL)
+
+        # Capability values
+        self.assertIsInstance(search.validation_level, list)
+        self.assertEqual(search.validation_level[0].value, ValidationLevel.VALUE_2)
+
+        self.assertIsInstance(search.interface[0], Interface)
+        self.assertEqual(
+            str(search.interface[0].access_url[0].value), "http://vao.stsci.edu/directory/ristandardservice.asmx?"
+        )
+
+    def test_write_to_xml(self):
+        """Test writing the Search model to XML."""
+
+        test_xml = self.test_search_model.to_xml(encoding=str, skip_empty=True)
+        self.assertEqual(canonicalize(test_xml), canonicalize(self.test_search_xml))

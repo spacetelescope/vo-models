@@ -53,7 +53,7 @@ class ResourceName(BaseXmlModel, ns="", nsmap=NSMAP):
             (content) - The name of the resource.
     """
 
-    value: str
+    value: Optional[str] = ""
     ivo_id: Optional[IdentifierURI] = attr(name="ivo-id", default=None)
 
 
