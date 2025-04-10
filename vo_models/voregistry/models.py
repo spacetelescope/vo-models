@@ -2,7 +2,7 @@
 
 from typing import Optional, Literal
 
-from pydantic_xml import element, attr, BaseXmlModel
+from pydantic_xml import element, attr
 
 import vo_models.vodataservice as vs
 import vo_models.voresource as vr

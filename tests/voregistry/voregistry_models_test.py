@@ -88,7 +88,10 @@ class TestAuthority(TestCase):
     )
 
     test_authority_xml = (
-        '<ri:Resource created="2014-04-05T14:55:33.000Z" status="active" updated="2015-11-19T17:43:23.000Z" xmlns:ri="http://www.ivoa.net/xml/RegistryInterface/v1.0" xmlns:vg="http://www.ivoa.net/xml/VORegistry/v1.0" xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" xsi:type="vg:Authority" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
+        '<ri:Resource created="2014-04-05T14:55:33.000Z" status="active" updated="2015-11-19T17:43:23.000Z" '
+        'xmlns:ri="http://www.ivoa.net/xml/RegistryInterface/v1.0" xmlns:vg="http://www.ivoa.net/xml/VORegistry/v1.0" '
+        'xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" xsi:type="vg:Authority" '
+        'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
         '<validationLevel validatedBy="ivo://archive.stsci.edu/nvoregistry">2</validationLevel>'
         "<title>CSIRO Authority Resource</title>"
         "<identifier>ivo://au.csiro</identifier>"
@@ -152,7 +155,7 @@ class TestRegistry(TestCase):
         ),
         content=Content(
             subject=["virtual observatory"],
-            description="Fully Searchable NVO Registry. Implements OAI interface and follows the standards and protocols of the IVOA Registry working group. ",
+            description="Fully Searchable NVO Registry.",
             reference_url="http://vao.stsci.edu/directory/",
             content_level=["Research"],
         ),
@@ -190,7 +193,7 @@ class TestRegistry(TestCase):
         "</curation>"
         "<content>"
         "<subject>virtual observatory</subject>"
-        "<description>Fully Searchable NVO Registry. Implements OAI interface and follows the standards and protocols of the IVOA Registry working group. </description>"
+        "<description>Fully Searchable NVO Registry.</description>"
         "<referenceURL>http://vao.stsci.edu/directory/</referenceURL>"
         "<contentLevel>Research</contentLevel>"
         "</content>"
@@ -227,8 +230,6 @@ class TestRegistry(TestCase):
     def test_write_to_xml(self):
         """Test writing the Registry model to XML."""
 
-        self.maxDiff = None
-
         test_xml = self.test_registry_model.to_xml(encoding=str, skip_empty=True)
         self.assertEqual(canonicalize(test_xml), canonicalize(self.test_registry_xml))
 
@@ -250,7 +251,8 @@ class TestHarvest(TestCase):
     )
 
     test_harvest_xml = (
-        '<capability xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:type="vg:Harvest" standardID="ivo://ivoa.net/std/Registry">'
+        '<capability xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:type="vg:Harvest" '
+        'standardID="ivo://ivoa.net/std/Registry">'
         '<validationLevel validatedBy="ivo://archive.stsci.edu/nvoregistry">2</validationLevel>'
         '<interface xsi:type="vg:OAIHTTP" role="std" version="1.0">'
         '<accessURL use="base">http://vao.stsci.edu/directory/oai.aspx?</accessURL>'
@@ -290,7 +292,8 @@ class TestSearch(TestCase):
     """Test the Search model."""
 
     test_search_xml = (
-        '<capability xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="vg:Search" standardID="ivo://ivoa.net/std/Registry">'
+        '<capability xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="vg:Search" '
+        'standardID="ivo://ivoa.net/std/Registry">'
         '<validationLevel validatedBy="ivo://archive.stsci.edu/nvoregistry">2</validationLevel>'
         '<interface xsi:type="vr:WebService" role="std" version="1.0">'
         '<accessURL use="full">http://vao.stsci.edu/directory/ristandardservice.asmx?</accessURL>'
