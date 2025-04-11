@@ -450,7 +450,7 @@ class Capability(BaseXmlModel, ns="", tag="capability", nsmap=NSMAP):
             (element) - A description of how to call the service to access this capability.
     """
 
-    standard_id: networks.AnyUrl = attr(name="standardID")
+    standard_id: Optional[networks.AnyUrl] = attr(name="standardID")
     type: Optional[str] = attr(name="type", default=None, ns="xsi")
 
     validation_level: Optional[list[Validation]] = element(tag="validationLevel", default_factory=list)
