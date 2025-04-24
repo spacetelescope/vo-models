@@ -13,3 +13,5 @@ This section contains documentation on the package's modules and classes.
     voresource_api
     vodataservice_api
     tapregext_api
+    voregistry_api
+    registry_interfaces_api
