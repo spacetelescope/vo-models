@@ -3,6 +3,7 @@
 TODO: This is an incomplete spec, covering only elements needed for VOSITables
 https://github.com/spacetelescope/vo-models/issues/17
 """
+
 from typing import Any, Literal, Optional
 from xml.sax.saxutils import escape
 
@@ -16,7 +17,6 @@ from vo_models.voresource.models import Interface
 
 NSMAP = {
     "": "http://www.ivoa.net/xml/VODataService/v1.1",
-    "xs": "http://www.w3.org/2001/XMLSchema",
     "vr": "http://www.ivoa.net/xml/VOResource/v1.0",
     "vs": "http://www.ivoa.net/xml/VODataService/v1.1",
     "stc": "http://www.ivoa.net/xml/STC/stc-v1.30.xsd",

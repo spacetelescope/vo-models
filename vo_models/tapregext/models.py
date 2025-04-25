@@ -8,7 +8,6 @@ from vo_models.voresource.models import NSMAP as VORESOURCE_NSMAP
 from vo_models.voresource.models import Capability
 
 NSMAP = {
-    "xs": "http://www.w3.org/2001/XMLSchema",
     "vm": "http://www.ivoa.net/xml/VOMetadata/v0.1",
     "tr": "http://www.ivoa.net/xml/TAPRegExt/v1.0",
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",

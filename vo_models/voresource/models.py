@@ -1,4 +1,5 @@
 """Pydantic-xml models for IVOA schema VOResource-v1.1.xsd"""
+
 import datetime
 from typing import Literal, Optional
 
@@ -12,7 +13,6 @@ from vo_models.voresource.types import IdentifierURI, UTCTimestamp, ValidationLe
 
 NSMAP = {
     "vr": "http://www.ivoa.net/xml/VOResource/v1.0",
-    "xs": "http://www.w3.org/2001/XMLSchema",
     "vm": "http://www.ivoa.net/xml/VOMetadata/v0.1",
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",
 }

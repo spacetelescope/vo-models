@@ -10,7 +10,6 @@ from vo_models.voresource.models import Capability
 
 NSMAP = {
     "vosi": "http://www.ivoa.net/xml/VOSICapabilities/v1.0",
-    "xsd": "http://www.w3.org/2001/XMLSchema",
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",
     "vs": "http://www.ivoa.net/xml/VODataService/v1.1",
 } | VORESOURCE_NSMAP

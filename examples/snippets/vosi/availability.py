@@ -16,7 +16,6 @@ availability.to_xml()
 avail_xml = """
 <availability
     xmlns="http://www.ivoa.net/xml/VOSIAvailability/v1.0"
-    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <available>true</available>
 <upSince>2023-01-01T00:00:00.000Z</upSince>

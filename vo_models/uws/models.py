@@ -11,7 +11,6 @@ from vo_models.xlink import XlinkType
 NSMAP = {
     "uws": "http://www.ivoa.net/xml/UWS/v1.0",
     "xlink": "http://www.w3.org/1999/xlink",
-    "xsd": "http://www.w3.org/2001/XMLSchema",
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",
 }
 

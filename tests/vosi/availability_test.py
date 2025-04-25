@@ -13,7 +13,6 @@ from vo_models.voresource.types import UTCTimestamp
 from vo_models.vosi.availability import Availability
 
 VOSI_AVAILABILITY_HEADER = """xmlns="http://www.ivoa.net/xml/VOSIAvailability/v1.0"
-xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 """
 

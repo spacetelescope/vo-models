@@ -238,6 +238,7 @@ class TestVOSICapabilities(TestCase):
 
     def test_write_to_xml(self):
         """Test writing VOSI Capabilities to XML."""
+
         test_xml = self.test_vosi_capabilities_model.to_xml(encoding=str, skip_empty=True)
         self.assertEqual(
             canonicalize(test_xml, strip_text=True),
