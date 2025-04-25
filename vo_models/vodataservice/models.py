@@ -99,7 +99,7 @@ class DataType(BaseXmlModel, tag="dataType", nsmap={"xsi": "http://www.w3.org/20
     value: str
 
 
-class TableParam(BaseXmlModel, ns="", tag="column"):
+class TableParam(BaseXmlModel, tag="column"):
     """A description of a table column.
 
     Parameters:
@@ -189,7 +189,7 @@ class TableParam(BaseXmlModel, ns="", tag="column"):
         return value
 
 
-class Table(BaseXmlModel, tag="table", ns="", skip_empty=True):
+class Table(BaseXmlModel, tag="table", ns="", nsmap={"": ""}, skip_empty=True):
     """A model representing a single table element.
 
     Parameters:
@@ -223,12 +223,12 @@ class Table(BaseXmlModel, tag="table", ns="", skip_empty=True):
     table_type: Optional[str] = attr(name="type", default=None)
 
     table_name: str = element(tag="name", ns="")
-    title: Optional[str] = element(tag="title", ns="", default=None)
-    description: Optional[str] = element(tag="description", ns="", default=None)
-    utype: Optional[str] = element(tag="utype", ns="", default=None)
-    nrows: Optional[int] = element(tag="nrows", gte=0, ns="", default=None)
-    column: Optional[list[TableParam]] = element(tag="column", ns="", default_factory=list)
-    foreign_key: Optional[list[ForeignKey]] = element(tag="foreignKey", ns="", default_factory=list)
+    title: Optional[str] = element(tag="title", default=None, ns="")
+    description: Optional[str] = element(tag="description", default=None, ns="")
+    utype: Optional[str] = element(tag="utype", default=None, ns="")
+    nrows: Optional[int] = element(tag="nrows", gte=0, default=None, ns="")
+    column: Optional[list[TableParam]] = element(tag="column", default_factory=list, ns="")
+    foreign_key: Optional[list[ForeignKey]] = element(tag="foreignKey", default_factory=list, ns="")
 
     def __init__(__pydantic_self__, **data: Any) -> None:
         """Escape any keys that are passed in."""
@@ -246,7 +246,7 @@ class Table(BaseXmlModel, tag="table", ns="", skip_empty=True):
         return value
 
 
-class TableSchema(BaseXmlModel, tag="schema", ns="", skip_empty=True):
+class TableSchema(BaseXmlModel, tag="schema", ns="", nsmap={"": ""}, skip_empty=True):
     """A detailed description of a logically related group of tables.
 
     Parameters:

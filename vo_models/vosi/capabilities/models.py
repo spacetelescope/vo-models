@@ -28,5 +28,6 @@ class VOSICapabilities(BaseXmlModel, tag="capabilities", ns="vosi", nsmap=NSMAP)
     capability: list[Union[TableAccess, Capability]] = element(
         tag="capability",
         ns="",
+        nsmap={"": ""},
         default=[],
     )
