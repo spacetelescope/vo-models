@@ -5,7 +5,6 @@ NSMAP = {
     "vosi": "http://www.ivoa.net/xml/VOSITables/v1.0",
     "vr": "http://www.ivoa.net/xml/VOResource/v1.0",
     "vs": "http://www.ivoa.net/xml/VODataService/v1.1",
-    "xsd": "http://www.w3.org/2001/XMLSchema",
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",
 }
 

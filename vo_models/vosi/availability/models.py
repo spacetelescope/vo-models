@@ -8,7 +8,6 @@ from vo_models.voresource.types import UTCTimestamp
 
 NSMAP = {
     "": "http://www.ivoa.net/xml/VOSIAvailability/v1.0",
-    "xsd": "http://www.w3.org/2001/XMLSchema",
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",
 }
 

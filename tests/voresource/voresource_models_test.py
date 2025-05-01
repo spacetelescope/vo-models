@@ -31,8 +31,6 @@ from vo_models.voresource.types import UTCDateTime, UTCTimestamp, ValidationLeve
 
 VORESOURCE_NAMESPACE_HEADER = """
     xmlns:xml="http://www.w3.org/XML/1998/namespace",
-    xmlns="http://www.w3.org/2001/XMLSchema",
-    xmlns:xs="http://www.w3.org/2001/XMLSchema",
     xmlns="http://www.ivoa.net/xml/VOResource/v1.0",
     xmlns:vm="http://www.ivoa.net/xml/VOMetadata/v0.1",
 """

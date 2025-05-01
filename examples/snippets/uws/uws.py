@@ -203,7 +203,6 @@ job_summary.to_xml()
 job_summary_xml = """
 <uws:job xmlns:uws="http://www.ivoa.net/xml/UWS/v1.0"
     xmlns:xlink="http://www.w3.org/1999/xlink"
-    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     version="1.1">
     <uws:jobId>job_1</uws:jobId>
