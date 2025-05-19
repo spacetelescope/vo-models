@@ -1,8 +1,8 @@
 """Pydantic-xml models for IVOA schema VORegistry 1.1"""
 
-from typing import Optional, Literal
+from typing import Literal, Optional
 
-from pydantic_xml import element, attr
+from pydantic_xml import attr, element
 
 import vo_models.vodataservice as vs
 import vo_models.voresource as vr
@@ -13,7 +13,7 @@ NSMAP = {
     "vg": "http://www.ivoa.net/xml/VORegistry/v1.0",
     "vs": "http://www.ivoa.net/xml/VODataService/v1.1",
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",
-    "ri": "http://www.ivoa.net/xml/RegistryInterface/v1.0"
+    "ri": "http://www.ivoa.net/xml/RegistryInterface/v1.0",
 }
 
 
@@ -22,10 +22,12 @@ class OAIHTTP(vr.Interface, nsmap=NSMAP):
 
     type: Literal["vg:OAIHTTP"] = attr(ns="xsi", default="vg:OAIHTTP")
 
+
 class OAISOAP(vr.WebService, nsmap=NSMAP):
     """A description of the standard OAI PMH interface using a SOAP Web Service interface."""
 
     type: Literal["vg:OAISOAP"] = attr(ns="xsi", default="vg:OAISOAP")
+
 
 class Registry(vr.Service, tag="Resource", nsmap=NSMAP, ns="ri"):
     """A service that provides access to descriptions of resources.
@@ -39,10 +41,12 @@ class Registry(vr.Service, tag="Resource", nsmap=NSMAP, ns="ri"):
             (element) - For registry interfaces with a user-visible table structure, tableset allows its declaration.
     """
 
-    full: bool = element(ns="")
+    full: bool = element(ns="", nsmap={"": ""})
     type: Literal["vg:Registry"] = attr(ns="xsi", default="vg:Registry")
-    managed_authority: Optional[list[vr.AuthorityID]] = element(tag="managedAuthority", default=[], ns="")
-    tableset: Optional[vs.TableSet] = element(tag="tableset", default=None, ns="")
+    managed_authority: Optional[list[vr.AuthorityID]] = element(
+        tag="managedAuthority", default=[], ns="", nsmap={"": ""}
+    )
+    tableset: Optional[vs.TableSet] = element(tag="tableset", default=None, ns="", nsmap={"": ""})
 
 
 class Harvest(vr.Capability, nsmap=NSMAP):
@@ -96,4 +100,4 @@ class Authority(vr.Resource, tag="Resource", nsmap=NSMAP, ns="ri"):
     """
 
     type: Literal["vg:Authority"] = attr(ns="xsi", default="vg:Authority")
-    managing_org: vr.ResourceName = element(tag="managingOrg", default="")
+    managing_org: vr.ResourceName = element(tag="managingOrg", default="", ns="", nsmap={"": ""})
