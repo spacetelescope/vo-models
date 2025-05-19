@@ -24,7 +24,6 @@ from vo_models.voresource.types import UTCTimestamp
 
 UWS_NAMESPACE_HEADER = """xmlns:uws="http://www.ivoa.net/xml/UWS/v1.0"
 xmlns:xlink="http://www.w3.org/1999/xlink"
-xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 """
 
