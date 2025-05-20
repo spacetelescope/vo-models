@@ -53,7 +53,7 @@ class ResourceName(BaseXmlModel):
             (content) - The name of the resource.
     """
 
-    value: str
+    value: Optional[str] = ""
     ivo_id: Optional[IdentifierURI] = attr(name="ivo-id", default=None)
 
 
@@ -326,7 +326,9 @@ class Interface(BaseXmlModel, tag="interface"):
 
     version: Optional[str] = attr(name="version", default=None)
     role: Optional[str] = attr(name="role", default=None)
-    type: Optional[str] = attr(name="type", default=None, ns="xsi", nsmap={"xsi": "http://www.w3.org/2001/XMLSchema-instance"})
+    type: Optional[str] = attr(
+        name="type", default=None, ns="xsi", nsmap={"xsi": "http://www.w3.org/2001/XMLSchema-instance"}
+    )
 
     access_url: list[AccessURL] = element(tag="accessURL")
     mirror_url: Optional[list[MirrorURL]] = element(tag="mirrorURL", default_factory=list)
@@ -357,7 +359,7 @@ class WebService(Interface):
     wsdl_url: Optional[list[networks.AnyUrl]] = element(tag="wsdlURL", default_factory=list)
 
 
-class Resource(BaseXmlModel):
+class Resource(BaseXmlModel, nsmap={"": ""}):
     """Any entity or component of a VO application that is describable and
                         identifiable by an IVOA Identifier.
 
@@ -394,13 +396,16 @@ class Resource(BaseXmlModel):
     status: Literal["active", "inactive", "deleted"] = attr(name="status")
     version: Optional[str] = attr(name="version", default=None)
 
-    validation_level: Optional[list[Validation]] = element(tag="validationLevel", default_factory=list)
-    title: str = element(tag="title")
-    short_name: Optional[str] = element(tag="shortName", default=None)
-    identifier: networks.AnyUrl = element(tag="identifier")
-    alt_identifier: Optional[list[networks.AnyUrl]] = element(tag="altIdentifier", default_factory=list)
-    curation: Curation = element(tag="curation")
-    content: Content = element(tag="content")
+    validation_level: Optional[list[Validation]] = element(tag="validationLevel", default_factory=list, ns="")
+    title: str = element(
+        tag="title",
+        ns="",
+    )
+    short_name: Optional[str] = element(tag="shortName", default=None, ns="")
+    identifier: networks.AnyUrl = element(tag="identifier", ns="")
+    alt_identifier: Optional[list[networks.AnyUrl]] = element(tag="altIdentifier", default_factory=list, ns="")
+    curation: Curation = element(tag="curation", ns="")
+    content: Content = element(tag="content", ns="")
 
     @field_validator("created", "updated")
     def _validate_timestamps(cls, values):
@@ -432,7 +437,7 @@ class Organisation(Resource):
     instrument: Optional[list[ResourceName]] = element(tag="instrument", default_factory=list)
 
 
-class Capability(BaseXmlModel, tag="capability"):
+class Capability(BaseXmlModel, tag="capability", ns="", nsmap={"": ""}):
     """A description of what the service does (in terms of context-specific behavior), and how to use it
     (in terms of an interface)
 
@@ -452,15 +457,17 @@ class Capability(BaseXmlModel, tag="capability"):
             (element) - A description of how to call the service to access this capability.
     """
 
-    standard_id: networks.AnyUrl = attr(name="standardID")
-    type: Optional[str] = attr(name="type", default=None, ns="xsi")
+    standard_id: Optional[networks.AnyUrl] = attr(name="standardID")
+    type: Optional[str] = attr(
+        name="type", default=None, ns="xsi", nsmap={"xsi": "http://www.w3.org/2001/XMLSchema-instance"}
+    )
 
     validation_level: Optional[list[Validation]] = element(tag="validationLevel", default_factory=list)
     description: Optional[str] = element(tag="description", default=None)
     interface: Optional[list[Interface]] = element(tag="interface", default_factory=list)
 
 
-class Service(Resource):
+class Service(Resource, ns="", nsmap={"": ""}):
     """A resource that can be invoked by a client to perform some action on its behalf.
 
     Parameters:

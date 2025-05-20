@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.ivoa.net/xml/VORegistry/v1.0" 
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" 
+           xmlns:vg="http://www.ivoa.net/xml/VORegistry/v1.0" 
+           xmlns:vs="http://www.ivoa.net/xml/VODataService/v1.1" 
+           xmlns:vm="http://www.ivoa.net/xml/VOMetadata/v0.1"
+           elementFormDefault="unqualified" attributeFormDefault="unqualified"
+           version="1.1">
+
+   <xs:annotation>
+      <xs:appinfo>
+        <vm:schemaName>VORegistry</vm:schemaName>
+        <vm:schemaPrefix>xs</vm:schemaPrefix>
+        <vm:targetPrefix>vg</vm:targetPrefix>
+      </xs:appinfo>
+      <xs:documentation>
+        An extension to the core resource metadata (VOResource) for 
+        describing registries and authority IDs.
+      </xs:documentation>
+   </xs:annotation>
+
+   <xs:import namespace="http://www.ivoa.net/xml/VOResource/v1.0"
+              schemaLocation="http://www.ivoa.net/xml/VOResource/v1.0"/>
+   <xs:import namespace="http://www.ivoa.net/xml/VODataService/v1.1"
+              schemaLocation="http://www.ivoa.net/xml/VODataService/v1.1"/>
+
+   <xs:complexType name="Registry">
+      <xs:annotation>
+         <xs:documentation>
+           a service that provides access to descriptions of resources.
+         </xs:documentation>
+         <xs:documentation>
+           A registry is considered a publishing registry if it
+           contains a capability element with xsi:type="vg:Harvest".  
+           It is considered a searchable registry if it contains a
+           capability element with xsi:type="vg:Search".
+         </xs:documentation>
+      </xs:annotation>
+
+      <xs:complexContent>
+         <xs:extension base="vr:Service">
+            <xs:sequence>
+               <xs:element name="full" type="xs:boolean">
+                  <xs:annotation>
+                     <xs:documentation>
+                       If true, this registry attempts to collect all resource
+                       records known to the IVOA.  
+                     </xs:documentation>
+                     <xs:documentation>
+                       A registry typically collects everything by harvesting 
+                       from all registries listed in the IVOA Registry of 
+                       Registries.  
+                     </xs:documentation>
+                  </xs:annotation>
+               </xs:element>
+
+               <xs:element name="managedAuthority" type="vr:AuthorityID"
+                           minOccurs="0" maxOccurs="unbounded">
+                  <xs:annotation>
+                     <xs:documentation>
+                       an authority identifier managed by the registry.
+                     </xs:documentation>
+                     <xs:documentation>
+                       Typically, this means the AuthorityIDs that originated 
+                       (i.e. were first published by) this registry.  Currently,
+                       only one registry can lay claim to an AuthorityID via
+                       this element at a time.   
+                     </xs:documentation>
+                  </xs:annotation>
+               </xs:element>
+                              
+               <xs:element name="tableset" type="vs:TableSet" minOccurs="0">
+                 <xs:annotation>
+                   <xs:documentation>
+                     For registry interfaces with a user-visible table
+                     structure, tableset allows its declaration.
+                   </xs:documentation>
+                   <xs:documentation>
+                     In case protocols implemented in different capabilities
+                     have conflicting requirements on tableset, the two
+                     capabilities should be considered belonging to separate
+                     resources.
+                   </xs:documentation>
+                 </xs:annotation>
+              </xs:element>
+
+            </xs:sequence>
+         </xs:extension>
+      </xs:complexContent>
+   </xs:complexType>
+
+   <xs:complexType name="Harvest">   
+      <xs:annotation>
+         <xs:documentation>
+            The capabilities of the Registry Harvest implementation.  
+         </xs:documentation>
+      </xs:annotation>
+
+      <xs:complexContent>
+         <xs:extension base="vr:Capability">
+            <xs:sequence>
+
+               <xs:element name="maxRecords" type="xs:int">
+                  <xs:annotation>
+                     <xs:documentation>
+                        The largest number of records that the registry search
+                        method will return.  A value greater than one implies 
+                        that an OAI continuation token will be provided when 
+                        the limit is reached.  A value of zero or less 
+                        indicates that there is no explicit limit and
+                        thus, continuation tokens are not supported.
+                     </xs:documentation>
+                  </xs:annotation>
+               </xs:element>
+
+            </xs:sequence>
+         </xs:extension>
+      </xs:complexContent>
+   </xs:complexType>
+
+   <xs:complexType name="Search">   
+      <xs:annotation>
+         <xs:documentation>
+            The capabilities of the Registry Search implementation.  
+         </xs:documentation>
+      </xs:annotation>
+
+      <xs:complexContent>
+         <xs:extension base="vr:Capability">
+            <xs:sequence>
+
+               <xs:element name="maxRecords" type="xs:int">
+                  <xs:annotation>
+                     <xs:documentation>
+                        The largest number of records that the registry search
+                        method will return.  A value of zero or less indicates
+                        that there is no explicit limit.  
+                     </xs:documentation>
+                  </xs:annotation>
+               </xs:element>
+
+               <xs:element name="extensionSearchSupport" 
+                           type="vg:ExtensionSearchSupport">
+                  <xs:annotation>
+                     <xs:documentation>
+                     	(deprecated)
+                     </xs:documentation>
+                     <xs:documentation>
+                     	This was used in Registry Interfaces 1.0 to indicate
+                     	what VOResource extensions a search interface supported.
+                     	Modern search interfaces will indicate that through
+                     	version, their tableset, or similar.
+                     </xs:documentation>
+                  </xs:annotation>
+               </xs:element>
+
+               <xs:element name="optionalProtocol" 
+                    type="vg:OptionalProtocol"
+                    minOccurs="0" maxOccurs="unbounded">
+                  <xs:annotation>
+                     <xs:documentation>
+                       (deprecated)
+                     </xs:documentation>
+                     <xs:documentation>
+                       This was used in Registry Interfaces 1.0 to indicate
+                       search protocol extensions.  In 1.1, use multiple
+                       capabilities with the appropriate standardIDs
+                       to declare special search capabilities.
+                     </xs:documentation>
+                  </xs:annotation>
+               </xs:element>
+            </xs:sequence>
+         </xs:extension>
+      </xs:complexContent>
+   </xs:complexType>
+
+   <xs:simpleType name="ExtensionSearchSupport">
+      <xs:restriction base="xs:NMTOKEN">
+         <xs:enumeration value="core">
+            <xs:annotation>
+              <xs:documentation>
+                 Only searches against the core VOResource metadata are 
+                 supported.
+              </xs:documentation>
+            </xs:annotation>
+         </xs:enumeration>
+         <xs:enumeration value="partial">
+            <xs:annotation>
+              <xs:documentation>
+                 Searches against some VOResource extension metadata are 
+                 supported but not necessarily all that exist in the registry.
+              </xs:documentation>
+            </xs:annotation>
+         </xs:enumeration>
+         <xs:enumeration value="full">
+            <xs:annotation>
+              <xs:documentation>
+                 Searches against all VOResource extension metadata contained 
+                 in the registry are supported.
+              </xs:documentation>
+            </xs:annotation>
+         </xs:enumeration>
+      </xs:restriction>
+   </xs:simpleType>
+
+   <xs:simpleType name="OptionalProtocol">
+      <xs:restriction base="xs:NMTOKEN">
+         <xs:enumeration value="XQuery">
+            <xs:annotation>
+              <xs:documentation>
+                 the XQuery (http://www.w3.org/TR/xquery/) protocol as defined
+                 in the VO Registry Interface standard.  
+              </xs:documentation>
+            </xs:annotation>
+         </xs:enumeration>
+      </xs:restriction>
+   </xs:simpleType>
+
+   <xs:complexType name="OAIHTTP">
+      <xs:annotation>
+         <xs:documentation>
+           a description of the standard OAI PMH interface using HTTP
+           (GET or POST) queries.
+         </xs:documentation>
+         <xs:documentation>
+           the accessURL child element is the base URL for the OAI
+           service as defined in section 3.1.1 of the OAI PMH
+           standard.  
+         </xs:documentation>
+      </xs:annotation>
+
+      <xs:complexContent>
+         <xs:extension base="vr:Interface">
+            <xs:sequence/>
+         </xs:extension>
+      </xs:complexContent>
+
+   </xs:complexType>
+
+   <xs:complexType name="OAISOAP">
+      <xs:annotation>
+         <xs:documentation>
+           a description of the standard OAI PMH interface using a SOAP 
+           Web Service interface.
+         </xs:documentation>
+         <xs:documentation>
+           the accessURL child element is the service port location URL for 
+           the OAI SOAP Web Service.  
+         </xs:documentation>
+      </xs:annotation>
+
+      <xs:complexContent>
+         <xs:extension base="vr:WebService">
+            <xs:sequence/>
+         </xs:extension>
+      </xs:complexContent>
+
+   </xs:complexType>
+
+   <xs:complexType name="Authority">
+      <xs:annotation>
+         <xs:documentation>
+           a naming authority; an assertion of control over a
+           namespace represented by an authority identifier. 
+         </xs:documentation>
+      </xs:annotation>
+      <xs:complexContent>
+         <xs:extension base="vr:Resource">
+            <xs:sequence>
+
+               <xs:element name="managingOrg" type="vr:ResourceName">
+                  <xs:annotation>
+                     <xs:documentation>
+                       the organization that manages or owns this authority.
+                     </xs:documentation>
+                     <xs:documentation>
+                       In most cases, this will be the same as the Publisher.
+                     </xs:documentation>
+                  </xs:annotation>
+               </xs:element>
+
+            </xs:sequence>
+         </xs:extension>
+      </xs:complexContent>
+   </xs:complexType>
+
+</xs:schema>

@@ -1,4 +1,4 @@
-"""IVOA VOResource-v1.1.xsd pydantic-xml models"""
+"""IVOA VOResource v1.1 pydantic-xml models"""
 
 from vo_models.voresource.models import (
     AccessURL,
