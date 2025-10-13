@@ -2,6 +2,7 @@
 
 from enum import Enum
 
+
 class ExtensionSearchSupport(str, Enum):
     """Used in Registry Interfaces 1.0 to denote what VOResource extensions a search interface supports."""
 
