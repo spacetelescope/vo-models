@@ -437,7 +437,7 @@ class Organisation(Resource):
     instrument: Optional[list[ResourceName]] = element(tag="instrument", default_factory=list)
 
 
-class Capability(BaseXmlModel, tag="capability", ns="", nsmap={"": ""}):
+class Capability(BaseXmlModel, tag="capability", ns="", nsmap={"": "", "xsi": "http://www.w3.org/2001/XMLSchema-instance"}):
     """A description of what the service does (in terms of context-specific behavior), and how to use it
     (in terms of an interface)
 
@@ -459,7 +459,7 @@ class Capability(BaseXmlModel, tag="capability", ns="", nsmap={"": ""}):
 
     standard_id: Optional[networks.AnyUrl] = attr(name="standardID")
     type: Optional[str] = attr(
-        name="type", default=None, ns="xsi", nsmap={"xsi": "http://www.w3.org/2001/XMLSchema-instance"}
+        name="type", default=None, ns="xsi"
     )
 
     validation_level: Optional[list[Validation]] = element(tag="validationLevel", default_factory=list)
