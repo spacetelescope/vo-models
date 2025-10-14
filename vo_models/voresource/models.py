@@ -299,7 +299,7 @@ class Content(BaseXmlModel):
     relationship: Optional[list[Relationship]] = element(tag="relationship", default_factory=list)
 
 
-class Interface(BaseXmlModel, tag="interface"):
+class Interface(BaseXmlModel, tag="interface", nsmap={"xsi": "http://www.w3.org/2001/XMLSchema-instance"}):
     """A description of a service interface.
 
     Since this type is abstract, one must use an Interface subclass to describe an actual interface denoting
@@ -326,9 +326,7 @@ class Interface(BaseXmlModel, tag="interface"):
 
     version: Optional[str] = attr(name="version", default=None)
     role: Optional[str] = attr(name="role", default=None)
-    type: Optional[str] = attr(
-        name="type", default=None, ns="xsi", nsmap={"xsi": "http://www.w3.org/2001/XMLSchema-instance"}
-    )
+    type: Optional[str] = attr(name="type", default=None, ns="xsi")
 
     access_url: list[AccessURL] = element(tag="accessURL")
     mirror_url: Optional[list[MirrorURL]] = element(tag="mirrorURL", default_factory=list)
@@ -352,9 +350,7 @@ class WebService(Interface):
             (element) - The location of the WSDL that describes this Web Service.
     """
 
-    type: Literal["vr:WebService"] = attr(
-        name="type", default="vr:WebService", ns="xsi", nsmap={"xsi": "http://www.w3.org/2001/XMLSchema-instance"}
-    )
+    type: Literal["vr:WebService"] = attr(name="type", default="vr:WebService", ns="xsi")
 
     wsdl_url: Optional[list[networks.AnyUrl]] = element(tag="wsdlURL", default_factory=list)
 
@@ -437,7 +433,9 @@ class Organisation(Resource):
     instrument: Optional[list[ResourceName]] = element(tag="instrument", default_factory=list)
 
 
-class Capability(BaseXmlModel, tag="capability", ns="", nsmap={"": "", "xsi": "http://www.w3.org/2001/XMLSchema-instance"}):
+class Capability(
+    BaseXmlModel, tag="capability", ns="", nsmap={"": "", "xsi": "http://www.w3.org/2001/XMLSchema-instance"}
+):
     """A description of what the service does (in terms of context-specific behavior), and how to use it
     (in terms of an interface)
 
@@ -458,9 +456,7 @@ class Capability(BaseXmlModel, tag="capability", ns="", nsmap={"": "", "xsi": "h
     """
 
     standard_id: Optional[networks.AnyUrl] = attr(name="standardID")
-    type: Optional[str] = attr(
-        name="type", default=None, ns="xsi"
-    )
+    type: Optional[str] = attr(name="type", default=None, ns="xsi")
 
     validation_level: Optional[list[Validation]] = element(tag="validationLevel", default_factory=list)
     description: Optional[str] = element(tag="description", default=None)
