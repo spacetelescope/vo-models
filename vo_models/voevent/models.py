@@ -1,13 +1,15 @@
-from typing import Literal, Optional
+"""XML Element and ComplexType models for VOEvent v2.1"""
+
+from typing import Annotated, Literal, Optional
 from warnings import warn
 
 import pydantic
-from pydantic import networks
+from pydantic import field_validator, networks
 from pydantic_xml import BaseXmlModel, attr, element
 
 from vo_models.voevent.types import CiteValues, DataType, RoleValues
 
-NSMAP = {"": "http://www.ivoa.net/xml/VOEvent/v2.1"}
+NSMAP = {"voe": "http://www.ivoa.net/xml/VOEvent/v2.1"}
 
 
 class CoordValue(BaseXmlModel, nsmap=NSMAP):
@@ -58,7 +60,7 @@ class Name(BaseXmlModel, nsmap=NSMAP):
 
     value: str
 
-    alt_identifier: Optional[networks.Any] = attr(name="altIdentifier", default=None)
+    alt_identifier: Optional[networks.AnyUrl] = attr(name="altIdentifier", default=None)
     role: Optional[str] = attr(name="role", default=None)
     ivorn: Optional[networks.AnyUrl] = attr(name="ivorn", default=None)
 
@@ -383,14 +385,15 @@ class Param(BaseXmlModel, nsmap=NSMAP):
         utype: (attr) - The utype of the Param
     """
 
-    description: Optional[list[str]] = element(tag="Description", default=None)
+    description: Optional[list[str]] = element(tag="Description", default_factory=list)
     reference: Optional[list[Reference]] = element(tag="Reference", default_factory=list)
-    value: Optional[list[str]] = attr(name="value", default=None)
+    value: Optional[str] = element(tag="Value", default=None)
 
+    value_attr: Optional[str] = attr(name="value", default=None)
     name: Optional[str] = attr(name="name", default=None)
     ucd: Optional[str] = attr(name="ucd", default=None)
     unit: Optional[str] = attr(name="unit", default=None)
-    data_type: Optional[DataType] = attr(name="dataType", default=DataType.STRING)
+    data_type: Optional[Literal["string", "int", "float"]] = attr(name="dataType", default=DataType.STRING)
     utype: Optional[str] = attr(name="utype", default=None)
 
 
@@ -444,15 +447,7 @@ class Data(BaseXmlModel, nsmap=NSMAP):
     What/Table Data definition.
     """
 
-    tr: list[str | TR] = element(tag="TR", default_factory=list)
-
-    def __init__(self, **data):
-        if "tr" in data:
-            if isinstance(data["tr"], list):
-                for idx, row in enumerate(data["tr"]):
-                    if isinstance(row, str):
-                        data["tr"][idx] = TR(td=[row])
-        super().__init__(**data)
+    tr: list[TR] = element(tag="TR", default_factory=list)
 
 
 class Table(BaseXmlModel, nsmap=NSMAP):
@@ -522,7 +517,7 @@ class Author(BaseXmlModel, nsmap=NSMAP):
     contact_name: Optional[list[str]] = element(tag="contactName", default_factory=list)
     contact_email: Optional[list[str]] = element(tag="contactEmail", default_factory=list)
     contact_phone: Optional[list[str]] = element(tag="contactPhone", default_factory=list)
-    contributor: Optional[list[str | Name]] = element(tag="Contributor", default_factory=list)
+    contributor: Optional[list[Name]] = element(tag="Contributor", default_factory=list)
 
     def __init__(self, **data):
         if "contributor" in data:
@@ -536,6 +531,16 @@ class Author(BaseXmlModel, nsmap=NSMAP):
                             stacklevel=2,
                         )
         super().__init__(**data)
+
+    @field_validator("title", "short_name", "logo_url", "contact_name", "contact_email", "contact_phone", mode="before")
+    @classmethod
+    def ensure_list(cls, v):
+        """Allow single values to be passed in and convert them to lists."""
+        if v is None:
+            return []
+        if isinstance(v, list):
+            return v
+        return [v]
 
 
 class Who(BaseXmlModel, nsmap=NSMAP):
@@ -554,7 +559,7 @@ class Who(BaseXmlModel, nsmap=NSMAP):
 class Inference(BaseXmlModel, nsmap=NSMAP):
     """Why/Inference: A container for a more nuanced expression, including relationships and probability."""
 
-    value: float = pydantic.Field(gte=0.0, lte=1.0)
+    value: Annotated[float, pydantic.Field(ge=0.0, le=1.0)]
 
     probability: Optional[float] = attr(name="probability", default=None)
     relation: Optional[str] = attr(name="relation", default=None)
@@ -582,7 +587,7 @@ class Why(BaseXmlModel, nsmap=NSMAP):
     reference: Reference = element(tag="Reference")
 
 
-class VOEvent(BaseXmlModel, tag="VOEvent", nsmap=NSMAP):
+class VOEvent(BaseXmlModel, tag="VOEvent", ns="voe", nsmap=NSMAP):
     """
     VOEvent is the root element for describing observations of immediate
         astronomical events. For more information, see
