@@ -7,7 +7,8 @@ import pydantic
 from pydantic import field_validator, networks
 from pydantic_xml import BaseXmlModel, attr, element
 
-from vo_models.voevent.types import CiteValues, DataType, RoleValues
+from vo_models.vocab.vocab import TimeScale, ReferenceFrame, ReferencePosition
+from vo_models.voevent.types import CiteValues, ContributorRole, DataType, RoleValues
 
 NSMAP = {"voe": "http://www.ivoa.net/xml/VOEvent/v2.1"}
 
@@ -61,7 +62,7 @@ class Name(BaseXmlModel, nsmap=NSMAP):
     value: str
 
     alt_identifier: Optional[networks.AnyUrl] = attr(name="altIdentifier", default=None)
-    role: Optional[str] = attr(name="role", default=None)
+    role: Optional[ContributorRole] = attr(name="role", default=None)
     ivorn: Optional[networks.AnyUrl] = attr(name="ivorn", default=None)
 
 
@@ -76,7 +77,7 @@ class TimeInstant(BaseXmlModel, nsmap=NSMAP):
 
     isotime: Optional[str] = element(tag="ISOTime", default=None)
     time_offset: Optional[float] = element(tag="TimeOffset", default=None)
-    time_scale: Optional[str] = element(tag="TimeScale", default=None)
+    time_scale: Optional[Literal[TimeScale.UTC, TimeScale.TT, TimeScale.TDB]] = element(tag="TimeScale", default=None)
 
 
 class TimeInterval(BaseXmlModel, nsmap=NSMAP):
@@ -244,6 +245,31 @@ class AstroCoords(BaseXmlModel, nsmap=NSMAP):
     position_name: Optional[str] = element(tag="PositionName", default=None)
     position_2d: Optional[Position2D] = element(tag="Position2D", default=None)
     position_3d: Optional[Position3D] = element(tag="Position3D", default=None)
+
+    @field_validator("coord_system_id")
+    @classmethod
+    def validate_coord_system_id(cls, value: Optional[str]) -> Optional[str]:
+        """Valid coord systems are the combinations of time-space-centers"""
+
+        parts = value.split("-") if value else []
+
+        valid_times = (TimeScale.UTC, TimeScale.TT, TimeScale.TDB)
+        valid_spaces = (ReferenceFrame.ICRS, ReferenceFrame.FK5)
+        valid_centers = (ReferencePosition.TOPO, ReferencePosition.GEO, ReferencePosition.BARY)
+
+        if len(parts) != 3:
+            raise ValueError(f"Invalid coord_system_id '{value}': must have three parts separated by '-'")
+
+        time_part, space_part, center_part = parts
+
+        if time_part not in valid_times:
+            raise ValueError(f"Invalid time part '{time_part}' in coord_system_id '{value}'")
+        if space_part not in valid_spaces:
+            raise ValueError(f"Invalid space part '{space_part}' in coord_system_id '{value}'")
+        if center_part not in valid_centers:
+            raise ValueError(f"Invalid center part '{center_part}' in coord_system_id '{value}'")
+
+        return value
 
 
 class TimeFrameType(BaseXmlModel, nsmap=NSMAP):
