@@ -7,7 +7,7 @@ import pydantic
 from pydantic import field_validator, networks
 from pydantic_xml import BaseXmlModel, attr, element
 
-from vo_models.vocab.vocab import TimeScale, ReferenceFrame, ReferencePosition
+from vo_models.vocab.vocab import ReferenceFrame, ReferencePosition, TimeScale
 from vo_models.voevent.types import CiteValues, ContributorRole, DataType, RoleValues
 
 NSMAP = {"voe": "http://www.ivoa.net/xml/VOEvent/v2.1"}
@@ -84,12 +84,12 @@ class TimeInterval(BaseXmlModel, nsmap=NSMAP):
     """Part of WhereWhen
 
     Parameters:
-        iso_time_start: (elem) - The ISOTimeStart string
-        iso_time_stop: (elem) - The ISOTimeStop string
+        isotime_start: (elem) - The ISOTimeStart string
+        isotime_stop: (elem) - The ISOTimeStop string
     """
 
-    iso_time_start: Optional[str] = element(tag="ISOTimeStart", default=None)
-    iso_time_stop: Optional[str] = element(tag="ISOTimeStop", default=None)
+    isotime_start: Optional[str] = element(tag="ISOTimeStart", default=None)
+    isotime_stop: Optional[str] = element(tag="ISOTimeStop", default=None)
 
 
 class Time(BaseXmlModel, nsmap=NSMAP):
@@ -155,7 +155,7 @@ class Position2D(BaseXmlModel, nsmap=NSMAP):
     name1: Optional[str] = element(tag="Name1", default=None)
     name2: Optional[str] = element(tag="Name2", default=None)
     value2: Value2 = element(tag="Value2")
-    error2radius: Optional[CoordValue] = element(tag="Error2Radius", default=None)
+    error2_radius: Optional[CoordValue] = element(tag="Error2Radius", default=None)
     error2: Optional[Error2] = element(tag="Error2", default=None)
 
 
@@ -223,8 +223,8 @@ class How(BaseXmlModel, nsmap=NSMAP):
         reference: (elem) - The Reference element
     """
 
-    description: str = element(tag="Description")
-    reference: Reference = element(tag="Reference")
+    description: Optional[str] = element(tag="Description", default=None)
+    reference: Optional[Reference] = element(tag="Reference", default=None)
 
 
 class AstroCoords(BaseXmlModel, nsmap=NSMAP):
@@ -585,15 +585,13 @@ class Who(BaseXmlModel, nsmap=NSMAP):
 class Inference(BaseXmlModel, nsmap=NSMAP):
     """Why/Inference: A container for a more nuanced expression, including relationships and probability."""
 
-    value: Annotated[float, pydantic.Field(ge=0.0, le=1.0)]
-
-    probability: Optional[float] = attr(name="probability", default=None)
+    probability: Optional[Annotated[float, pydantic.Field(ge=0.0, le=1.0)]] = attr(name="probability", default=None)
     relation: Optional[str] = attr(name="relation", default=None)
 
-    name: str = element(tag="Name")
-    concept: str = element(tag="Concept")
-    description: str = element(tag="Description")
-    reference: Reference = element(tag="Reference")
+    name: Optional[str] = element(tag="Name", default=None)
+    concept: Optional[str] = element(tag="Concept", default=None)
+    description: Optional[str] = element(tag="Description", default=None)
+    reference: Optional[Reference] = element(tag="Reference", default=None)
 
 
 class Why(BaseXmlModel, nsmap=NSMAP):
@@ -606,11 +604,11 @@ class Why(BaseXmlModel, nsmap=NSMAP):
     importance: Optional[float] = attr(name="importance", default=None)
     expires: Optional[str] = attr(name="expires", default=None)
 
-    name: str = element(tag="Name")
-    concept: str = element(tag="Concept")
-    inference: Inference = element(tag="Inference")
-    description: str = element(tag="Description")
-    reference: Reference = element(tag="Reference")
+    name: Optional[str] = element(tag="Name", default=None)
+    concept: Optional[str] = element(tag="Concept", default=None)
+    inference: Optional[Inference] = element(tag="Inference", default=None)
+    description: Optional[str] = element(tag="Description", default=None)
+    reference: Optional[Reference] = element(tag="Reference", default=None)
 
 
 class VOEvent(BaseXmlModel, tag="VOEvent", ns="voe", nsmap=NSMAP):
@@ -622,14 +620,14 @@ class VOEvent(BaseXmlModel, tag="VOEvent", ns="voe", nsmap=NSMAP):
         Reference.
     """
 
-    who: Optional[Who] = element(tag="Who", default=None)
-    what: Optional[What] = element(tag="What", default=None)
-    where_when: Optional[WhereWhen] = element(tag="WhereWhen", default=None)
-    how: Optional[How] = element(tag="How", default=None)
-    why: Optional[Why] = element(tag="Why", default=None)
-    citations: Optional[Citations] = element(tag="Citations", default=None)
-    description: Optional[str] = element(tag="Description", default=None)
-    reference: Optional[Reference] = element(tag="Reference", default=None)
+    who: Optional[Who] = element(tag="Who", default=None, ns="", nsmap={"": ""})
+    what: Optional[What] = element(tag="What", default=None, ns="", nsmap={"": ""})
+    where_when: Optional[WhereWhen] = element(tag="WhereWhen", default=None, ns="", nsmap={"": ""})
+    how: Optional[How] = element(tag="How", default=None, ns="", nsmap={"": ""})
+    why: Optional[Why] = element(tag="Why", default=None, ns="", nsmap={"": ""})
+    citations: Optional[Citations] = element(tag="Citations", default=None, ns="", nsmap={"": ""})
+    description: Optional[str] = element(tag="Description", default=None, ns="", nsmap={"": ""})
+    reference: Optional[Reference] = element(tag="Reference", default=None, ns="", nsmap={"": ""})
 
     version: Literal["2.1"] = attr(name="version", default="2.1")
     ivorn: str = attr(name="ivorn")
