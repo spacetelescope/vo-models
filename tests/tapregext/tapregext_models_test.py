@@ -24,9 +24,6 @@ xmlns:vm="http://www.ivoa.net/xml/VOMetadata/v0.1"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 """
 
-with open("tests/tapregext/TAPRegExt-v1.0-with-erratum1.xsd") as schema_file:
-    tapregext_schema = etree.XMLSchema(etree.parse(schema_file))
-
 
 class TestVersion(TestCase):
     """Tests the Version model."""
