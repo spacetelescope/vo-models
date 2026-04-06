@@ -8,6 +8,7 @@ from xml.etree.ElementTree import canonicalize
 from lxml import etree
 from pydantic_xml import element
 
+from tests.xml_utils import load_schema
 from vo_models.uws import (
     ErrorSummary,
     Jobs,
@@ -27,11 +28,10 @@ xmlns:xlink="http://www.w3.org/1999/xlink"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 """
 
+
 # New schema versions can be downloaded from https://www.ivoa.net/xml/ under "UWS - Universal Worker Service"
 # The most current version is 1.1, found here: https://www.ivoa.net/xml/UWS/UWS-v1.1.xsd
-with open("tests/uws/UWS-Schema-V1.0.xsd", "r") as schema_file:
-    uws_schema = etree.XMLSchema(etree.parse(schema_file))
-
+uws_schema = load_schema("tests/uws/UWS-Schema-V1.0.xsd")
 
 class TestErrorSummaryType(TestCase):
     """Tests for the UWS errorSummary complex type"""
@@ -55,9 +55,7 @@ class TestErrorSummaryType(TestCase):
     def test_write_to_xml(self):
         """Test writing to XML"""
 
-        error_summary = ErrorSummary(
-            type="transient", has_detail=True, message="Invalid query."
-        )
+        error_summary = ErrorSummary(type="transient", has_detail=True, message="Invalid query.")
         error_summary_xml = error_summary.to_xml(encoding=str)
 
         self.assertEqual(
@@ -87,9 +85,7 @@ class TestParameterType(TestCase):
     def test_write_to_xml(self):
         """Test writing to XML"""
 
-        parameter = Parameter(
-            by_reference=False, id="param1", is_post=False, value="test_value"
-        )
+        parameter = Parameter(by_reference=False, id="param1", is_post=False, value="test_value")
         parameter_xml = parameter.to_xml(encoding=str)
 
         self.assertEqual(
@@ -214,9 +210,7 @@ class TestShortJobDescriptionType(TestCase):
     def test_read_from_xml(self):
         """Test reading from XML"""
 
-        short_job_description = ShortJobDescription.from_xml(
-            self.test_short_job_description_xml
-        )
+        short_job_description = ShortJobDescription.from_xml(self.test_short_job_description_xml)
         self.assertEqual(short_job_description.job_id, "id1")
         self.assertEqual(short_job_description.type, "simple")
         self.assertEqual(short_job_description.href, "http://uri1")
@@ -345,9 +339,7 @@ class TestParametersElement(TestCase):
             ],
             param5=[Parameter(id="param5", value="value5")],
         )
-        parameters_xml = etree.fromstring(
-            parameters.to_xml(skip_empty=True, encoding=str)
-        )
+        parameters_xml = etree.fromstring(parameters.to_xml(skip_empty=True, encoding=str))
         uws_schema.assertValid(parameters_xml)
 
 
@@ -390,15 +382,9 @@ class TestJobSummaryElement(TestCase):
         self.assertEqual(job_summary.owner_id, "ownerId1")
         self.assertEqual(job_summary.phase, ExecutionPhase.PENDING.value)
         self.assertEqual(job_summary.quote, None)
-        self.assertEqual(
-            job_summary.creation_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc)
-        )
-        self.assertEqual(
-            job_summary.start_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc)
-        )
-        self.assertEqual(
-            job_summary.end_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc)
-        )
+        self.assertEqual(job_summary.creation_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
+        self.assertEqual(job_summary.start_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
+        self.assertEqual(job_summary.end_time, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
         self.assertEqual(job_summary.execution_duration, 0)
         self.assertEqual(job_summary.destruction, UTCTimestamp(1900, 1, 1, 1, 1, 1, tzinfo=tz.utc))
         self.assertEqual(len(job_summary.parameters.model_dump()), 2)
@@ -524,7 +510,5 @@ class TestJobsElement(TestCase):
                 )
             ]
         )
-        jobs_element_xml = etree.fromstring(
-            jobs_element.to_xml(skip_empty=True, encoding=str)
-        )
+        jobs_element_xml = etree.fromstring(jobs_element.to_xml(skip_empty=True, encoding=str))
         uws_schema.assertValid(jobs_element_xml)
