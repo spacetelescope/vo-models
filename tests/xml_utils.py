@@ -7,13 +7,15 @@ since newer versions of libxml2 (>= 2.14) no longer support HTTP/FTP fetching na
 import requests
 from lxml import etree
 
+requests_session = requests.Session()
+
 
 class URLResolver(etree.Resolver):
     """An lxml resolver that fetches remote schemas via requests."""
 
     def resolve(self, schema_url, public_id, context):  # pylint: disable=unused-argument
         if schema_url and schema_url.startswith(("http://", "https://")):
-            response = requests.get(schema_url, timeout=30)
+            response = requests_session.get(schema_url, timeout=30)
             response.raise_for_status()
             return self.resolve_string(response.content, context)
         return None
