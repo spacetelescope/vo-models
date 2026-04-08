@@ -6,11 +6,11 @@ from xml.etree.ElementTree import canonicalize
 
 from lxml import etree  # nosec B410
 
+from tests.xml_utils import load_schema
 from vo_models.vodataservice.models import DataType, Table, TableParam, TableSchema
 from vo_models.vosi.tables import VOSITable, VOSITableSet
 
-with open("tests/vosi/VOSITables-v1.1.xsd", "r") as schema_file:
-    vosi_tables_schema = etree.XMLSchema(file=schema_file)
+vosi_tables_schema = load_schema("tests/vosi/VOSITables-v1.1.xsd")
 
 VOSIT_TABLES_HEADER = """xmlns:vosi='http://www.ivoa.net/xml/VOSITables/v1.0'
 xmlns:vr='http://www.ivoa.net/xml/VOResource/v1.0'
