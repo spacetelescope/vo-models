@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use vo-models in your work, please cite it using these metadata."
+title: vo-models
+abstract: >-
+  Pydantic data models for IVOA service protocols. Provides validated,
+  serializable Python (pydantic-xml) models for IVOA protocols including UWS,
+  VOSI, VODataService, VOResource, TAPRegExt, and VORegistry, to support the
+  development of IVOA-compliant services and clients.
+type: software
+version: 0.5.3
+date-released: 2026-04-22
+license: MIT
+repository-code: "https://github.com/spacetelescope/vo-models"
+url: "https://vo-models.readthedocs.io/"
+keywords:
+  - ivoa
+  - virtual observatory
+  - pydantic
+  - pydantic-xml
+  - astronomy
+  - data models
+authors:
+  - given-names: Joshua
+    family-names: Fraustro
+    email: jfraustro@stsci.edu
+    orcid: "https://orcid.org/0009-0008-7937-1918"
+    affiliation: Space Telescope Science Institute
