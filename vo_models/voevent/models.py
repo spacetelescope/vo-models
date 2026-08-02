@@ -524,8 +524,8 @@ class What(BaseXmlModel, nsmap=NSMAP):
     table: Optional[list[Table]] = element(tag="Table", default_factory=list)
     # This is commented out in the XSD schema and not implemented in this model for now.
     # simple_time_series: Optional[list["SimpleTimeSeries"]] = element(tag="SimpleTimeSeries", default_factory=list)
-    description: Optional[str] = element(tag="Description", default=None)
-    reference: Optional[Reference] = element(tag="Reference", default=None)
+    description: Optional[list[str]] = element(tag="Description", default_factory=list)
+    reference: Optional[list[Reference]] = element(tag="Reference", default_factory=list)
 
 
 class Author(BaseXmlModel, nsmap=NSMAP):
