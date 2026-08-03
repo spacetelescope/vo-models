@@ -223,8 +223,8 @@ class How(BaseXmlModel, nsmap=NSMAP):
         reference: (elem) - The Reference element
     """
 
-    description: Optional[str] = element(tag="Description", default=None)
-    reference: Optional[Reference] = element(tag="Reference", default=None)
+    description: Optional[list[str]] = element(tag="Description", default_factory=list)
+    reference: Optional[list[Reference]] = element(tag="Reference", default_factory=list)
 
 
 class AstroCoords(BaseXmlModel, nsmap=NSMAP):
@@ -437,7 +437,7 @@ class Group(BaseXmlModel, nsmap=NSMAP):
         type: (attr) - The type of the Group
     """
 
-    param: Optional[list[Param]] = element(tag="Param", default_factory=list)
+    param: list[Param] = element(tag="Param")
     description: Optional[list[str]] = element(tag="Description", default_factory=list)
     reference: Optional[list[Reference]] = element(tag="Reference", default_factory=list)
 
@@ -494,7 +494,7 @@ class Table(BaseXmlModel, nsmap=NSMAP):
     """
 
     description: Optional[list[str]] = element(tag="Description", default_factory=list)
-    reference: Optional[Reference] = element(tag="Reference", default_factory=list)
+    reference: Optional[list[Reference]] = element(tag="Reference", default_factory=list)
     param: Optional[list[Param]] = element(tag="Param", default_factory=list)
     field: Optional[list[Field]] = element(tag="Field", default_factory=list)
     data: Data = element(tag="Data", default=None)
