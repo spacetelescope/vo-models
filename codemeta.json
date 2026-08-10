@@ -40,7 +40,7 @@
     "dateModified": "2026-04-22",
     "datePublished": "2023-12-07",
     "description": "Pydantic data models for IVOA service protocols. Provides validated, serializable Python (pydantic-xml) models for IVOA protocols including UWS, VOSI, VODataService, VOResource, TAPRegExt, and VORegistry, to support the development of IVOA-compliant services and clients.",
-    "downloadUrl": "https://github.com/spacetelescope/vo-models/releases/tag/v0.5.3",
+    "downloadUrl": "https://github.com/spacetelescope/vo-models/archive/refs/tags/v0.5.3.tar.gz",
     "identifier": "vo-models",
     "keywords": [
         "ivoa",
