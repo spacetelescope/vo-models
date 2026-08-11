@@ -15,9 +15,9 @@ if TYPE_CHECKING:
     UTCTimestamp = Annotated[datetime, ...]
 else:
     class UTCTimestamp(datetime):
-        """A subclass of datetime to allow expanded handling of ISO formatted datetimes, and enforce
+        """
+        A subclass of datetime to allow expanded handling of ISO formatted datetimes, and enforce
         the use of a Z identifier for UTC timezone in outputs
-
         """
 
         # This is the strict regex definition for VO datetimes from:
@@ -59,7 +59,8 @@ else:
 
         @classmethod
         def _validate(cls, value: str):
-            """Validator that expands the pydantic datetime model to include Z UTC identifiers
+            """
+            Validator that expands the pydantic datetime model to include Z UTC identifiers
 
             Args:
                 value: datetime string. Comes from either a user's POST (destruction) or from the cache
@@ -94,7 +95,8 @@ else:
             return cls._validate(date_string)
 
         def isoformat(self, sep: str = "T", timespec: str = "milliseconds") -> str:
-            """Overwrites the datetime isoformat output to use a Z UTC indicator
+            """
+            Overwrites the datetime isoformat output to use a Z UTC indicator
 
             Parameters:
                 sep: Separator between date and time (default: 'T')
@@ -108,10 +110,12 @@ else:
 
 
 class UTCDateTime(str):
-    """A date stamp that can be given to a precision of either a day (type
+    """
+    A date stamp that can be given to a precision of either a day (type
     xs:date) or seconds (type xs:dateTime). Where only a date is given,
     it is to be interpreted as the span of the day on the UTC timezone
-    if such distinctions are relevant."""
+    if such distinctions are relevant.
+    """
 
 
 class ValidationLevel(Enum):
