@@ -159,7 +159,7 @@ class Contact(BaseXmlModel):
                 Always use a URI form including a scheme here.
     """
 
-    ivo_id: Optional[IdentifierURI] = attr(name="ivo_id", default=None)
+    ivo_id: Optional[IdentifierURI] = attr(name="ivo-id", default=None)
 
     name: ResourceName = element(tag="name")
     address: Optional[str] = element(tag="address", default=None)
@@ -194,7 +194,7 @@ class Creator(BaseXmlModel):
             including a scheme here.
     """
 
-    ivo_id: Optional[IdentifierURI] = attr(name="ivo_id", default=None)
+    ivo_id: Optional[IdentifierURI] = attr(name="ivo-id", default=None)
 
     name: ResourceName = element(tag="name")
     logo: Optional[networks.AnyUrl] = element(tag="logo", default=None)

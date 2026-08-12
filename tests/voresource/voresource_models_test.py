@@ -197,6 +197,7 @@ class TestContact(TestCase):
     """Test VOResource Contact model"""
 
     test_contact_model = Contact(
+        ivo_id="ivo://example.edu/contact",
         name=ResourceName(value="John Doe"),
         address="1234 Example St.",
         email="jdoe@mail.com",
@@ -204,7 +205,7 @@ class TestContact(TestCase):
         alt_identifier=["http://orcid.org/0000-0001-9718-6515"],
     )
     test_contact_xml = (
-        '<Contact >'
+        '<Contact ivo-id="ivo://example.edu/contact">'
         "<name>John Doe</name>"
         "<address>1234 Example St.</address>"
         "<email>jdoe@mail.com</email>"
@@ -234,9 +235,9 @@ class TestContact(TestCase):
 class TestCreator(TestCase):
     """Test VOResource Creator model"""
 
-    test_creator_model = Creator(name=ResourceName(value="Doe, J."), logo="https://example.edu/logo.png")
+    test_creator_model = Creator(ivo_id="ivo://example.edu/creator", name=ResourceName(value="Doe, J."), logo="https://example.edu/logo.png")
     test_creator_xml = (
-        '<Creator >'
+        '<Creator ivo-id="ivo://example.edu/creator">'
         "<name>Doe, J.</name>"
         "<logo>https://example.edu/logo.png</logo>"
         "</Creator>"
@@ -495,11 +496,11 @@ class TestResource(TestCase):
         alt_identifier=["bibcode:2008ivoa.spec.0222P"],
         curation=Curation(
             publisher=ResourceName(value="STScI"),
-            creator=[Creator(name=ResourceName(value="Doe, J."))],
+            creator=[Creator(ivo_id="ivo://example.edu/creator", name=ResourceName(value="Doe, J."))],
             contributor=[ResourceName(value="Example Resource")],
             date=[Date(value="2021-01-01T00:00:00Z", role="update")],
             version="1.0",
-            contact=[Contact(name=ResourceName(value="John Doe"))],
+            contact=[Contact(ivo_id="ivo://example.edu/contact", name=ResourceName(value="John Doe"))],
         ),
         content=Content(
             subject=["Astronomy"],
@@ -526,11 +527,11 @@ class TestResource(TestCase):
         "<altIdentifier>bibcode:2008ivoa.spec.0222P</altIdentifier>"
         "<curation>"
         "<publisher>STScI</publisher>"
-        "<creator><name>Doe, J.</name></creator>"
+        '<creator ivo-id="ivo://example.edu/creator"><name>Doe, J.</name></creator>'
         "<contributor>Example Resource</contributor>"
         '<date role="update">2021-01-01T00:00:00.000Z</date>'
         "<version>1.0</version>"
-        "<contact><name>John Doe</name></contact>"
+        '<contact ivo-id="ivo://example.edu/contact"><name>John Doe</name></contact>'
         "</curation>"
         "<content>"
         "<subject>Astronomy</subject>"
