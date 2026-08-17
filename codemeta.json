@@ -1,0 +1,59 @@
+{
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "type": "SoftwareSourceCode",
+    "applicationCategory": "Astronomy",
+    "author": [
+        {
+            "id": "https://orcid.org/0009-0008-7937-1918",
+            "type": "Person",
+            "affiliation": {
+                "type": "Organization",
+                "name": "Space Telescope Science Institute"
+            },
+            "email": "jfraustro@stsci.edu",
+            "familyName": "Fraustro",
+            "givenName": "Joshua"
+        }
+    ],
+    "codeRepository": "https://github.com/spacetelescope/vo-models",
+    "contributor": [
+        {
+            "id": "_:contributor_1",
+            "type": "Person",
+            "familyName": "Allbery",
+            "givenName": "Russ"
+        },
+        {
+            "id": "_:contributor_2",
+            "type": "Person",
+            "familyName": "Fuchs",
+            "givenName": "Dan"
+        },
+        {
+            "id": "_:contributor_3",
+            "type": "Person",
+            "familyName": "Falk",
+            "givenName": "Benjamin"
+        }
+    ],
+    "dateCreated": "2023-12-07",
+    "dateModified": "2026-04-22",
+    "datePublished": "2023-12-07",
+    "description": "Pydantic data models for IVOA service protocols. Provides validated, serializable Python (pydantic-xml) models for IVOA protocols including UWS, VOSI, VODataService, VOResource, TAPRegExt, and VORegistry, to support the development of IVOA-compliant services and clients.",
+    "downloadUrl": "https://github.com/spacetelescope/vo-models/archive/refs/tags/v0.5.3.tar.gz",
+    "identifier": "vo-models",
+    "keywords": [
+        "ivoa",
+        "virtual observatory",
+        "pydantic",
+        "pydantic-xml",
+        "astronomy",
+        "data models"
+    ],
+    "license": "https://spdx.org/licenses/MIT",
+    "name": "vo-models",
+    "programmingLanguage": "Python 3",
+    "version": "0.5.3",
+    "developmentStatus": "active",
+    "issueTracker": "https://github.com/spacetelescope/vo-models/issues"
+}
