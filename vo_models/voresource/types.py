@@ -1,7 +1,7 @@
 """VOResource Simple Types"""
 
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import TYPE_CHECKING, Annotated
 
@@ -24,8 +24,8 @@ else:
         # https://www.ivoa.net/documents/VOResource/20180625/REC-VOResource-1.1.html#tth_sEc2.2.4
         # vodt_regex = r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?Z?"
 
-        # Expanded regex to accept Zulu but also +00:00 offset UTC times
-        exp_utc_regex = r"(\d{4}-\d\d-\d\d(T|\s)\d\d:\d\d:\d\d(\.\d+)?)(Z|\+\d\d:\d\d)?"
+        # Expanded regex to accept Zulu but also numeric UTC offsets, which are converted to UTC
+        exp_utc_regex = r"(\d{4}-\d\d-\d\d(T|\s)\d\d:\d\d:\d\d(\.\d+)?)(Z|[+-]\d\d:\d\d)?"
         # Will match:
         # 2023-03-15T18:27:18.758 (UTC assumed - T separator)
         # 2023-03-15 18:27:18.758 (UTC assumed - space separator)
@@ -33,6 +33,7 @@ else:
         # 2023-03-15 18:27:18.758Z (Zulu UTC - space separator)
         # 2023-03-15T18:27:18.758+00:00 (UTC w/ offset - T separator)
         # 2023-03-15 18:27:18.758+00:00 (UTC w/ offset - space separator)
+        # 2023-03-15T18:27:18.758-05:00 (non-UTC offset - converted to 2023-03-15T23:27:18.758Z)
 
         # TODO: Python 3.11 datetime.fromisoformat() does accept a 'Z' indicated UTC time. Revisit this when upgrading.
 
@@ -69,11 +70,8 @@ else:
                 UTCTimestamp: VO-compliant datetime subclass
             """
 
-            if isinstance(value, UTCTimestamp):
-                return value
-
             if isinstance(value, datetime):
-                return cls._validate(value.isoformat())
+                return cls._from_datetime(value)
 
             if not isinstance(value, str):
                 raise TypeError("String datetime required")
@@ -85,10 +83,39 @@ else:
                 # If there was no full match, reject it
                 raise ValueError("Invalid VOResource ISO-8601 date format")
 
-            # Grab only the date/time match and manually add a UTC offset for an aware python datetime object
-            value = valid_utc.group(1) + "+00:00"
+            # A missing offset means UTC. Any other offset is kept so the time can be converted to UTC.
+            offset = valid_utc.group(4)
+            if offset in (None, "Z"):
+                offset = "+00:00"
 
-            return super().fromisoformat(value)
+            return cls._from_datetime(datetime.fromisoformat(valid_utc.group(1) + offset))
+
+        @classmethod
+        def _from_datetime(cls, value: datetime):
+            """
+            Convert a datetime to a UTCTimestamp, treating naive datetimes as UTC
+
+            Args:
+                value: naive or timezone-aware datetime
+
+            Returns:
+                UTCTimestamp: the same instant in UTC
+            """
+            if value.utcoffset() is None:
+                value = value.replace(tzinfo=timezone.utc)
+            else:
+                value = value.astimezone(timezone.utc)
+
+            return cls(
+                value.year,
+                value.month,
+                value.day,
+                value.hour,
+                value.minute,
+                value.second,
+                value.microsecond,
+                tzinfo=timezone.utc,
+            )
 
         @classmethod
         def fromisoformat(cls, date_string):
