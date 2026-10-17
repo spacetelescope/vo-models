@@ -59,12 +59,12 @@ else:
             )
 
         @classmethod
-        def _validate(cls, value: str):
+        def _validate(cls, value: str | datetime):
             """
             Validator that expands the pydantic datetime model to include Z UTC identifiers
 
             Args:
-                value: datetime string. Comes from either a user's POST (destruction) or from the cache
+                value: datetime or datetime string. Comes from either a user's POST (destruction) or from the cache
 
             Returns:
                 UTCTimestamp: VO-compliant datetime subclass
