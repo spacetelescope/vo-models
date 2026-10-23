@@ -1,0 +1,599 @@
+<?xml version='1.0' encoding='ASCII'?>
+<!-- Change log
+Revision 2.1 2025/01/07 BaptisteCecconi
+- added "Name" complex type with "ivorn", "altIdentifier" and "role" attributes, used by "Contributor" (in "Who/Author")
+- deprecated "contributor" in "Who/Author" (kept for backward compatibility)
+- added "ContributorRole" simple type, with enumeration of role values (from DataCite schema v4.5)
+- removed restricted list of "AstroCoordSystem": previously "idValues" type, now "xs:string"
+- removed "idValues" type (and references)
+- added annotation in "AstroCoords/Time" (according to STC-1.30)
+- added "AstroCoords/PositionName" as "xs:string"
+- added annotation to "AstroCoords/Position2D" (according to STC-1.30)
+- removed restricted list of attribute "coord_system_id" in "AstroCoords": previous type=idValues (removed), new type=xs:string
+- added "TimeInterval" of type "TimeInterval" in "Time"
+- added "TimeInterval" type with "StartTime" and "StopTime" elements
+- changed minOccurs attribute in "Position2D/Error2Radius": now set to 0
+- added "Error2" element in "Position2D" with type "Error2" and minOccurs=0
+- added "Error3" element in "Position3D" with type "Error3" and minOccurs=0
+- added "coord_value" type introducing "ucd" and "unit" attributes for C1, C2 and C3 elements
+- added "Error2" type, with "C1" and "C2" elements
+- added "Error3" type, with "C1", "C2" and "C3" elements
+- added "TimeFrameType" (taken from to STC-1.30)
+- added "SpaceFrameType" (taken from to STC-1.30)
+- updated "AstroCoords" with with sequence instead of choice
+-->
+<xs:schema xmlns="http://www.ivoa.net/xml/VOEvent/v2.1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.ivoa.net/xml/VOEvent/v2.1" elementFormDefault="unqualified">
+
+  <xs:element name="VOEvent">
+    <xs:annotation>
+      <xs:documentation> VOEvent is the root element for describing observations of immediate
+        astronomical events. For more information, see
+        http://www.ivoa.net/twiki/bin/view/IVOA/IvoaVOEvent. The event consists of at most one of
+        each of: Who, What, WhereWhen, How, Why, Citations, Description, and
+        Reference.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <!-- Can have zero or one of each of these, in any order -->
+      <xs:all>
+        <xs:element name="Who" type="Who" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="What" type="What" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="WhereWhen" type="WhereWhen" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="How" type="How" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="Why" type="Why" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="Citations" type="Citations" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="Description" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="Reference" type="Reference" minOccurs="0" maxOccurs="1"/>
+      </xs:all>
+      <xs:attribute name="version" type="xs:token" fixed="2.1" use="required"/>
+      <xs:attribute name="ivorn" type="xs:anyURI" use="required"/>
+      <xs:attribute name="role" type="roleValues" default="observation"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:simpleType name="roleValues">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="observation"/>
+      <xs:enumeration value="prediction"/>
+      <xs:enumeration value="utility"/>
+      <xs:enumeration value="test"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+
+  <xs:complexType name="Who">
+    <xs:annotation>
+      <xs:documentation> Who: Curation Metadata </xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <!-- Can have zero or one of each of these. Schema is loose because
+        should have AuthorIVORN *or* Author -->
+      <xs:element name="AuthorIVORN" type="xs:anyURI" minOccurs="0"/>
+      <xs:element name="Date" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="Description" type="xs:string" minOccurs="0"/>
+      <xs:element name="Reference" type="Reference" minOccurs="0"/>
+      <xs:element name="Author" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation> Author information follows the IVOA curation information schema: the
+            organization responsible for the packet can have a title, short name or acronym, and a
+            logo. A contact person has a name, email, and phone number. Other contributors can also
+            be noted. </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:choice maxOccurs="unbounded">
+            <xs:element name="title" type="xs:string"/>
+            <xs:element name="shortName" type="xs:string"/>
+            <xs:element name="logoURL" type="xs:anyURI"/>
+            <xs:element name="contactName" type="xs:string"/>
+            <xs:element name="contactEmail" type="xs:string"/>
+            <xs:element name="contactPhone" type="xs:string"/>
+            <xs:element name="contributor" type="xs:string"/>  <!--- DEPRECATED -->
+            <xs:element name="Contributor" type="Name"/>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+
+
+  <xs:complexType name="What">
+    <xs:annotation>
+      <xs:documentation> What: Event Characterization. This is the part of the data model that is
+        chosen by the Authoer of the event rather than the IVOA. There can be Params, that may be in
+        Groups, and Tables, and simpleTimeSeries. There can also be Description and Reference as
+        with most VOEvent elements. </xs:documentation>
+    </xs:annotation>
+    <xs:choice maxOccurs="unbounded">
+      <!-- can have any number of any of these in any order  -->
+      <xs:element name="Param" type="Param" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="Group" type="Group" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="Table" type="Table" minOccurs="0" maxOccurs="unbounded"/>
+      <!--<xs:element ref="sts:SimpleTimeseries"          minOccurs="0" maxOccurs="unbounded"/>-->
+      <xs:element name="Description" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="Reference" type="Reference" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:choice>
+  </xs:complexType>
+
+
+  <xs:complexType name="Param">
+    <xs:annotation>
+      <xs:documentation> What/Param definition. A Param has name, value, ucd, unit, dataType; and
+        may have Description and Reference.</xs:documentation>
+    </xs:annotation>
+    <xs:choice maxOccurs="unbounded">
+      <xs:element name="Description" type="xs:string" minOccurs="0"/>
+      <xs:element name="Reference" type="Reference" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="Value" type="xs:string" minOccurs="0" maxOccurs="1"/>
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="ucd" type="xs:string"/>
+    <xs:attribute name="value" type="xs:string"/>
+    <xs:attribute name="unit" type="xs:string"/>
+    <xs:attribute name="dataType" type="dataType" default="string"/>
+    <xs:attribute name="utype" type="xs:string"/>
+  </xs:complexType>
+  <xs:simpleType name="dataType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="string"/>
+      <xs:enumeration value="float"/>
+      <xs:enumeration value="int"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="Group">
+    <xs:annotation>
+      <xs:documentation> What/Group definition: A group is a collection of Params, with name and
+        type attributes.</xs:documentation>
+    </xs:annotation>
+    <xs:choice maxOccurs="unbounded">
+      <xs:element name="Param" type="Param" maxOccurs="unbounded"/>
+      <xs:element name="Description" type="xs:string" minOccurs="0"/>
+      <xs:element name="Reference" type="Reference" minOccurs="0"/>
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="type" type="xs:string"/>
+  </xs:complexType>
+
+
+  <xs:complexType name="Table">
+    <xs:annotation>
+      <xs:documentation> What/Table definition. This small Table has Fields for the column
+        definitions, and Data to hold the table data, with TR for row and TD for value of a table
+        cell.</xs:documentation>
+    </xs:annotation>
+    <xs:choice maxOccurs="unbounded">
+      <xs:element name="Description" type="xs:string" minOccurs="0"/>
+      <xs:element name="Reference" type="Reference" minOccurs="0"/>
+      <xs:element name="Param" type="Param" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="Field" type="Field" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="Data" type="Data" minOccurs="1" maxOccurs="1"/>
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="type" type="xs:string"/>
+  </xs:complexType>
+  <xs:complexType name="Field">
+    <xs:choice maxOccurs="unbounded">
+      <xs:element name="Description" type="xs:string" minOccurs="0"/>
+      <xs:element name="Reference" type="Reference" minOccurs="0"/>
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="ucd" type="xs:string"/>
+    <xs:attribute name="unit" type="xs:string"/>
+    <xs:attribute name="dataType" type="dataType" default="string"/>
+    <xs:attribute name="utype" type="xs:string"/>
+  </xs:complexType>
+  <xs:complexType name="Data">
+    <xs:choice maxOccurs="unbounded">
+      <xs:element name="TR" type="TR"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="TR">
+    <xs:choice maxOccurs="unbounded">
+      <xs:element name="TD" type="xs:string"/>
+    </xs:choice>
+  </xs:complexType>
+
+
+  <xs:complexType name="WhereWhen">
+    <xs:annotation>
+      <xs:documentation> WhereWhen: Space-Time Coordinates. Lots and lots of elements here, but the
+        import is that each event has these: observatory, coord_system, time, timeError, longitude,
+        latitude, posError.</xs:documentation>
+    </xs:annotation>
+    <xs:choice maxOccurs="unbounded">
+      <xs:element name="ObsDataLocation" type="ObsDataLocation" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="Description" type="xs:string" minOccurs="0"/>
+      <xs:element name="Reference" type="Reference" minOccurs="0"/>
+    </xs:choice>
+    <xs:attribute name="id" type="xs:ID" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="ObsDataLocation">
+    <xs:annotation>
+      <xs:documentation> Part of WhereWhen</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="ObservatoryLocation" minOccurs="1" maxOccurs="1" type="ObservatoryLocation"/>
+      <xs:element name="ObservationLocation" minOccurs="1" maxOccurs="1" type="ObservationLocation"
+      />
+    </xs:all>
+  </xs:complexType>
+
+  <xs:complexType name="ObservationLocation">
+    <xs:annotation>
+      <xs:documentation> Part of WhereWhen</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="AstroCoordSystem" type="AstroCoordSystem" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="AstroCoords" type="AstroCoords" minOccurs="1" maxOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+
+  <xs:complexType name="AstroCoordSystem">
+    <xs:annotation>
+      <xs:documentation> Part of WhereWhen</xs:documentation>
+    </xs:annotation>
+    <!-- The empty sequence closes this to content -->
+    <xs:sequence>
+      <xs:element minOccurs="0" name="TimeFrame" type="TimeFrameType"/>
+      <xs:element minOccurs="0" name="SpaceFrame" type="SpaceFrameType"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:ID"/>
+  </xs:complexType>
+
+
+
+  <xs:complexType name="AstroCoords">
+    <xs:annotation>
+      <xs:documentation> Part of WhereWhen</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Time" type="Time" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Time instant or Time Interval for the event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="PositionName" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Named position for the event or an observatory</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Position2D" type="Position2D" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Position for the event (2D coordSystem)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Position3D" type="Position3D" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Position for the event (3D coordSystem)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="coord_system_id" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="Time">
+    <xs:annotation>
+      <xs:documentation> Part of WhereWhen</xs:documentation>
+    </xs:annotation>
+    <xs:sequence maxOccurs="unbounded">
+      <xs:element name="TimeInstant" type="TimeInstant" maxOccurs="1" minOccurs="0"/>
+      <xs:element name="TimeInterval" type="TimeInterval" maxOccurs="1" minOccurs="0"/>
+      <xs:element name="Error" type="xs:float" maxOccurs="1" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="unit" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="TimeInstant">
+    <xs:annotation>
+      <xs:documentation> Part of WhereWhen</xs:documentation>
+    </xs:annotation>
+    <xs:sequence maxOccurs="unbounded">
+      <xs:element name="ISOTime" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="TimeOffset" type="xs:float" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="TimeScale" type="xs:string" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="TimeInterval">
+    <xs:annotation>
+      <xs:documentation> Part of WhereWhen</xs:documentation>
+    </xs:annotation>
+    <xs:sequence maxOccurs="unbounded">
+      <xs:element name="ISOTimeStart" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="ISOTimeStop" type="xs:string" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Position2D">
+    <xs:annotation>
+      <xs:documentation> Part of WhereWhen</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="Name1" type="xs:string" minOccurs="0"/>
+      <xs:element name="Name2" type="xs:string" minOccurs="0"/>
+      <xs:element name="Value2" type="Value2"/>
+      <xs:element name="Error2Radius" type="coord_value" minOccurs="0"/>
+      <xs:element name="Error2" type="Error2" minOccurs="0"/>
+    </xs:all>
+    <xs:attribute name="unit" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="Position3D">
+    <xs:annotation>
+      <xs:documentation> Part of WhereWhen</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="Name1" type="xs:string" minOccurs="0"/>
+      <xs:element name="Name2" type="xs:string" minOccurs="0"/>
+      <xs:element name="Name3" type="xs:string" minOccurs="0"/>
+      <xs:element name="Value3" type="Value3"/>
+      <xs:element name="Error3" type="Error3" minOccurs="0"/>
+    </xs:all>
+    <xs:attribute name="unit" type="xs:string"/>
+  </xs:complexType>
+  <xs:complexType name="coord_value">
+    <xs:annotation>
+      <xs:documentation>element for each axis </xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:float">
+        <xs:attribute name="ucd" type="xs:string"/>
+        <xs:attribute name="pos_unit" type="xs:string"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+
+  <xs:complexType name="Value2">
+    <xs:annotation>
+      <xs:documentation> Part of WhereWhen</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="C1" type="coord_value"/>
+      <xs:element name="C2" type="coord_value"/>
+    </xs:all>
+  </xs:complexType>
+
+  <xs:complexType name="Error2">
+    <xs:annotation>
+      <xs:documentation> Part of WhereWhen</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="C1" type="coord_value" minOccurs="0"/>
+      <xs:element name="C2" type="coord_value" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+
+
+  <xs:complexType name="Value3">
+    <xs:annotation>
+      <xs:documentation> Part of WhereWhen</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="C1" type="coord_value"/>
+      <xs:element name="C2" type="coord_value"/>
+      <xs:element name="C3" type="coord_value"/>
+    </xs:all>
+  </xs:complexType>
+
+  <xs:complexType name="Error3">
+    <xs:annotation>
+      <xs:documentation> Part of WhereWhen</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="C1" type="coord_value" minOccurs="0"/>
+      <xs:element name="C2" type="coord_value" minOccurs="0"/>
+      <xs:element name="C3" type="coord_value" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+
+
+  <xs:complexType name="ObservatoryLocation">
+    <xs:annotation>
+      <xs:documentation> Part of WhereWhen</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="AstroCoordSystem" type="AstroCoordSystem" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="AstroCoords" type="AstroCoords" minOccurs="0" maxOccurs="1"/>
+    </xs:all>
+    <xs:attribute name="id" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="How">
+    <xs:annotation>
+      <xs:documentation> How: Instrument Configuration. Built with some Description and Reference
+        elements. </xs:documentation>
+    </xs:annotation>
+    <xs:choice maxOccurs="unbounded">
+      <xs:element name="Description" type="xs:string"/>
+      <xs:element name="Reference" type="Reference"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="Why">
+    <xs:annotation>
+      <xs:documentation> Why: Initial Scientific Assessment. Can make simple Concept/Name/Desc/Ref
+        for the inference or use multiple Inference containers for more semantic sophistication.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:choice maxOccurs="unbounded">
+      <xs:element name="Name" type="xs:string"/>
+      <xs:element name="Concept" type="xs:string"/>
+      <xs:element name="Inference" type="Inference"/>
+      <xs:element name="Description" type="xs:string"/>
+      <xs:element name="Reference" type="Reference"/>
+    </xs:choice>
+    <xs:attribute name="importance" type="xs:float"/>
+    <xs:attribute name="expires" type="xs:dateTime"/>
+  </xs:complexType>
+
+  <xs:complexType name="Inference">
+    <xs:annotation>
+      <xs:documentation> Why/Inference: A container for a more nuanced expression, including
+        relationships and probability. </xs:documentation>
+    </xs:annotation>
+    <xs:choice maxOccurs="unbounded">
+      <xs:element name="Name" type="xs:string"/>
+      <xs:element name="Concept" type="xs:string"/>
+      <xs:element name="Description" type="xs:string"/>
+      <xs:element name="Reference" type="Reference"/>
+    </xs:choice>
+    <xs:attribute name="probability" type="smallFloat"/>
+    <xs:attribute name="relation" type="xs:string"/>
+  </xs:complexType>
+  <xs:simpleType name="smallFloat">
+    <xs:restriction base="xs:float">
+      <xs:minInclusive value="0.0"/>
+      <xs:maxInclusive value="1.0"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+
+  <xs:complexType name="Citations">
+    <xs:annotation>
+      <xs:documentation> Citations: Follow-up Observations. This section is a sequence of EventIVORN
+        elements, each of which has the IVORN of a cited event. </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="EventIVORN" type="EventIVORN" maxOccurs="unbounded"/>
+      <xs:element name="Description" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="EventIVORN">
+    <xs:annotation>
+      <xs:documentation> Citations/EventIVORN. The value is the IVORN of the cited event, the 'cite'
+        attribute is the nature of that relationship, choosing from 'followup', 'supersedes', or
+        'retraction'.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="cite" type="citeValues"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="citeValues">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="followup"/>
+      <xs:enumeration value="supersedes"/>
+      <xs:enumeration value="retraction"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="Reference">
+    <xs:annotation>
+      <xs:documentation> Reference: External Content. The payload is the uri, and the 'type'
+        describes the nature of the data under that uri. The Reference can also be named.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence/>
+    <xs:attribute name="uri" type="xs:anyURI" use="required"/>
+    <xs:attribute name="type" type="xs:string"/>
+    <xs:attribute name="mimetype" type="xs:string"/>
+    <xs:attribute name="meaning" type="xs:anyURI"/>
+  </xs:complexType>
+
+  <xs:complexType name="TimeFrameType">
+    <xs:annotation>
+      <xs:documentation>The time reference frame consists of a time scale, a time format, and a
+        reference time, if needed. A TimeFrame has to have at least an Id.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Name" type="xs:string"/>
+      <xs:element minOccurs="0" name="ReferencePosition" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Origin of the coordinate reference frame: either a "known place" such as
+            geocenter or barycenter, or a position defined in a known coordinate
+            system. Values should be taken from: http://www.ivoa.net/rdf/refposition</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="TimeScale" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Values should be taken from: http://www.ivoa.net/rdf/timescale</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:ID"/>
+  </xs:complexType>
+  <xs:complexType name="SpaceFrameType">
+    <xs:annotation>
+      <xs:documentation>A SpaceFrame has to have at least an Id</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Name" type="xs:string"/>
+      <xs:element minOccurs="0" name="SpaceRefFrame" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Coordinate reference frame: optional equinox with either a standard
+            reference system (ICRS, FK5, FK4) and optional standard pole (equatorial, ecliptic,
+            galactic, etc.), or pole (positive Z-axis) and positive X-axis direction. Values should
+            be taken from: http://www.ivoa.net/rdf/refframe</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="CoordFlavor" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Provides the coordinate definitions: number of axes, SPHERICAL,
+            CARTESIAN, UNITSPHERE, POLAR, or HEALPIX, presence of velocities</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="ReferencePosition" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Origin of the coordinate reference frame: either a "known place" such as
+            geocenter or barycenter, or a position defined in a known coordinate
+            system. Values should be taken from: http://www.ivoa.net/rdf/refposition</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:ID"/>
+  </xs:complexType>
+  <xs:complexType name="Name">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="altIdentifier" type="xs:anyURI">
+          <xs:annotation>
+            <xs:documentation>Alternate contact identifier in URI form. The main usage is to refer
+              to ORCIDs (e.g.: https://orcid.org/0000-0001-2345-6789)</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="role" type="contributorRole">
+          <xs:annotation>
+            <xs:documentation>Role of the Contributor </xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="ivorn" type="xs:anyURI">
+          <xs:annotation>
+            <xs:documentation>Person id in the VO registry, if available</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:simpleType name="contributorRole">
+    <xs:annotation>
+      <xs:documentation>The list of contributor roles is extracted from the DataCite Schema v4.5.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ContactPerson"/>
+      <xs:enumeration value="DataCollector"/>
+      <xs:enumeration value="DataCurator"/>
+      <xs:enumeration value="DataManager"/>
+      <xs:enumeration value="Distributor"/>
+      <xs:enumeration value="Editor"/>
+      <xs:enumeration value="HostingInstitution"/>
+      <xs:enumeration value="Producer"/>
+      <xs:enumeration value="ProjectLeader"/>
+      <xs:enumeration value="ProjectManager"/>
+      <xs:enumeration value="ProjectMember"/>
+      <xs:enumeration value="RegistrationAgency"/>
+      <xs:enumeration value="RegistrationAuthority"/>
+      <xs:enumeration value="RelatedPerson"/>
+      <xs:enumeration value="Researcher"/>
+      <xs:enumeration value="ResearchGroup"/>
+      <xs:enumeration value="RightsHolder"/>
+      <xs:enumeration value="Sponsor"/>
+      <xs:enumeration value="Supervisor"/>
+      <xs:enumeration value="WorkPackageLeader"/>
+      <xs:enumeration value="Other"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

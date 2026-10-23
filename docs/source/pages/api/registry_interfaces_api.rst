@@ -1,7 +1,7 @@
 .. _registry_interfaces_api:
 
 Registry Interfaces API
---------------
+-----------------------
 
 Models
 ^^^^^^

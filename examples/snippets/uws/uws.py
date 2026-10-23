@@ -181,14 +181,14 @@ parameters = TAPParameters(
 )
 
 job_summary = JobSummary[TAPParameters](
-    job_id = "job_1",
-    owner_id = "anon_user",
-    phase = "COMPLETED",
-    creation_time = "2023-12-01T12:00:00.000Z",
-    start_time = "2023-12-01T12:00:00.000Z",
-    end_time = datetime.datetime.now(),
-    parameters = parameters,
-    results = Results(
+    job_id="job_1",
+    owner_id="anon_user",
+    phase="COMPLETED",
+    creation_time="2023-12-01T12:00:00.000Z",
+    start_time="2023-12-01T12:00:00.000Z",
+    end_time=datetime.datetime.now(),
+    parameters=parameters,
+    results=Results(
         results=[
             ResultReference(id="result1", href="http://example.com/result1"),
             ResultReference(id="result2", href="http://example.com/result2"),
