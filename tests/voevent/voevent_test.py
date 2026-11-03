@@ -76,7 +76,7 @@ class TestAuthorModel(TestCase):
         self.assertIsInstance(author, Author)
         self.assertEqual(author.title[0], "Rapid Telescope for Optical Response")
         self.assertEqual(author.short_name[0], "Raptor")
-        self.assertEqual(author.logo_url[0], "http://www.raptor.lanl.gov/images/RAPTOR_patchLarge.jpg")
+        self.assertEqual(author.logo_url[0], "http://www.raptor.lanl.gov/images /RAPTOR_patchLarge.jpg")
         self.assertEqual(author.contact_name[0], "Robert White")
         self.assertEqual(author.contact_email[0], "rwhite@lanl.gov")
         self.assertEqual(author.contact_phone[0], "+1 800 555 1212")
@@ -682,23 +682,25 @@ class TestHowModel(TestCase):
     """
 
     test_element = How(
-        description="Details on how the observation was made.",
-        reference=Reference(
-            uri="http://example.org/observation/method",
-            mimetype="text/html",
-            meaning="http://ivoa.net/rdf/uat#observation-method",
-        ),
+        description=["Details on how the observation was made."],
+        reference=[
+            Reference(
+                uri="http://example.org/observation/method",
+                mimetype="text/html",
+                meaning="http://ivoa.net/rdf/uat#observation-method",
+            )
+        ],
     )
 
     def test_read_from_xml(self):
         """Test reading a How from XML."""
         how = How.from_xml(self.test_xml)
         self.assertIsInstance(how, How)
-        self.assertEqual(how.description, "Details on how the observation was made.")
+        self.assertEqual(how.description[0], "Details on how the observation was made.")
         self.assertIsNotNone(how.reference)
-        self.assertEqual(how.reference.uri, "http://example.org/observation/method")
-        self.assertEqual(how.reference.mimetype, "text/html")
-        self.assertEqual(how.reference.meaning, "http://ivoa.net/rdf/uat#observation-method")
+        self.assertEqual(how.reference[0].uri, "http://example.org/observation/method")
+        self.assertEqual(how.reference[0].mimetype, "text/html")
+        self.assertEqual(how.reference[0].meaning, "http://ivoa.net/rdf/uat#observation-method")
 
     def test_write_to_xml(self):
         """Test writing a How to XML."""
@@ -1308,7 +1310,7 @@ class TestVOEventModel(TestCase):
                             time_instant=TimeInstant(
                                 isotime="2009-09-25T12:00:00",
                             ),
-                            error=0.0,  
+                            error=0.0,
                         ),
                         position2d=Position2D(
                             unit="deg",
